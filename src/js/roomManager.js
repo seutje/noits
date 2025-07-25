@@ -23,7 +23,8 @@ export default class RoomManager {
         const newRoom = {
             id: Date.now(), // Simple unique ID
             type: type,
-            tiles: []
+            tiles: [],
+            storage: {} // For storage rooms, this will hold resources
         };
 
         for (let y = y1; y <= y2; y++) {
@@ -52,6 +53,33 @@ export default class RoomManager {
             return this.roomGrid[y][x];
         }
         return null;
+    }
+
+    addResourceToStorage(room, resourceType, quantity) {
+        if (room.type === "storage") {
+            if (!room.storage[resourceType]) {
+                room.storage[resourceType] = 0;
+            }
+            room.storage[resourceType] += quantity;
+            console.log(`Added ${quantity} ${resourceType} to storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+            return true;
+        }
+        console.warn(`Room ${room.id} is not a storage room.`);
+        return false;
+    }
+
+    removeResourceFromStorage(room, resourceType, quantity) {
+        if (room.type === "storage") {
+            if (room.storage[resourceType] && room.storage[resourceType] >= quantity) {
+                room.storage[resourceType] -= quantity;
+                console.log(`Removed ${quantity} ${resourceType} from storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+                return true;
+            }
+            console.warn(`Not enough ${resourceType} in storage room ${room.id}.`);
+            return false;
+        }
+        console.warn(`Room ${room.id} is not a storage room.`);
+        return false;
     }
 
     // Future: removeRoom, getRoomsByType, etc.

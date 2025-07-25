@@ -135,7 +135,7 @@ export default class Settler {
                         console.log(`${this.name} completed mining ${resourceType}.`);
                         this.currentTask = null; // Task completed
                     }
-                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "forage_food" || this.currentTask.type === "hunt_animal") {
+                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "forage_food" || this.currentTask.type === "hunt_animal" || this.currentTask.type === "sow_crop" || this.currentTask.type === "harvest_crop" || this.currentTask.type === "tend_animals") {
                     const resourceType = this.currentTask.resourceType;
                     const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
                     const amountToGather = gatheringRate * (deltaTime / 1000);
@@ -148,6 +148,31 @@ export default class Settler {
                         console.log(`${this.name} completed ${this.currentTask.type}.`);
                         this.currentTask = null;
                     }
+                } else if (this.currentTask.type === "sow_crop" && this.currentTask.building) {
+                    const farmPlot = this.currentTask.building;
+                    if (farmPlot.plant(this.currentTask.cropType)) {
+                        console.log(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
+                        this.currentTask = null;
+                    } else {
+                        console.log(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
+                        this.currentTask = null;
+                    }
+                } else if (this.currentTask.type === "harvest_crop" && this.currentTask.building) {
+                    const farmPlot = this.currentTask.building;
+                    const harvestedCrop = farmPlot.harvest();
+                    if (harvestedCrop) {
+                        this.resourceManager.addResource(harvestedCrop, 1); // Add 1 unit of harvested crop
+                        console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y}.`);
+                        this.currentTask = null;
+                    } else {
+                        console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
+                        this.currentTask = null;
+                    }
+                } else if (this.currentTask.type === "tend_animals" && this.currentTask.building) {
+                    const animalPen = this.currentTask.building;
+                    // Simulate tending animals - perhaps increases animal health/reproduction rate
+                    console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
+                    this.currentTask = null;
                 }
             }
         }

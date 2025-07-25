@@ -195,6 +195,21 @@ export default class Game {
                     } else {
                         console.warn("Crafting station has no recipes defined.");
                     }
+                } else if (clickedBuilding.type === 'farm_plot') {
+                    const farmPlot = clickedBuilding;
+                    if (farmPlot.growthStage === 0) {
+                        this.taskManager.addTask(new Task("sow_crop", tileX, tileY, null, 0, 3, farmPlot, 'wheat')); // Hardcode wheat for now
+                        console.log(`Sow crop task added for wheat at ${tileX},${tileY}`);
+                    } else if (farmPlot.growthStage === 3) {
+                        this.taskManager.addTask(new Task("harvest_crop", tileX, tileY, null, 0, 3, farmPlot));
+                        console.log(`Harvest crop task added at ${tileX},${tileY}`);
+                    } else {
+                        console.log(`Farm plot at ${tileX},${tileY} is not ready for action.`);
+                    }
+                } else if (clickedBuilding.type === 'animal_pen') {
+                    const animalPen = clickedBuilding;
+                    this.taskManager.addTask(new Task("tend_animals", tileX, tileY, null, 0, 3, animalPen));
+                    console.log(`Tend animals task added at ${tileX},${tileY}`);
                 } else if (typeof clickedBuilding.takeDamage === 'function') {
                     clickedBuilding.takeDamage(25); // Example: 25 damage per click
                     if (clickedBuilding.health <= 0) {

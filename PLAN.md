@@ -75,7 +75,7 @@ This phase expands on resource chains, introduces crafting, and refines base man
 
 * [x] 3.6.1 Implement farm plots for cultivating basic crops (e.g., wheat).  
 * [x] 3.6.2 Implement a simple animal pen for basic livestock (e.g., chickens).  
-* [ ] 3.6.3 Settlers can sow, harvest, and tend to animals.
+* [x] 3.6.3 Settlers can sow, harvest, and tend to animals.
 
 ### **3.7 Base Management Refinements**
 

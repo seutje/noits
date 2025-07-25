@@ -1,0 +1,29 @@
+import Resource from '../src/js/resource.js';
+
+describe('Resource', () => {
+    test('should create a resource with correct properties', () => {
+        const wood = new Resource('wood', 100);
+        expect(wood.type).toBe('wood');
+        expect(wood.quantity).toBe(100);
+        expect(wood.quality).toBe(1);
+    });
+
+    test('should add quantity correctly', () => {
+        const stone = new Resource('stone', 50);
+        stone.add(25);
+        expect(stone.quantity).toBe(75);
+    });
+
+    test('should remove quantity correctly', () => {
+        const food = new Resource('food', 200);
+        food.remove(50);
+        expect(food.quantity).toBe(150);
+    });
+
+    test('should not remove more quantity than available', () => {
+        const water = new Resource('water', 30);
+        const result = water.remove(40);
+        expect(water.quantity).toBe(30);
+        expect(result).toBe(false);
+    });
+});

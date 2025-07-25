@@ -12,7 +12,7 @@ export default class Map {
         for (let y = 0; y < this.height; y++) {
             tiles[y] = [];
             for (let x = 0; x < this.width; x++) {
-                tiles[y][x] = 0; // 0 for grass
+                tiles[y][x] = Math.random() > 0.8 ? 1 : 0; // 0 for grass, 1 for dirt
             }
         }
         return tiles;
@@ -24,6 +24,8 @@ export default class Map {
                 const tile = this.tiles[y][x];
                 if (tile === 0) {
                     ctx.fillStyle = '#2c9f45'; // Green for grass
+                } else {
+                    ctx.fillStyle = '#8b4513'; // Brown for dirt
                 }
                 ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
             }

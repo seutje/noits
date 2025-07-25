@@ -15,7 +15,7 @@ This phase focuses on establishing the fundamental game engine, rendering, and b
 
 ### **1.5 Basic Rendering**
 
-* [ ] 1.5.1 Render individual tiles on the canvas (e.g., grass, dirt).  
+* [x] 1.5.1 Render individual tiles on the canvas (e.g., grass, dirt).  
 * [ ] 1.5.2 Implement a simple sprite loading and rendering system for objects and characters.  
 * [ ] 1.5.3 Basic UI elements (e.g., top bar for time/resources).
 

@@ -122,6 +122,26 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(animalPenButton);
+
+        const designateBedroomButton = document.createElement('button');
+        designateBedroomButton.textContent = 'Designate Bedroom';
+        designateBedroomButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.startRoomDesignation('bedroom');
+            }
+        };
+        this.buildMenu.appendChild(designateBedroomButton);
+
+        const designateStorageButton = document.createElement('button');
+        designateStorageButton.textContent = 'Designate Storage';
+        designateStorageButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.startRoomDesignation('storage');
+            }
+        };
+        this.buildMenu.appendChild(designateStorageButton);
     }
 
     setGameInstance(gameInstance) {

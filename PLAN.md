@@ -79,7 +79,7 @@ This phase expands on resource chains, introduces crafting, and refines base man
 
 ### **3.7 Base Management Refinements**
 
-* [ ] 3.7.1 Implement room designation system (e.g., "Bedroom", "Storage").  
+* [x] 3.7.1 Implement room designation system (e.g., "Bedroom", "Storage").  
 * [ ] 3.7.2 Implement basic furniture placement (e.g., beds, tables).  
 * [ ] 3.7.3 Implement a basic storage system with designated zones.  
 * [ ] 3.7.4 Basic logistics: Settlers haul resources to storage.

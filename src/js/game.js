@@ -12,6 +12,7 @@ import CraftingStation from './craftingStation.js';
 import Task from './task.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
+import RoomManager from './roomManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -24,6 +25,7 @@ export default class Game {
         this.ui.setGameInstance(this);
         this.resourceManager = new ResourceManager();
         this.taskManager = new TaskManager();
+        this.roomManager = new RoomManager(this.map);
         this.settlers = [];
         this.keys = {};
         this.gameTime = 0;
@@ -97,6 +99,7 @@ export default class Game {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         this.camera.applyTransform();
         this.map.render(this.ctx);
+        this.roomManager.render(this.ctx, this.map.tileSize);
 
         const placeholderSprite = this.spriteManager.getSprite('placeholder');
         if (placeholderSprite) {
@@ -132,8 +135,19 @@ export default class Game {
         } else {
             this.buildMode = true;
             this.selectedBuilding = buildingType;
+            // Exit room designation mode if active
+            this.roomDesignationStart = null;
+            this.selectedRoomType = null;
         }
         console.log(`Build mode: ${this.buildMode}, Selected: ${this.selectedBuilding}`);
+    }
+
+    startRoomDesignation(roomType) {
+        this.buildMode = false; // Exit build mode if active
+        this.selectedBuilding = null;
+        this.roomDesignationStart = { x: null, y: null };
+        this.selectedRoomType = roomType;
+        console.log(`Room designation mode: ${roomType}. Click to select start tile.`);
     }
 
     handleKeyDown(event) {
@@ -162,6 +176,24 @@ export default class Game {
         const tileY = Math.floor(worldY / this.map.tileSize);
 
         const clickedTile = this.map.getTile(tileX, tileY);
+
+        // Check if a room designation is in progress
+        if (this.roomDesignationStart && this.selectedRoomType) {
+            if (this.roomDesignationStart.x === null) {
+                // First click: set start point
+                this.roomDesignationStart.x = tileX;
+                this.roomDesignationStart.y = tileY;
+                console.log(`Room designation started at ${tileX},${tileY}. Click again to select end tile.`);
+            } else {
+                // Second click: set end point and create room
+                const startX = this.roomDesignationStart.x;
+                const startY = this.roomDesignationStart.y;
+                this.roomManager.designateRoom(startX, startY, tileX, tileY, this.selectedRoomType);
+                this.roomDesignationStart = null;
+                this.selectedRoomType = null;
+            }
+            return; // Room designation handled
+        }
 
         if (this.buildMode && this.selectedBuilding) {
             // Place the selected building

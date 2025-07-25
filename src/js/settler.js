@@ -8,6 +8,14 @@ export default class Settler {
         this.x = x;
         this.y = y;
         this.health = 100; // 0-100
+        this.bodyParts = {
+            head: { health: 100, bleeding: false },
+            torso: { health: 100, bleeding: false },
+            leftArm: { health: 100, bleeding: false },
+            rightArm: { health: 100, bleeding: false },
+            leftLeg: { health: 100, bleeding: false },
+            rightLeg: { health: 100, bleeding: false }
+        };
         this.hunger = 100; // 0-100, 0 means starving
         this.sleep = 100; // 0-100, 0 means exhausted
         this.mood = 100; // 0-100, 0 means very unhappy
@@ -41,6 +49,22 @@ export default class Settler {
         }
         if (this.mood > 100) this.mood = 100;
         if (this.mood < 0) this.mood = 0;
+
+        // Update overall health based on body parts
+        let totalHealth = 0;
+        let damagedParts = 0;
+        for (const part in this.bodyParts) {
+            totalHealth += this.bodyParts[part].health;
+            if (this.bodyParts[part].health < 100) {
+                damagedParts++;
+            }
+            // Simulate bleeding
+            if (this.bodyParts[part].bleeding) {
+                this.bodyParts[part].health -= 0.01 * (deltaTime / 1000); // Bleeding causes health loss
+                if (this.bodyParts[part].health < 0) this.bodyParts[part].health = 0;
+            }
+        }
+        this.health = totalHealth / Object.keys(this.bodyParts).length; // Average health of all parts
 
         // Basic AI: Change state based on needs
         if (this.hunger < 20) {
@@ -224,6 +248,7 @@ export default class Settler {
         ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);
         ctx.fillText(this.state, this.x * 32, this.y * 32 + 40);
         ctx.fillText(this.getStatus(), this.x * 32, this.y * 32 + 50);
+        ctx.fillText(`Health: ${this.health.toFixed(1)}`, this.x * 32, this.y * 32 + 60);
     }
 
     getStatus() {

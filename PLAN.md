@@ -101,7 +101,7 @@ This phase introduces interactions with the outside world, a more detailed healt
 
 ### **4.5 Health System**
 
-* [ ] 4.5.1 Implement a basic body part system for settlers (e.g., head, torso, limbs).  
+* [x] 4.5.1 Implement a basic body part system for settlers (e.g., head, torso, limbs).  
 * [ ] 4.5.2 Implement basic injuries (e.g., cuts, bruises).  
 * [ ] 4.5.3 Implement basic medical treatment (e.g., bandaging).
 

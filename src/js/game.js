@@ -201,6 +201,15 @@ export default class Game {
             } else if (clickedTile === 2) { // If a tree is clicked
                 this.resourceManager.addResource("wood", 10);
                 this.map.removeTree(tileX, tileY);
+            } else if (clickedTile === 3) { // If a stone is clicked
+                this.resourceManager.addResource("stone", 10);
+                this.map.removeTree(tileX, tileY); // Use removeTree for now, will change to removeResourceNode
+            } else if (clickedTile === 4) { // If berries are clicked
+                this.resourceManager.addResource("berries", 5);
+                this.map.removeTree(tileX, tileY); // Use removeTree for now
+            } else if (clickedTile === 5) { // If iron_ore is clicked
+                this.resourceManager.addResource("iron_ore", 5);
+                this.map.removeTree(tileX, tileY); // Use removeTree for now
             } else {
                 // Place a wood pile at the clicked tile
                 this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));

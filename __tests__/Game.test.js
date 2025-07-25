@@ -126,4 +126,36 @@ describe('Game', () => {
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         expect(game.map.addBuilding).not.toHaveBeenCalled();
     });
+
+    test('handleClick should add wood and remove tree when tree is clicked', () => {
+        game.map.getTile.mockReturnValue(2); // Mock a tree tile
+        game.map.removeTree = jest.fn();
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+        expect(game.resourceManager.addResource).toHaveBeenCalledWith("wood", 10);
+        expect(game.map.removeTree).toHaveBeenCalledWith(expect.any(Number), expect.any(Number));
+    });
+
+    test('handleClick should add stone and remove tile when stone is clicked', () => {
+        game.map.getTile.mockReturnValue(3); // Mock a stone tile
+        game.map.removeTree = jest.fn(); // Using removeTree for now as per game.js
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+        expect(game.resourceManager.addResource).toHaveBeenCalledWith("stone", 10);
+        expect(game.map.removeTree).toHaveBeenCalledWith(expect.any(Number), expect.any(Number));
+    });
+
+    test('handleClick should add berries and remove tile when berries are clicked', () => {
+        game.map.getTile.mockReturnValue(4); // Mock a berries tile
+        game.map.removeTree = jest.fn(); // Using removeTree for now as per game.js
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+        expect(game.resourceManager.addResource).toHaveBeenCalledWith("berries", 5);
+        expect(game.map.removeTree).toHaveBeenCalledWith(expect.any(Number), expect.any(Number));
+    });
+
+    test('handleClick should add iron_ore and remove tile when iron_ore is clicked', () => {
+        game.map.getTile.mockReturnValue(5); // Mock an iron_ore tile
+        game.map.removeTree = jest.fn(); // Using removeTree for now as per game.js
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+        expect(game.resourceManager.addResource).toHaveBeenCalledWith("iron_ore", 5);
+        expect(game.map.removeTree).toHaveBeenCalledWith(expect.any(Number), expect.any(Number));
+    });
 });

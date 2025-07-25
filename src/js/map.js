@@ -67,6 +67,12 @@ export default class Map {
                     ctx.fillStyle = '#8b4513'; // Brown for dirt
                 } else if (tile === 2) {
                     ctx.fillStyle = '#006400'; // Dark green for tree
+                } else if (tile === 3) {
+                    ctx.fillStyle = '#808080'; // Grey for stone
+                } else if (tile === 4) {
+                    ctx.fillStyle = '#FF0000'; // Red for berries
+                } else if (tile === 5) {
+                    ctx.fillStyle = '#A9A9A9'; // Darker grey for iron_ore
                 }
                 ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
             }

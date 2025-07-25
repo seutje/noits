@@ -13,6 +13,7 @@ import Task from './task.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import RoomManager from './roomManager.js';
+import Furniture from './furniture.js';
 
 export default class Game {
     constructor(ctx) {
@@ -204,6 +205,10 @@ export default class Game {
                 newBuilding = new FarmPlot(tileX, tileY);
             } else if (this.selectedBuilding === 'animal_pen') {
                 newBuilding = new AnimalPen(tileX, tileY);
+            } else if (this.selectedBuilding === 'bed') {
+                newBuilding = new Furniture('bed', tileX, tileY, 1, 2, 'wood', 50);
+            } else if (this.selectedBuilding === 'table') {
+                newBuilding = new Furniture('table', tileX, tileY, 2, 1, 'wood', 75);
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
             }

@@ -142,6 +142,26 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(designateStorageButton);
+
+        const bedButton = document.createElement('button');
+        bedButton.textContent = 'Place Bed';
+        bedButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('bed');
+            }
+        };
+        this.buildMenu.appendChild(bedButton);
+
+        const tableButton = document.createElement('button');
+        tableButton.textContent = 'Place Table';
+        tableButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('table');
+            }
+        };
+        this.buildMenu.appendChild(tableButton);
     }
 
     setGameInstance(gameInstance) {

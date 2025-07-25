@@ -72,7 +72,7 @@ export default class Game {
         for (const type in this.resourceManager.getAllResources()) {
             resourceString += `${type}: ${this.resourceManager.getResourceQuantity(type)}, `;
         }
-        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers[0].hunger, this.settlers[0].sleep); // Remove trailing comma and space
+        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers[0].hunger, this.settlers[0].sleep, this.settlers[0].mood); // Remove trailing comma and space
     }
 
     render() {

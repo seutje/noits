@@ -33,6 +33,11 @@ export default class UI {
         this.settlerSleepElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.settlerSleepElement);
 
+        this.settlerMoodElement = document.createElement('span');
+        this.settlerMoodElement.id = 'settler-mood-display';
+        this.settlerMoodElement.style.marginLeft = '20px';
+        this.uiContainer.appendChild(this.settlerMoodElement);
+
         // Speed slider
         this.speedLabel = document.createElement('span');
         this.speedLabel.textContent = 'Speed: ';
@@ -63,10 +68,11 @@ export default class UI {
         this.gameInstance = gameInstance;
     }
 
-    update(gameTime, resourceString, settlerHunger, settlerSleep) {
+    update(gameTime, resourceString, settlerHunger, settlerSleep, settlerMood) {
         this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
         this.resourcesElement.textContent = `Resources: ${resourceString}`;
         this.settlerHungerElement.textContent = `Settler Hunger: ${settlerHunger.toFixed(1)}`;
         this.settlerSleepElement.textContent = `Settler Sleep: ${settlerSleep.toFixed(1)}`;
+        this.settlerMoodElement.textContent = `Settler Mood: ${settlerMood.toFixed(1)}`;
     }
 }

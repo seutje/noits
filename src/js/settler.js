@@ -173,17 +173,6 @@ export default class Settler {
                     // Simulate tending animals - perhaps increases animal health/reproduction rate
                     console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                     this.currentTask = null;
-                } else if (this.currentTask.type === "dig_dirt") {
-                    const diggingRate = 0.1; // e.g., 0.1 units of work per second
-                    const amountOfWork = diggingRate * (deltaTime / 1000);
-
-                    this.currentTask.quantity -= amountOfWork;
-
-                    if (this.currentTask.quantity <= 0) {
-                        this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change grass to dirt
-                        console.log(`${this.name} dug dirt at ${this.currentTask.targetX},${this.currentTask.targetY}.`);
-                        this.currentTask = null;
-                    }
                 }
             }
         }

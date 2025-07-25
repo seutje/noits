@@ -37,7 +37,7 @@ This document provides instructions for AI agents contributing to the developmen
 
 ## **5\. Development Server with Autoreload**
 
-* **Local Development Server:** Set up a simple HTTP server for local development.  
+* **Local Development Server:** Set up a simple HTTP server on port 8000 for local development.  
 * **Autoreload:** The server **MUST** include an auto-reload feature to automatically refresh the browser upon file changes (HTML, CSS, JS).  
 * **Recommended Tool:** live-server or a similar lightweight HTTP server with hot-reloading capabilities is recommended. It should be installed as a dev dependency and configured via an npm script (e.g., npm start).
 

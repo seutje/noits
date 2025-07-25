@@ -22,14 +22,14 @@ export default class Game {
     }
 
     update(deltaTime) {
-        const panSpeed = 100; // pixels per second
-        if (this.keys['a']) {
+        const panSpeed = 200; // pixels per second
+        if (this.keys['a'] || this.keys['q']) {
             this.camera.x -= panSpeed * (deltaTime / 1000);
         }
         if (this.keys['d']) {
             this.camera.x += panSpeed * (deltaTime / 1000);
         }
-        if (this.keys['w']) {
+        if (this.keys['w'] || this.keys['z']) {
             this.camera.y -= panSpeed * (deltaTime / 1000);
         }
         if (this.keys['s']) {

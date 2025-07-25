@@ -21,7 +21,7 @@ This phase focuses on establishing the fundamental game engine, rendering, and b
 
 ### **1.6 Core Data Structures**
 
-* [ ] 1.6.1 Define Resource object structure (type, quantity, quality).  
+* [x] 1.6.1 Define Resource object structure (type, quantity, quality).  
 * [ ] 1.6.2 Define Settler object structure (name, basic skills, health, position).  
 * [ ] 1.6.3 Define Building object structure (type, position, material, health).
 

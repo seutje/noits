@@ -1,6 +1,7 @@
 
 export default class UI {
-    constructor() {
+    constructor(ctx) {
+        this.ctx = ctx;
         this.uiContainer = document.createElement('div');
         this.uiContainer.id = 'ui-container';
         this.uiContainer.style.position = 'absolute';

@@ -14,7 +14,7 @@ export default class Game {
         this.map = new Map(50, 30, 32);
         this.camera = new Camera(ctx);
         this.spriteManager = new SpriteManager();
-        this.ui = new UI();
+        this.ui = new UI(ctx);
         this.resourceManager = new ResourceManager();
         this.settlers = [];
         this.keys = {};

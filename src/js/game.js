@@ -13,6 +13,7 @@ import Task from './task.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import RoomManager from './roomManager.js';
+import WorldMap from './worldMap.js';
 import Furniture from './furniture.js';
 
 export default class Game {
@@ -27,6 +28,7 @@ export default class Game {
         this.resourceManager = new ResourceManager();
         this.taskManager = new TaskManager();
         this.roomManager = new RoomManager(this.map);
+        this.worldMap = new WorldMap();
         this.settlers = [];
         this.keys = {};
         this.gameTime = 0;

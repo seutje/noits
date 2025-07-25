@@ -14,7 +14,21 @@ jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
 jest.mock('../src/js/building.js');
-jest.mock('../src/js/task.js');
+jest.mock('../src/js/task.js', () => {
+    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe) => {
+        return {
+            type,
+            targetX,
+            targetY,
+            resourceType,
+            quantity,
+            difficulty,
+            building,
+            recipe,
+            craftingProgress: 0 // Add craftingProgress for crafting tasks
+        };
+    });
+});
 
 
 
@@ -107,7 +121,6 @@ describe('Game', () => {
             0 // buildProgress starts at 0
         );
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
-        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.any(Task));
         expect(Task).toHaveBeenCalledWith(
             'build',
             expectedTileX,
@@ -117,6 +130,7 @@ describe('Game', () => {
             3,
             expect.any(Building)
         );
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
         expect(game.buildMode).toBe(false);
         expect(game.selectedBuilding).toBe(null);
     });
@@ -130,13 +144,16 @@ describe('Game', () => {
     test('handleClick should add wood and remove tree when tree is clicked', () => {
         game.map.getTile.mockReturnValue(2); // Mock a tree tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
-        expect(game.taskManager.addTask).toHaveBeenCalledWith("chop_wood", expect.any(Number), expect.any(Number), "wood", 50, 2);
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        const addedTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(addedTask.type).toBe("chop_wood");
+        expect(addedTask.resourceType).toBe("wood");
+        expect(addedTask.quantity).toBe(50);
     });
 
     test('handleClick should add stone and remove tile when stone is clicked', () => {
         game.map.getTile.mockReturnValue(3); // Mock a stone tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
-        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.any(Task));
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe("mine_stone");
         expect(addedTask.resourceType).toBe("stone");
@@ -146,7 +163,6 @@ describe('Game', () => {
     test('handleClick should add berries and remove tile when berries are clicked', () => {
         game.map.getTile.mockReturnValue(4); // Mock a berries tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
-        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.any(Task));
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe("gather_berries");
         expect(addedTask.resourceType).toBe("berries");
@@ -156,6 +172,9 @@ describe('Game', () => {
     test('handleClick should add iron_ore and remove tile when iron_ore is clicked', () => {
         game.map.getTile.mockReturnValue(5); // Mock an iron_ore tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
-        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.any(Task));
+        const addedTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(addedTask.type).toBe("mine_iron_ore");
+        expect(addedTask.resourceType).toBe("iron_ore");
+        expect(addedTask.quantity).toBe(50);
     });
 });

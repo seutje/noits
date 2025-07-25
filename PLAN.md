@@ -69,7 +69,7 @@ This phase expands on resource chains, introduces crafting, and refines base man
 
 * [x] 3.5.1 Implement various resource types: Stone, Metals (basic), Fibers, Food (basic).  
 * [x] 3.5.2 Implement mining functionality for stone and metal ores.  
-* [ ] 3.5.3 Implement hunting and foraging for wild food.
+* [x] 3.5.3 Implement hunting and foraging for wild food.
 
 ### **3.6 Farming & Animal Husbandry**
 

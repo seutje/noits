@@ -24,6 +24,10 @@ export default class Map {
                     tiles[y][x] = 4; // 4 for berries
                 } else if (rand < 0.11) {
                     tiles[y][x] = 5; // 5 for iron_ore
+                } else if (rand < 0.13) {
+                    tiles[y][x] = 6; // 6 for wild food (bush)
+                } else if (rand < 0.15) {
+                    tiles[y][x] = 7; // 7 for animal
                 } else if (rand < 0.25) {
                     tiles[y][x] = 1; // 1 for dirt
                 } else {
@@ -85,6 +89,10 @@ export default class Map {
                     ctx.fillStyle = '#FF0000'; // Red for berries
                 } else if (tile === 5) {
                     ctx.fillStyle = '#A9A9A9'; // Darker grey for iron_ore
+                } else if (tile === 6) {
+                    ctx.fillStyle = '#8B4513'; // Brown for wild food (bush)
+                } else if (tile === 7) {
+                    ctx.fillStyle = '#800000'; // Maroon for animal
                 }
                 ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
             }

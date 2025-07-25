@@ -56,5 +56,12 @@ export default class Settler {
         ctx.font = '10px Arial';
         ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);
         ctx.fillText(this.state, this.x * 32, this.y * 32 + 40);
+        ctx.fillText(this.getStatus(), this.x * 32, this.y * 32 + 50);
+    }
+
+    getStatus() {
+        if (this.hunger < 20) return "Hungry";
+        if (this.sleep < 20) return "Sleepy";
+        return "OK";
     }
 }

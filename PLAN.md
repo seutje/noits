@@ -40,7 +40,7 @@ This phase introduces settler needs, basic work assignments, and the initial bui
 * [x] 2.1 Implement basic settler needs: Hunger, Sleep.  
 * [x] 2.2 Create a simple AI for settlers to fulfill basic needs (e.g., find food, find a bed).  
 * [x] 2.3 Implement a basic mood system based on needs fulfillment.  
-* [ ] 2.4 Display settler status (e.g., "Hungry", "Sleeping") via simple text labels.
+* [x] 2.4 Display settler status (e.g., "Hungry", "Sleeping") via simple text labels.
 
 ### **2.5 Basic Work System**
 

@@ -168,7 +168,7 @@ export default class Game {
             if (this.selectedBuilding === 'crafting_station') {
                 newBuilding = new CraftingStation(tileX, tileY);
             } else if (this.selectedBuilding === 'farm_plot') {
-                newBuilding = new new FarmPlot(tileX, tileY);
+                newBuilding = new FarmPlot(tileX, tileY);
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
             }

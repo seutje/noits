@@ -7,6 +7,7 @@ export default class Settler {
         this.health = 100; // 0-100
         this.hunger = 100; // 0-100, 0 means starving
         this.sleep = 100; // 0-100, 0 means exhausted
+        this.state = "idle"; // e.g., "idle", "seeking_food", "seeking_sleep"
         this.skills = {
             farming: 1,
             mining: 1,
@@ -24,7 +25,25 @@ export default class Settler {
         // Decrease sleep over time
         this.sleep -= 0.005 * (deltaTime / 1000); // Adjust rate as needed
         if (this.sleep < 0) this.sleep = 0;
+
+        // Basic AI: Change state based on needs
+        if (this.hunger < 20) {
+            this.state = "seeking_food";
+        } else if (this.sleep < 20) {
+            this.state = "seeking_sleep";
+        } else {
+            this.state = "idle";
+        }
     }
 
     // Placeholder for future methods like update, render, etc.
+
+    render(ctx) {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
+        ctx.fillStyle = 'white';
+        ctx.font = '10px Arial';
+        ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);
+        ctx.fillText(this.state, this.x * 32, this.y * 32 + 40);
+    }
 }

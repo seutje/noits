@@ -83,6 +83,11 @@ export default class Game {
             this.ctx.drawImage(placeholderSprite, 0, 0, 32, 32);
         }
 
+        // Render settlers
+        this.settlers.forEach(settler => {
+            settler.render(this.ctx);
+        });
+
         this.camera.resetTransform();
     }
 

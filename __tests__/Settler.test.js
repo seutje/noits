@@ -20,7 +20,7 @@ describe('Settler', () => {
         mockMap = {
             removeResourceNode: jest.fn(),
         };
-        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap);
+        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager);
     });
 
     test('should initialize with correct properties', () => {
@@ -28,6 +28,14 @@ describe('Settler', () => {
         expect(settler.x).toBe(0);
         expect(settler.y).toBe(0);
         expect(settler.health).toBe(100);
+        expect(settler.bodyParts).toEqual({
+            head: { health: 100, bleeding: false },
+            torso: { health: 100, bleeding: false },
+            leftArm: { health: 100, bleeding: false },
+            rightArm: { health: 100, bleeding: false },
+            leftLeg: { health: 100, bleeding: false },
+            rightLeg: { health: 100, bleeding: false }
+        });
         expect(settler.hunger).toBe(100);
         expect(settler.sleep).toBe(100);
         expect(settler.mood).toBe(100);
@@ -175,6 +183,94 @@ describe('Settler', () => {
         settler.updateNeeds(1000); // Simulate 1 second (crafting time)
 
         expect(mockResourceManager.addResource).toHaveBeenCalledWith("plank", 1, 1.1); // Expect quality to be 1.1
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should handle dig_dirt task', () => {
+        const task = new Task('dig_dirt', 1, 1, 'dirt', 50);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+        settler.map.tiles = [[0, 0], [0, 0]]; // Mock map tiles
+        settler.map.removeResourceNode = jest.fn(); // Mock removeResourceNode
+
+        // Simulate enough time for the task to complete
+        for (let i = 0; i < 500; i++) { // 50 quantity / 0.1 per second = 500 seconds
+            settler.updateNeeds(1000);
+        }
+        expect(settler.map.tiles[1][1]).toBe(1); // Expect tile to be dirt
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should handle sow_crop task', () => {
+        const mockFarmPlot = {
+            plant: jest.fn().mockReturnValue(true)
+        };
+        const task = new Task('sow_crop', 1, 1, null, 0, 3, mockFarmPlot, 'wheat');
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.updateNeeds(1000); // Simulate enough time for task to complete
+        expect(mockFarmPlot.plant).toHaveBeenCalledWith('wheat');
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should handle harvest_crop task', () => {
+        const mockFarmPlot = {
+            harvest: jest.fn().mockReturnValue('wheat')
+        };
+        const task = new Task('harvest_crop', 1, 1, null, 0, 3, mockFarmPlot);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.updateNeeds(1000); // Simulate enough time for task to complete
+        expect(mockFarmPlot.harvest).toHaveBeenCalled();
+        expect(mockResourceManager.addResource).toHaveBeenCalledWith('wheat', 1);
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should handle tend_animals task', () => {
+        const mockAnimalPen = {};
+        const task = new Task('tend_animals', 1, 1, null, 0, 3, mockAnimalPen);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.updateNeeds(1000); // Simulate enough time for task to complete
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should handle explore task', () => {
+        const mockLocation = { id: 'forest_outpost', name: 'Forest Outpost' };
+        settler.map.worldMap = { discoverLocation: jest.fn() }; // Mock worldMap
+        const task = new Task('explore', 1, 1, null, 0, 5, null, null, mockLocation);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.updateNeeds(1000); // Simulate enough time for task to complete
+        expect(settler.map.worldMap.discoverLocation).toHaveBeenCalledWith('forest_outpost');
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should handle haul task', () => {
+        const mockRoomManager = {
+            getRoomAt: jest.fn().mockReturnValue({ type: 'storage' }),
+            addResourceToStorage: jest.fn()
+        };
+        settler.roomManager = mockRoomManager; // Assign mock roomManager
+        settler.carrying = { type: 'wood', quantity: 1 };
+        const task = new Task('haul', 1, 1, null, 0, 3, null, null, null, settler.carrying);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.updateNeeds(1000); // Simulate enough time for task to complete
+        expect(mockRoomManager.getRoomAt).toHaveBeenCalledWith(1, 1);
+        expect(mockRoomManager.addResourceToStorage).toHaveBeenCalledWith({ type: 'storage' }, 'wood', 1);
+        expect(settler.carrying).toBe(null);
         expect(settler.currentTask).toBe(null);
     });
 });

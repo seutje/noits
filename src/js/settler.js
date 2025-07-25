@@ -267,4 +267,15 @@ export default class Settler {
         if (finalQuality > 2) finalQuality = 2;
         return finalQuality;
     }
+
+    takeDamage(bodyPart, amount, bleeding = false) {
+        if (this.bodyParts[bodyPart]) {
+            this.bodyParts[bodyPart].health -= amount;
+            if (this.bodyParts[bodyPart].health < 0) this.bodyParts[bodyPart].health = 0;
+            this.bodyParts[bodyPart].bleeding = bleeding;
+            console.log(`${this.name} took ${amount} damage to ${bodyPart}. Health: ${this.bodyParts[bodyPart].health}. Bleeding: ${this.bodyParts[bodyPart].bleeding}`);
+        } else {
+            console.warn(`Invalid body part: ${bodyPart}`);
+        }
+    }
 }

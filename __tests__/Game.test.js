@@ -15,7 +15,7 @@ jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
 jest.mock('../src/js/building.js');
 jest.mock('../src/js/task.js', () => {
-    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe) => {
+    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe, targetLocation) => {
         return {
             type,
             targetX,
@@ -25,6 +25,7 @@ jest.mock('../src/js/task.js', () => {
             difficulty,
             building,
             recipe,
+            targetLocation, // Add targetLocation here
             craftingProgress: 0 // Add craftingProgress for crafting tasks
         };
     });
@@ -176,5 +177,36 @@ describe('Game', () => {
         expect(addedTask.type).toBe("mine_iron_ore");
         expect(addedTask.resourceType).toBe("iron_ore");
         expect(addedTask.quantity).toBe(50);
+    });
+
+    test('startDiggingDirt should set diggingDirtMode to true', () => {
+        game.startDiggingDirt();
+        expect(game.diggingDirtMode).toBe(true);
+        expect(game.buildMode).toBe(false);
+        expect(game.selectedBuilding).toBe(null);
+        expect(game.roomDesignationStart).toBe(null);
+        expect(game.selectedRoomType).toBe(null);
+    });
+
+    test('startExploration should add an explore task', () => {
+        game.worldMap = { // Mock worldMap
+            getLocations: jest.fn().mockReturnValue([{ id: 'forest_outpost', name: 'Forest Outpost' }]),
+            getLocation: jest.fn().mockReturnValue({ id: 'forest_outpost', name: 'Forest Outpost', x: 10, y: 10 })
+        };
+        game.settlers = [{ name: 'Alice' }]; // Mock settler
+        game.startExploration();
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        const addedTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(addedTask.type).toBe("explore");
+        expect(addedTask.targetLocation.id).toBe('forest_outpost');
+    });
+
+    test('spawnTravelingMerchant should initiate trade', () => {
+        game.tradeManager = { initiateTrade: jest.fn() }; // Mock tradeManager
+        game.resourceManager.addResource('gold', 100); // Ensure gold is available for testing
+        game.spawnTravelingMerchant();
+        expect(game.tradeManager.initiateTrade).toHaveBeenCalledTimes(2);
+        expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'buy', resource: 'wood', quantity: 10, price: 5 }]);
+        expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     });
 });

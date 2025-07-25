@@ -1,6 +1,7 @@
 
 import Map from './map.js';
 import Camera from './camera.js';
+import SpriteManager from './spriteManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -8,6 +9,7 @@ export default class Game {
         this.lastTime = 0;
         this.map = new Map(50, 30, 32);
         this.camera = new Camera(ctx);
+        this.spriteManager = new SpriteManager();
         this.keys = {};
 
         this.gameLoop = this.gameLoop.bind(this);
@@ -15,7 +17,8 @@ export default class Game {
         this.handleKeyUp = this.handleKeyUp.bind(this);
     }
 
-    start() {
+    async start() {
+        await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         this.gameLoop(0);
@@ -41,6 +44,12 @@ export default class Game {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         this.camera.applyTransform();
         this.map.render(this.ctx);
+
+        const placeholderSprite = this.spriteManager.getSprite('placeholder');
+        if (placeholderSprite) {
+            this.ctx.drawImage(placeholderSprite, 0, 0, 32, 32);
+        }
+
         this.camera.resetTransform();
     }
 

@@ -3,6 +3,7 @@ import Map from './map.js';
 import Camera from './camera.js';
 import SpriteManager from './spriteManager.js';
 import UI from './ui.js';
+import ResourceManager from './resourceManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -12,6 +13,7 @@ export default class Game {
         this.camera = new Camera(ctx);
         this.spriteManager = new SpriteManager();
         this.ui = new UI();
+        this.resourceManager = new ResourceManager();
         this.keys = {};
         this.gameTime = 0;
 
@@ -26,6 +28,9 @@ export default class Game {
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }
+        this.resourceManager.addResource("wood", 100);
+        this.resourceManager.addResource("stone", 50);
+
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         this.gameLoop(0);
@@ -47,7 +52,12 @@ export default class Game {
         }
 
         this.gameTime += deltaTime / 1000; // Update game time in seconds
-        this.ui.update(this.gameTime, "Wood: 100, Stone: 50"); // Placeholder resources
+        
+        let resourceString = "";
+        for (const type in this.resourceManager.getAllResources()) {
+            resourceString += `${type}: ${this.resourceManager.getResourceQuantity(type)}, `;
+        }
+        this.ui.update(this.gameTime, resourceString.slice(0, -2)); // Remove trailing comma and space
     }
 
     render() {

@@ -7,8 +7,8 @@ export default class CraftingStation extends Building {
         this.recipes = []; // List of recipes this station can craft
 
         // Add example recipes
-        this.addRecipe(new Recipe("plank_from_wood", [{ resourceType: "wood", quantity: 1 }], [{ resourceType: "plank", quantity: 1 }], 5));
-        this.addRecipe(new Recipe("block_from_stone", [{ resourceType: "stone", quantity: 1 }], [{ resourceType: "block", quantity: 1 }], 7));
+        this.addRecipe(new Recipe("plank_from_wood", [{ resourceType: "wood", quantity: 1 }], [{ resourceType: "plank", quantity: 1, quality: 1 }], 5));
+        this.addRecipe(new Recipe("block_from_stone", [{ resourceType: "stone", quantity: 1 }], [{ resourceType: "block", quantity: 1, quality: 1 }], 7));
     }
 
     addRecipe(recipe) {

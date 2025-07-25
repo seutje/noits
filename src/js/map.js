@@ -18,6 +18,12 @@ export default class Map {
                 const rand = Math.random();
                 if (rand < 0.05) {
                     tiles[y][x] = 2; // 2 for tree
+                } else if (rand < 0.07) {
+                    tiles[y][x] = 3; // 3 for stone
+                } else if (rand < 0.09) {
+                    tiles[y][x] = 4; // 4 for berries
+                } else if (rand < 0.11) {
+                    tiles[y][x] = 5; // 5 for iron_ore
                 } else if (rand < 0.25) {
                     tiles[y][x] = 1; // 1 for dirt
                 } else {

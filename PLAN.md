@@ -11,7 +11,7 @@ This phase focuses on establishing the fundamental game engine, rendering, and b
 * [x] 1.1 Initialize HTML5 Canvas and JavaScript environment.  
 * [x] 1.2 Implement a robust game loop (update, render).  
 * [x] 1.3 Create a basic tile-based map data structure (2D array).  
-* [ ] 1.4 Implement camera controls (panning, basic zoom).
+* [x] 1.4 Implement camera controls (panning, basic zoom).
 
 ### **1.5 Basic Rendering**
 

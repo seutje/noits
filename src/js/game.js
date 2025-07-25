@@ -162,7 +162,12 @@ export default class Game {
 
         if (this.buildMode && this.selectedBuilding) {
             // Place the selected building
-            const newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
+            let newBuilding;
+            if (this.selectedBuilding === 'crafting_station') {
+                newBuilding = new CraftingStation(tileX, tileY);
+            } else {
+                newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
+            }
             this.map.addBuilding(newBuilding);
             this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 3, newBuilding)); // Build task with 100 quantity (workload)
             this.buildMode = false; // Exit build mode after placing
@@ -171,7 +176,19 @@ export default class Game {
             // Check if a building was clicked
             const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
             if (clickedBuilding) {
-                if (typeof clickedBuilding.takeDamage === 'function') {
+                if (clickedBuilding.type === 'crafting_station') {
+                    // For now, hardcode a crafting task for testing
+                    const craftingStation = clickedBuilding;
+                    if (craftingStation.recipes && craftingStation.recipes.length > 0) {
+                        const recipe = craftingStation.recipes[0]; // Get the first recipe
+                        if (recipe) {
+                            this.taskManager.addTask(new Task("craft", tileX, tileY, null, 0, 3, craftingStation, recipe));
+                            console.log(`Crafting task for ${recipe.name} added at ${tileX},${tileY}`);
+                        }
+                    } else {
+                        console.warn("Crafting station has no recipes defined.");
+                    }
+                } else if (typeof clickedBuilding.takeDamage === 'function') {
                     clickedBuilding.takeDamage(25); // Example: 25 damage per click
                     if (clickedBuilding.health <= 0) {
                         this.map.removeBuilding(clickedBuilding);

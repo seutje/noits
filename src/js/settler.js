@@ -87,6 +87,37 @@ export default class Settler {
                         console.log(`${this.name} stopped building due to lack of ${material}`);
                         this.currentTask = null; // Clear the task
                     }
+                } else if (this.currentTask.type === "craft" && this.currentTask.recipe) {
+                    const recipe = this.currentTask.recipe;
+                    // Check if resources are available for crafting
+                    let resourcesAvailable = true;
+                    for (const input of recipe.inputs) {
+                        if (this.resourceManager.getResourceQuantity(input.resourceType) < input.quantity) {
+                            resourcesAvailable = false;
+                            break;
+                        }
+                    }
+
+                    if (resourcesAvailable) {
+                        // Consume input resources
+                        for (const input of recipe.inputs) {
+                            this.resourceManager.removeResource(input.resourceType, input.quantity);
+                        }
+
+                        // Simulate crafting time
+                        this.currentTask.craftingProgress += (deltaTime / 1000);
+                        if (this.currentTask.craftingProgress >= recipe.time) {
+                            // Produce output resources
+                            for (const output of recipe.outputs) {
+                                this.resourceManager.addResource(output.resourceType, output.quantity);
+                            }
+                            console.log(`${this.name} completed crafting ${recipe.name}.`);
+                            this.currentTask = null; // Task completed
+                        }
+                    } else {
+                        console.log(`${this.name} stopped crafting ${recipe.name} due to lack of resources.`);
+                        this.currentTask = null; // Clear the task
+                    }
                 } else if (this.currentTask.quantity <= 0) {
                     console.log(`${this.name} completed task: ${this.currentTask.type}`);
                     this.currentTask = null;

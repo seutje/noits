@@ -62,7 +62,7 @@ This phase expands on resource chains, introduces crafting, and refines base man
 
 * [x] 3.1 Implement Crafting Station building type (e.g., Workbench).  
 * [x] 3.2 Define basic crafting recipes (e.g., wood \-\> plank, stone \-\> block).  
-* [ ] 3.3 Settlers can craft items at designated stations.  
+* [x] 3.3 Settlers can craft items at designated stations.  
 * [ ] 3.4 Implement a basic quality system for crafted items.
 
 ### **3.5 Diverse Resources & Gathering**

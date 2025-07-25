@@ -92,6 +92,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(floorButton);
+
+        const craftingStationButton = document.createElement('button');
+        craftingStationButton.textContent = 'Build Crafting Station';
+        craftingStationButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('crafting_station');
+            }
+        };
+        this.buildMenu.appendChild(craftingStationButton);
     }
 
     setGameInstance(gameInstance) {

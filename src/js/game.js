@@ -8,6 +8,7 @@ import ResourcePile from './resourcePile.js';
 import Settler from './settler.js';
 import TaskManager from './taskManager.js';
 import Building from './building.js';
+import CraftingStation from './craftingStation.js';
 import Task from './task.js';
 
 export default class Game {

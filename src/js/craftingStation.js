@@ -1,9 +1,14 @@
 import Building from './building.js';
+import Recipe from './recipe.js';
 
 export default class CraftingStation extends Building {
     constructor(x, y) {
         super("crafting_station", x, y, 1, 1, "wood", 0);
         this.recipes = []; // List of recipes this station can craft
+
+        // Add example recipes
+        this.addRecipe(new Recipe("plank_from_wood", [{ resourceType: "wood", quantity: 1 }], [{ resourceType: "plank", quantity: 1 }], 5));
+        this.addRecipe(new Recipe("block_from_stone", [{ resourceType: "stone", quantity: 1 }], [{ resourceType: "block", quantity: 1 }], 7));
     }
 
     addRecipe(recipe) {

@@ -1,0 +1,26 @@
+import CraftingStation from '../src/js/craftingStation.js';
+import Recipe from '../src/js/recipe.js';
+
+jest.mock('../src/js/building.js');
+jest.mock('../src/js/recipe.js');
+
+describe('CraftingStation', () => {
+    let craftingStation;
+
+    beforeEach(() => {
+        craftingStation = new CraftingStation(0, 0);
+    });
+
+    test('should initialize with correct properties', () => {
+        expect(craftingStation.type).toBe('crafting_station');
+        expect(craftingStation.x).toBe(0);
+        expect(craftingStation.y).toBe(0);
+        expect(craftingStation.recipes).toEqual([expect.any(Recipe), expect.any(Recipe)]);
+    });
+
+    test('should add a recipe', () => {
+        const newRecipe = new Recipe("test_recipe", [], [], 1);
+        craftingStation.addRecipe(newRecipe);
+        expect(craftingStation.recipes).toContain(newRecipe);
+    });
+});

@@ -102,6 +102,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(craftingStationButton);
+
+        const farmPlotButton = document.createElement('button');
+        farmPlotButton.textContent = 'Build Farm Plot';
+        farmPlotButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('farm_plot');
+            }
+        };
+        this.buildMenu.appendChild(farmPlotButton);
     }
 
     setGameInstance(gameInstance) {

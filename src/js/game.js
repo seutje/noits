@@ -153,7 +153,12 @@ export default class Game {
         console.log(`Room designation mode: ${roomType}. Click to select start tile.`);
     }
 
-    this.diggingDirtMode = true;
+    startDiggingDirt() {
+        this.buildMode = false; // Exit build mode if active
+        this.selectedBuilding = null;
+        this.roomDesignationStart = null; // Exit room designation mode if active
+        this.selectedRoomType = null;
+        this.diggingDirtMode = true;
         console.log("Digging dirt mode: Click on a grass tile to dig dirt.");
     }
 

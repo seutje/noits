@@ -151,6 +151,15 @@ export default class Game {
         console.log(`Room designation mode: ${roomType}. Click to select start tile.`);
     }
 
+    startDiggingDirt() {
+        this.buildMode = false; // Exit build mode if active
+        this.selectedBuilding = null;
+        this.roomDesignationStart = null; // Exit room designation mode if active
+        this.selectedRoomType = null;
+        this.diggingDirtMode = true;
+        console.log("Digging dirt mode: Click on a grass tile to dig dirt.");
+    }
+
     handleKeyDown(event) {
         this.keys[event.key] = true;
     }
@@ -274,6 +283,10 @@ export default class Game {
             } else if (clickedTile === 7) { // If animal is clicked
                 this.taskManager.addTask(new Task("hunt_animal", tileX, tileY, "meat", 50, 2));
                 console.log(`Hunt animal task added at ${tileX},${tileY}`);
+            } else if (this.diggingDirtMode && clickedTile === 0) { // If digging dirt mode is active and a grass tile is clicked
+                this.taskManager.addTask(new Task("dig_dirt", tileX, tileY, "dirt", 20, 2));
+                console.log(`Dig dirt task added at ${tileX},${tileY}`);
+                this.diggingDirtMode = false; // Exit digging dirt mode after task is added
             } else {
                 // Place a wood pile at the clicked tile
                 this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));

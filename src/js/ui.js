@@ -162,6 +162,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(tableButton);
+
+        const digDirtButton = document.createElement('button');
+        digDirtButton.textContent = 'Dig Dirt';
+        digDirtButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.startDiggingDirt();
+            }
+        };
+        this.buildMenu.appendChild(digDirtButton);
     }
 
     setGameInstance(gameInstance) {

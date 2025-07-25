@@ -153,6 +153,24 @@ export default class Game {
         console.log(`Room designation mode: ${roomType}. Click to select start tile.`);
     }
 
+    this.diggingDirtMode = true;
+        console.log("Digging dirt mode: Click on a grass tile to dig dirt.");
+    }
+
+    startExploration() {
+        // For now, just log the locations. In the future, this will open a world map view.
+        console.log("World Map Locations:", this.worldMap.getLocations());
+        // Example: send a settler to explore a specific location
+        if (this.settlers.length > 0) {
+            const settler = this.settlers[0]; // Get the first settler
+            const targetLocation = this.worldMap.getLocation('forest_outpost'); // Example target
+            if (targetLocation) {
+                this.taskManager.addTask(new Task("explore", targetLocation.x, targetLocation.y, null, 0, 5, null, null, targetLocation));
+                console.log(`${settler.name} is sent to explore ${targetLocation.name}.`);
+            }
+        }
+    }
+
     handleKeyDown(event) {
         this.keys[event.key] = true;
     }

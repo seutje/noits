@@ -204,6 +204,10 @@ export default class Settler {
                         console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
                         this.currentTask = null;
                     }
+                } else if (this.currentTask.type === "explore" && this.currentTask.targetLocation) {
+                    // Settler has arrived at the exploration target
+                    console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name}.`);
+                    this.currentTask = null;
                 }
             }
         }

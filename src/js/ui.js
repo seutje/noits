@@ -162,6 +162,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(tableButton);
+
+        const exploreButton = document.createElement('button');
+        exploreButton.textContent = 'Explore';
+        exploreButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.startExploration();
+            }
+        };
+        this.buildMenu.appendChild(exploreButton);
     }
 
     setGameInstance(gameInstance) {

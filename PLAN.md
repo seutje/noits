@@ -91,7 +91,7 @@ This phase introduces interactions with the outside world, a more detailed healt
 ### **4.0 World Map & Exploration**
 
 * [x] 4.1 Create a simple world map representation (e.g., nodes for locations).  
-* [ ] 4.2 Implement basic exploration mechanics (send settlers to new map nodes).  
+* [x] 4.2 Implement basic exploration mechanics (send settlers to new map nodes).  
 * [ ] 4.3 Discover basic points of interest (e.g., ruins, resource nodes).
 
 ### **4.4 Faction Interaction (Basic)**

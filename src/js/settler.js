@@ -12,6 +12,7 @@ export default class Settler {
         this.mood = 100; // 0-100, 0 means very unhappy
         this.state = "idle"; // e.g., "idle", "seeking_food", "seeking_sleep"
         this.currentTask = null;
+        this.carrying = null; // { type: "wood", quantity: 1 }
         this.skills = {
             farming: 1,
             mining: 1,
@@ -45,8 +46,26 @@ export default class Settler {
             this.state = "seeking_food";
         } else if (this.sleep < 20) {
             this.state = "seeking_sleep";
+        } else if (this.carrying) {
+            this.state = "hauling";
         } else {
             this.state = "idle";
+        }
+
+        // If hauling, find a storage room and set a task
+        if (this.state === "hauling" && !this.currentTask) {
+            const storageRooms = this.map.roomManager.rooms.filter(room => room.type === "storage");
+            if (storageRooms.length > 0) {
+                // For simplicity, just pick the first storage room
+                const targetRoom = storageRooms[0];
+                // Find a tile within the storage room to drop off resources
+                const targetTile = targetRoom.tiles[0]; // Just use the first tile for now
+                this.currentTask = { type: "haul", targetX: targetTile.x, targetY: targetTile.y, resource: this.carrying };
+                console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
+            } else {
+                console.log(`${this.name} has resources to haul but no storage room found.`);
+                this.state = "idle"; // Go back to idle if no storage
+            }
         }
 
         // Execute current task
@@ -143,9 +162,9 @@ export default class Settler {
                     this.currentTask.quantity -= amountToGather;
 
                     if (this.currentTask.quantity <= 0) {
-                        this.resourceManager.addResource(resourceType, 1); // Add 1 unit of gathered resource
+                        this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
                         this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
-                        console.log(`${this.name} completed ${this.currentTask.type}.`);
+                        console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null;
                     }
                 } else if (this.currentTask.type === "sow_crop" && this.currentTask.building) {
@@ -173,6 +192,17 @@ export default class Settler {
                     // Simulate tending animals - perhaps increases animal health/reproduction rate
                     console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                     this.currentTask = null;
+                } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
+                    const room = this.map.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                    if (room && room.type === "storage") {
+                        this.map.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
+                        this.carrying = null; // Clear carried resource
+                        console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
+                        this.currentTask = null;
+                    } else {
+                        console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
+                        this.currentTask = null;
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@
 import Map from './map.js';
 import Camera from './camera.js';
 import SpriteManager from './spriteManager.js';
+import UI from './ui.js';
 
 export default class Game {
     constructor(ctx) {
@@ -10,7 +11,9 @@ export default class Game {
         this.map = new Map(50, 30, 32);
         this.camera = new Camera(ctx);
         this.spriteManager = new SpriteManager();
+        this.ui = new UI();
         this.keys = {};
+        this.gameTime = 0;
 
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -42,6 +45,9 @@ export default class Game {
         if (this.keys['s']) {
             this.camera.y += panSpeed * (deltaTime / 1000);
         }
+
+        this.gameTime += deltaTime / 1000; // Update game time in seconds
+        this.ui.update(this.gameTime, "Wood: 100, Stone: 50"); // Placeholder resources
     }
 
     render() {

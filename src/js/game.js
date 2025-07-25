@@ -5,6 +5,7 @@ import SpriteManager from './spriteManager.js';
 import UI from './ui.js';
 import ResourceManager from './resourceManager.js';
 import ResourcePile from './resourcePile.js';
+import Settler from './settler.js';
 
 export default class Game {
     constructor(ctx) {
@@ -15,6 +16,7 @@ export default class Game {
         this.spriteManager = new SpriteManager();
         this.ui = new UI();
         this.resourceManager = new ResourceManager();
+        this.settlers = [];
         this.keys = {};
         this.gameTime = 0;
 
@@ -32,6 +34,9 @@ export default class Game {
         }
         this.resourceManager.addResource("wood", 100);
         this.resourceManager.addResource("stone", 50);
+
+        // Create a new settler
+        this.settlers.push(new Settler("Alice", 5, 5));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -56,11 +61,16 @@ export default class Game {
 
         this.gameTime += deltaTime / 1000; // Update game time in seconds
         
+        // Update settler needs
+        this.settlers.forEach(settler => {
+            settler.updateNeeds(deltaTime);
+        });
+
         let resourceString = "";
         for (const type in this.resourceManager.getAllResources()) {
             resourceString += `${type}: ${this.resourceManager.getResourceQuantity(type)}, `;
         }
-        this.ui.update(this.gameTime, resourceString.slice(0, -2)); // Remove trailing comma and space
+        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers[0].hunger, this.settlers[0].sleep); // Remove trailing comma and space
     }
 
     render() {

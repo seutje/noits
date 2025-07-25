@@ -23,8 +23,10 @@ export default class UI {
         this.uiContainer.appendChild(this.resourcesElement);
     }
 
-    update(time, resources) {
-        this.timeElement.textContent = `Time: ${time.toFixed(1)}`;
-        this.resourcesElement.textContent = `Resources: ${resources}`; // Placeholder for now
+    update(gameTime, resourceString, settlerHunger, settlerSleep) {
+        this.ctx.fillText(`Time: ${gameTime.toFixed(1)}s`, 10, 20);
+        this.ctx.fillText(`Resources: ${resourceString}`, 10, 40);
+        this.ctx.fillText(`Settler Hunger: ${settlerHunger.toFixed(1)}`, 10, 60);
+        this.ctx.fillText(`Settler Sleep: ${settlerSleep.toFixed(1)}`, 10, 80);
     }
 }

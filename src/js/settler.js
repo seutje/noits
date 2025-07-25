@@ -28,4 +28,3 @@ export default class Settler {
 
     // Placeholder for future methods like update, render, etc.
 }
-}

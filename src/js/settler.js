@@ -150,9 +150,9 @@ export default class Settler {
                     this.currentTask.quantity -= amountToMine; // Decrease task quantity (workload)
 
                     if (this.currentTask.quantity <= 0) {
-                        this.resourceManager.addResource(resourceType, 1); // Add 1 unit of mined resource
+                        this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
                         this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
-                        console.log(`${this.name} completed mining ${resourceType}.`);
+                        console.log(`${this.name} completed mining ${resourceType} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null; // Task completed
                     }
                 } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "forage_food" || this.currentTask.type === "hunt_animal" || this.currentTask.type === "sow_crop" || this.currentTask.type === "harvest_crop" || this.currentTask.type === "tend_animals") {

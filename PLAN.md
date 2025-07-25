@@ -97,7 +97,7 @@ This phase introduces interactions with the outside world, a more detailed healt
 ### **4.4 Faction Interaction (Basic)**
 
 * [x] 4.4.1 Define a simple Faction data structure (name, relation).  
-* [ ] 4.4.2 Implement basic trade with friendly factions (e.g., traveling merchant event).
+* [x] 4.4.2 Implement basic trade with friendly factions (e.g., traveling merchant event).
 
 ### **4.5 Health System**
 

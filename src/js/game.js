@@ -15,6 +15,7 @@ import AnimalPen from './animalPen.js';
 import RoomManager from './roomManager.js';
 import WorldMap from './worldMap.js';
 import Faction from './faction.js';
+import TradeManager from './tradeManager.js';
 import Furniture from './furniture.js';
 
 export default class Game {
@@ -34,6 +35,7 @@ export default class Game {
             bandits: new Faction('Bandits', -50),
             traders: new Faction('Traders', 50)
         };
+        this.tradeManager = new TradeManager(this.resourceManager, this.factions);
         this.settlers = [];
         this.keys = {};
         this.gameTime = 0;
@@ -179,6 +181,14 @@ export default class Game {
                 console.log(`${settler.name} is sent to explore ${targetLocation.name}.`);
             }
         }
+    }
+
+    spawnTravelingMerchant() {
+        console.log("A traveling merchant has arrived!");
+        // Example trade: buy 10 wood for 5 gold
+        this.tradeManager.initiateTrade('traders', [{ type: 'buy', resource: 'wood', quantity: 10, price: 5 }]);
+        // Example trade: sell 5 food for 10 gold
+        this.tradeManager.initiateTrade('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     }
 
     handleKeyDown(event) {

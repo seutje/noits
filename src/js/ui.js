@@ -172,6 +172,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(exploreButton);
+
+        const merchantButton = document.createElement('button');
+        merchantButton.textContent = 'Traveling Merchant';
+        merchantButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.spawnTravelingMerchant();
+            }
+        };
+        this.buildMenu.appendChild(merchantButton);
     }
 
     setGameInstance(gameInstance) {

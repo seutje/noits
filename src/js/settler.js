@@ -1,6 +1,7 @@
 
 export default class Settler {
-    constructor(name, x, y) {
+    constructor(name, x, y, resourceManager) {
+        this.resourceManager = resourceManager;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -69,7 +70,24 @@ export default class Settler {
                 // For now, just complete the task after some time
                 // In future, this will involve interaction, etc.
                 this.currentTask.quantity -= 1 * (deltaTime / 1000); // Simulate work
-                if (this.currentTask.quantity <= 0) {
+                if (this.currentTask.type === "build" && this.currentTask.building) {
+                    const material = this.currentTask.building.material;
+                    const consumptionRate = 0.1; // e.g., 0.1 units of material per second
+                    const amountToConsume = consumptionRate * (deltaTime / 1000); // Amount to consume per update
+
+                    if (this.resourceManager.removeResource(material, amountToConsume)) {
+                        const workAmount = 1 * (deltaTime / 1000); // Amount of work done
+                        this.currentTask.building.buildProgress += workAmount; // Increase build progress
+                        if (this.currentTask.building.buildProgress >= 100) {
+                            this.currentTask.building.buildProgress = 100;
+                            console.log(`${this.name} completed building task for ${this.currentTask.building.type}`);
+                            this.currentTask = null; // Task completed
+                        }
+                    } else {
+                        console.log(`${this.name} stopped building due to lack of ${material}`);
+                        this.currentTask = null; // Clear the task
+                    }
+                } else if (this.currentTask.quantity <= 0) {
                     console.log(`${this.name} completed task: ${this.currentTask.type}`);
                     this.currentTask = null;
                 }

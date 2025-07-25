@@ -8,6 +8,7 @@ import ResourcePile from './resourcePile.js';
 import Settler from './settler.js';
 import TaskManager from './taskManager.js';
 import Building from './building.js';
+import Task from './task.js';
 
 export default class Game {
     constructor(ctx) {
@@ -43,7 +44,7 @@ export default class Game {
         this.resourceManager.addResource("stone", 50);
 
         // Create a new settler
-        this.settlers.push(new Settler("Alice", 5, 5));
+        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -78,11 +79,12 @@ export default class Game {
                     console.log(`${settler.name} picked up task: ${task.type}`);
                 }
             }
+            
         });
 
         let resourceString = "";
         for (const type in this.resourceManager.getAllResources()) {
-            resourceString += `${type}: ${this.resourceManager.getResourceQuantity(type)}, `;
+            resourceString += `${type}: ${Math.floor(this.resourceManager.getResourceQuantity(type))}, `;
         }
         this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers[0].hunger, this.settlers[0].sleep, this.settlers[0].mood); // Remove trailing comma and space
     }
@@ -139,6 +141,11 @@ export default class Game {
     }
 
     handleClick(event) {
+        // Check if the click originated from a UI element
+        if (event.target.closest('#ui-container') || event.target.closest('#build-menu')) {
+            return; // Do not process clicks that originate from UI elements
+        }
+
         const mouseX = event.clientX;
         const mouseY = event.clientY;
 
@@ -154,12 +161,14 @@ export default class Game {
 
         if (this.buildMode && this.selectedBuilding) {
             // Place the selected building
-            this.map.addBuilding(new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 100));
+            const newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
+            this.map.addBuilding(newBuilding);
+            this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 3, newBuilding)); // Build task with 100 quantity (workload)
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;
         } else if (clickedTile === 2) { // If a tree is clicked
-            this.resourceManager.addResource("wood", 10); // Add 10 wood
-            this.map.removeTree(tileX, tileY); // Remove the tree
+            this.resourceManager.addResource("wood", 10);
+            this.map.removeTree(tileX, tileY);
         } else {
             // Place a wood pile at the clicked tile
             this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));

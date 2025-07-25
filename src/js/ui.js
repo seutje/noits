@@ -85,7 +85,8 @@ export default class UI {
 
         const floorButton = document.createElement('button');
         floorButton.textContent = 'Build Floor';
-        floorButton.onclick = () => {
+        floorButton.onclick = (event) => {
+            event.stopPropagation();
             if (this.gameInstance) {
                 this.gameInstance.toggleBuildMode('floor');
             }

@@ -5,6 +5,7 @@ import ResourceManager from '../src/js/resourceManager.js';
 import Settler from '../src/js/settler.js';
 import TaskManager from '../src/js/taskManager.js';
 import Building from '../src/js/building.js';
+import Task from '../src/js/task.js';
 
 // Mock dependencies
 jest.mock('../src/js/map.js');
@@ -13,6 +14,11 @@ jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
 jest.mock('../src/js/building.js');
+jest.mock('../src/js/task.js');
+
+
+
+
 
 describe('Game', () => {
     let game;
@@ -29,8 +35,8 @@ describe('Game', () => {
         Map.mockClear();
         UI.mockClear();
         ResourceManager.mockClear();
-        Settler.mockClear();
         TaskManager.mockClear();
+        Settler.mockClear();
         Building.mockClear();
 
         // Mock instance methods if needed
@@ -38,7 +44,7 @@ describe('Game', () => {
         game.ui = new UI();
         game.resourceManager = new ResourceManager();
         game.taskManager = new TaskManager();
-        game.settlers = [new Settler()];
+        game.settlers = [new Settler("Alice", 5, 5, game.resourceManager)];
 
         // Mock specific methods that are called
         game.map.getTile.mockReturnValue(0); // Default to grass tile
@@ -47,7 +53,7 @@ describe('Game', () => {
         game.ui.update = jest.fn();
         game.resourceManager.addResource = jest.fn();
         game.resourceManager.getAllResources.mockReturnValue({});
-        game.settlers[0].updateNeeds = jest.fn();
+        
         game.settlers[0].render = jest.fn();
         game.settlers[0].hunger = 100;
         game.settlers[0].sleep = 100;
@@ -82,7 +88,7 @@ describe('Game', () => {
 
     test('handleClick should place a building when in build mode', () => {
         game.toggleBuildMode('wall');
-        game.handleClick({ clientX: 100, clientY: 100 });
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
 
         // Calculate expected tile coordinates based on mock canvas size and default camera
         const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
@@ -98,7 +104,18 @@ describe('Game', () => {
             1,
             1,
             'wood',
-            100
+            0 // buildProgress starts at 0
+        );
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.any(Task));
+        expect(Task).toHaveBeenCalledWith(
+            'build',
+            expectedTileX,
+            expectedTileY,
+            null,
+            100,
+            3,
+            expect.any(Building)
         );
         expect(game.buildMode).toBe(false);
         expect(game.selectedBuilding).toBe(null);
@@ -106,7 +123,7 @@ describe('Game', () => {
 
     test('handleClick should not place a building when not in build mode', () => {
         game.buildMode = false;
-        game.handleClick({ clientX: 100, clientY: 100 });
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         expect(game.map.addBuilding).not.toHaveBeenCalled();
     });
 });

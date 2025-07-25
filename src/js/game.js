@@ -65,7 +65,7 @@ export default class Game {
         
         // Update settler needs
         this.settlers.forEach(settler => {
-            settler.updateNeeds(deltaTime);
+            settler.updateNeeds(deltaTime * this.gameSpeed);
         });
 
         let resourceString = "";

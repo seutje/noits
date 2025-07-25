@@ -14,6 +14,7 @@ import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import RoomManager from './roomManager.js';
 import WorldMap from './worldMap.js';
+import Faction from './faction.js';
 import Furniture from './furniture.js';
 
 export default class Game {
@@ -29,6 +30,10 @@ export default class Game {
         this.taskManager = new TaskManager();
         this.roomManager = new RoomManager(this.map);
         this.worldMap = new WorldMap();
+        this.factions = {
+            bandits: new Faction('Bandits', -50),
+            traders: new Faction('Traders', 50)
+        };
         this.settlers = [];
         this.keys = {};
         this.gameTime = 0;

@@ -1,7 +1,7 @@
 import CraftingStation from '../src/js/craftingStation.js';
 import Recipe from '../src/js/recipe.js';
 
-jest.mock('../src/js/building.js');
+
 jest.mock('../src/js/recipe.js');
 
 describe('CraftingStation', () => {

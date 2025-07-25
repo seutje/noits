@@ -69,7 +69,10 @@ export default class Settler {
                 this.x = this.currentTask.targetX; // Snap to tile
                 this.y = this.currentTask.targetY; // Snap to tile
 
-                if (this.currentTask.type === "build" && this.currentTask.building) {
+                if (this.currentTask.type === "move") {
+                    console.log(`${this.name} completed task: ${this.currentTask.type}`);
+                    this.currentTask = null;
+                } else if (this.currentTask.type === "build" && this.currentTask.building) {
                     const material = this.currentTask.building.material;
                     const consumptionRate = 0.1; // e.g., 0.1 units of material per second
                     const amountToConsume = consumptionRate * (deltaTime / 1000); // Amount to consume per update

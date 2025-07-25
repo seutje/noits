@@ -2,10 +2,12 @@ import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
 
 jest.mock('../src/js/resourceManager.js');
+jest.mock('../src/js/map.js');
 
 describe('Settler', () => {
     let settler;
     let mockResourceManager;
+    let mockMap;
 
     beforeEach(() => {
         mockResourceManager = {
@@ -15,7 +17,10 @@ describe('Settler', () => {
             removeResource: jest.fn(),
             getResourceQuantity: jest.fn(),
         };
-        settler = new Settler('TestSettler', 0, 0, mockResourceManager);
+        mockMap = {
+            removeResourceNode: jest.fn(),
+        };
+        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap);
     });
 
     test('should initialize with correct properties', () => {
@@ -121,11 +126,14 @@ describe('Settler', () => {
     });
 
     test('should complete task when target is reached', () => {
-        const task = new Task('move', 1, 1, null, 1); // Quantity 1 for quick completion
+        const task = new Task('move', 1, 1, null, 0.0001); // Very small quantity for quick completion
         settler.currentTask = task;
-        settler.x = 0.99;
-        settler.y = 0.99;
-        settler.updateNeeds(1000); // Simulate 1 second
+        settler.x = task.targetX;
+        settler.y = task.targetY;
+        // Simulate enough updates for the task to complete
+        for (let i = 0; i < 100; i++) {
+            settler.updateNeeds(1000); // Simulate 1 second
+        }
         expect(settler.currentTask).toBe(null);
     });
 

@@ -11,6 +11,7 @@ import Building from './building.js';
 import CraftingStation from './craftingStation.js';
 import Task from './task.js';
 import FarmPlot from './farmPlot.js';
+import AnimalPen from './animalPen.js';
 
 export default class Game {
     constructor(ctx) {
@@ -169,6 +170,8 @@ export default class Game {
                 newBuilding = new CraftingStation(tileX, tileY);
             } else if (this.selectedBuilding === 'farm_plot') {
                 newBuilding = new FarmPlot(tileX, tileY);
+            } else if (this.selectedBuilding === 'animal_pen') {
+                newBuilding = new AnimalPen(tileX, tileY);
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
             }

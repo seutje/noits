@@ -112,6 +112,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(farmPlotButton);
+
+        const animalPenButton = document.createElement('button');
+        animalPenButton.textContent = 'Build Animal Pen';
+        animalPenButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('animal_pen');
+            }
+        };
+        this.buildMenu.appendChild(animalPenButton);
     }
 
     setGameInstance(gameInstance) {

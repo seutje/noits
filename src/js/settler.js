@@ -1,7 +1,8 @@
 
 export default class Settler {
-    constructor(name, x, y, resourceManager) {
+    constructor(name, x, y, resourceManager, map) {
         this.resourceManager = resourceManager;
+        this.map = map;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -67,9 +68,7 @@ export default class Settler {
             if (Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed) {
                 this.x = this.currentTask.targetX; // Snap to tile
                 this.y = this.currentTask.targetY; // Snap to tile
-                // For now, just complete the task after some time
-                // In future, this will involve interaction, etc.
-                this.currentTask.quantity -= 1 * (deltaTime / 1000); // Simulate work
+
                 if (this.currentTask.type === "build" && this.currentTask.building) {
                     const material = this.currentTask.building.material;
                     const consumptionRate = 0.1; // e.g., 0.1 units of material per second
@@ -119,9 +118,33 @@ export default class Settler {
                         console.log(`${this.name} stopped crafting ${recipe.name} due to lack of resources.`);
                         this.currentTask = null; // Clear the task
                     }
-                } else if (this.currentTask.quantity <= 0) {
-                    console.log(`${this.name} completed task: ${this.currentTask.type}`);
-                    this.currentTask = null;
+                } else if (this.currentTask.type === "mine_stone" || this.currentTask.type === "mine_iron_ore") {
+                    const resourceType = this.currentTask.type.replace("mine_", "");
+                    const miningRate = 0.1; // e.g., 0.1 units of resource per second
+                    const amountToMine = miningRate * (deltaTime / 1000);
+
+                    // Simulate mining progress
+                    this.currentTask.quantity -= amountToMine; // Decrease task quantity (workload)
+
+                    if (this.currentTask.quantity <= 0) {
+                        this.resourceManager.addResource(resourceType, 1); // Add 1 unit of mined resource
+                        this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
+                        console.log(`${this.name} completed mining ${resourceType}.`);
+                        this.currentTask = null; // Task completed
+                    }
+                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries") {
+                    const resourceType = this.currentTask.resourceType;
+                    const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
+                    const amountToGather = gatheringRate * (deltaTime / 1000);
+
+                    this.currentTask.quantity -= amountToGather;
+
+                    if (this.currentTask.quantity <= 0) {
+                        this.resourceManager.addResource(resourceType, 1); // Add 1 unit of gathered resource
+                        this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
+                        console.log(`${this.name} completed ${this.currentTask.type}.`);
+                        this.currentTask = null;
+                    }
                 }
             }
         }

@@ -55,6 +55,12 @@ export default class Map {
         }
     }
 
+    removeResourceNode(x, y) {
+        if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+            this.tiles[y][x] = 0; // Change resource node to grass
+        }
+    }
+
     getBuildingAt(x, y) {
         return this.buildings.find(building => building.x === x && building.y === y);
     }

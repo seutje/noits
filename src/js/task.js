@@ -1,6 +1,6 @@
 export default class Task {
     constructor(type, targetX, targetY, resourceType = null, quantity = 0, priority = 1, building = null, recipe = null) {
-        this.type = type; // e.g., "chop_wood", "mine_stone", "eat", "sleep", "build", "craft"
+        this.type = type; // e.g., "chop_wood", "mine_stone", "eat", "sleep", "build", "craft", "mine_stone", "mine_iron_ore", "gather_berries", "mine_stone", "mine_iron_ore", "gather_berries"
         this.targetX = targetX;
         this.targetY = targetY;
         this.resourceType = resourceType; // For gathering tasks

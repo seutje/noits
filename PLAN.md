@@ -51,8 +51,8 @@ This phase introduces settler needs, basic work assignments, and the initial bui
 ### **2.6 Basic Base Construction**
 
 * [x] 2.6.1 Implement wall and floor placement using a simple build menu.  
-* [ ] 2.6.2 Allow settlers to construct placed buildings using resources.  
-* [ ] 2.6.3 Implement basic building health and destruction.
+* [x] 2.6.2 Allow settlers to construct placed buildings using resources.  
+* [x] 2.6.3 Implement basic building health and destruction.
 
 ## **Phase 3: Production, Advanced Resources, and Base Management**
 
@@ -60,8 +60,8 @@ This phase expands on resource chains, introduces crafting, and refines base man
 
 ### **3.0 Production & Crafting**
 
-* [ ] 3.1 Implement Crafting Station building type (e.g., Workbench).  
-* [ ] 3.2 Define basic crafting recipes (e.g., wood \-\> plank, stone \-\> block).  
+* [x] 3.1 Implement Crafting Station building type (e.g., Workbench).  
+* [x] 3.2 Define basic crafting recipes (e.g., wood \-\> plank, stone \-\> block).  
 * [ ] 3.3 Settlers can craft items at designated stations.  
 * [ ] 3.4 Implement a basic quality system for crafted items.
 

@@ -7,6 +7,7 @@ export default class Map {
         this.tileSize = tileSize;
         this.tiles = this.createEmptyMap();
         this.resourcePiles = [];
+        this.buildings = [];
     }
 
     createEmptyMap() {
@@ -29,6 +30,10 @@ export default class Map {
 
     addResourcePile(resourcePile) {
         this.resourcePiles.push(resourcePile);
+    }
+
+    addBuilding(building) {
+        this.buildings.push(building);
     }
 
     getTile(x, y) {
@@ -61,6 +66,10 @@ export default class Map {
 
         for (const pile of this.resourcePiles) {
             pile.render(ctx);
+        }
+
+        for (const building of this.buildings) {
+            building.render(ctx, this.tileSize);
         }
     }
 }

@@ -1,12 +1,18 @@
-
 export default class Building {
-    constructor(type, x, y, material, health) {
-        this.type = type; // e.g., "house", "storage", "workshop"
+    constructor(type, x, y, width, height, material, health) {
+        this.type = type; // e.g., "wall", "floor", "house"
         this.x = x;
         this.y = y;
-        this.material = material; // e.g., "wood", "stone"
-        this.health = health; // 0-100
+        this.width = width;
+        this.height = height;
+        this.material = material;
+        this.health = health;
     }
 
-    // Placeholder for future methods like update, render, etc.
+    render(ctx, tileSize) {
+        ctx.fillStyle = this.material === "wood" ? "brown" : "gray";
+        ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
+    }
 }

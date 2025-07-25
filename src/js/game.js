@@ -7,6 +7,7 @@ import ResourceManager from './resourceManager.js';
 import ResourcePile from './resourcePile.js';
 import Settler from './settler.js';
 import TaskManager from './taskManager.js';
+import Building from './building.js';
 
 export default class Game {
     constructor(ctx) {
@@ -23,6 +24,8 @@ export default class Game {
         this.keys = {};
         this.gameTime = 0;
         this.gameSpeed = 1; // Default game speed
+        this.buildMode = false; // New property for build mode
+        this.selectedBuilding = null; // New property to hold the selected building type
 
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -116,6 +119,12 @@ export default class Game {
         this.gameSpeed = speed;
     }
 
+    toggleBuildMode(buildingType) {
+        this.buildMode = !this.buildMode;
+        this.selectedBuilding = buildingType;
+        console.log(`Build mode: ${this.buildMode}, Selected: ${this.selectedBuilding}`);
+    }
+
     handleKeyDown(event) {
         this.keys[event.key] = true;
     }
@@ -138,7 +147,12 @@ export default class Game {
 
         const clickedTile = this.map.getTile(tileX, tileY);
 
-        if (clickedTile === 2) { // If a tree is clicked
+        if (this.buildMode && this.selectedBuilding) {
+            // Place the selected building
+            this.map.addBuilding(new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 100));
+            this.buildMode = false; // Exit build mode after placing
+            this.selectedBuilding = null;
+        } else if (clickedTile === 2) { // If a tree is clicked
             this.resourceManager.addResource("wood", 10); // Add 10 wood
             this.map.removeTree(tileX, tileY); // Remove the tree
         } else {

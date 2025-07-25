@@ -50,7 +50,7 @@ This phase introduces settler needs, basic work assignments, and the initial bui
 
 ### **2.6 Basic Base Construction**
 
-* [ ] 2.6.1 Implement wall and floor placement using a simple build menu.  
+* [x] 2.6.1 Implement wall and floor placement using a simple build menu.  
 * [ ] 2.6.2 Allow settlers to construct placed buildings using resources.  
 * [ ] 2.6.3 Implement basic building health and destruction.
 

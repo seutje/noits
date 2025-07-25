@@ -62,6 +62,35 @@ export default class UI {
                 this.gameInstance.setGameSpeed(parseInt(event.target.value));
             }
         });
+
+        // Build menu
+        this.buildMenu = document.createElement('div');
+        this.buildMenu.id = 'build-menu';
+        this.buildMenu.style.position = 'absolute';
+        this.buildMenu.style.top = '10px';
+        this.buildMenu.style.right = '10px';
+        this.buildMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        this.buildMenu.style.padding = '10px';
+        this.buildMenu.style.borderRadius = '5px';
+        document.body.appendChild(this.buildMenu);
+
+        const wallButton = document.createElement('button');
+        wallButton.textContent = 'Build Wall';
+        wallButton.onclick = () => {
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('wall');
+            }
+        };
+        this.buildMenu.appendChild(wallButton);
+
+        const floorButton = document.createElement('button');
+        floorButton.textContent = 'Build Floor';
+        floorButton.onclick = () => {
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('floor');
+            }
+        };
+        this.buildMenu.appendChild(floorButton);
     }
 
     setGameInstance(gameInstance) {

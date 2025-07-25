@@ -1,8 +1,11 @@
 
+import Map from './map.js';
+
 export default class Game {
     constructor(ctx) {
         this.ctx = ctx;
         this.lastTime = 0;
+        this.map = new Map(50, 30, 32);
         this.gameLoop = this.gameLoop.bind(this);
     }
 
@@ -15,10 +18,8 @@ export default class Game {
     }
 
     render() {
-        // Drawing code will go here
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        this.ctx.fillStyle = 'black';
-        this.ctx.fillRect(10, 10, 100, 100);
+        this.map.render(this.ctx);
     }
 
     gameLoop(timestamp) {

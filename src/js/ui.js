@@ -32,6 +32,35 @@ export default class UI {
         this.settlerSleepElement.id = 'settler-sleep-display';
         this.settlerSleepElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.settlerSleepElement);
+
+        // Speed slider
+        this.speedLabel = document.createElement('span');
+        this.speedLabel.textContent = 'Speed: ';
+        this.speedLabel.style.marginLeft = '20px';
+        this.uiContainer.appendChild(this.speedLabel);
+
+        this.speedSlider = document.createElement('input');
+        this.speedSlider.type = 'range';
+        this.speedSlider.min = '1';
+        this.speedSlider.max = '50';
+        this.speedSlider.value = '1';
+        this.speedSlider.id = 'speed-slider';
+        this.uiContainer.appendChild(this.speedSlider);
+
+        this.speedValueDisplay = document.createElement('span');
+        this.speedValueDisplay.textContent = '1x';
+        this.uiContainer.appendChild(this.speedValueDisplay);
+
+        this.speedSlider.addEventListener('input', (event) => {
+            this.speedValueDisplay.textContent = `${event.target.value}x`;
+            if (this.gameInstance) {
+                this.gameInstance.setGameSpeed(parseInt(event.target.value));
+            }
+        });
+    }
+
+    setGameInstance(gameInstance) {
+        this.gameInstance = gameInstance;
     }
 
     update(gameTime, resourceString, settlerHunger, settlerSleep) {

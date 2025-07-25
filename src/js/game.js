@@ -15,10 +15,12 @@ export default class Game {
         this.camera = new Camera(ctx);
         this.spriteManager = new SpriteManager();
         this.ui = new UI(ctx);
+        this.ui.setGameInstance(this);
         this.resourceManager = new ResourceManager();
         this.settlers = [];
         this.keys = {};
         this.gameTime = 0;
+        this.gameSpeed = 1; // Default game speed
 
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -59,7 +61,7 @@ export default class Game {
             this.camera.y += panSpeed * (deltaTime / 1000);
         }
 
-        this.gameTime += deltaTime / 1000; // Update game time in seconds
+        this.gameTime += (deltaTime / 1000) * this.gameSpeed; // Update game time in seconds
         
         // Update settler needs
         this.settlers.forEach(settler => {
@@ -99,6 +101,10 @@ export default class Game {
         this.render();
 
         requestAnimationFrame(this.gameLoop);
+    }
+
+    setGameSpeed(speed) {
+        this.gameSpeed = speed;
     }
 
     handleKeyDown(event) {

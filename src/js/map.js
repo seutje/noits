@@ -49,6 +49,14 @@ export default class Map {
         }
     }
 
+    getBuildingAt(x, y) {
+        return this.buildings.find(building => building.x === x && building.y === y);
+    }
+
+    removeBuilding(buildingToRemove) {
+        this.buildings = this.buildings.filter(building => building !== buildingToRemove);
+    }
+
     render(ctx) {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {

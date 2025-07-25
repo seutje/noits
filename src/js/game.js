@@ -166,12 +166,26 @@ export default class Game {
             this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 3, newBuilding)); // Build task with 100 quantity (workload)
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;
-        } else if (clickedTile === 2) { // If a tree is clicked
-            this.resourceManager.addResource("wood", 10);
-            this.map.removeTree(tileX, tileY);
         } else {
-            // Place a wood pile at the clicked tile
-            this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
+            // Check if a building was clicked
+            const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
+            if (clickedBuilding) {
+                if (typeof clickedBuilding.takeDamage === 'function') {
+                    clickedBuilding.takeDamage(25); // Example: 25 damage per click
+                    if (clickedBuilding.health <= 0) {
+                        this.map.removeBuilding(clickedBuilding);
+                        console.log(`Building at ${tileX},${tileY} destroyed.`);
+                    }
+                } else {
+                    console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
+                }
+            } else if (clickedTile === 2) { // If a tree is clicked
+                this.resourceManager.addResource("wood", 10);
+                this.map.removeTree(tileX, tileY);
+            } else {
+                // Place a wood pile at the clicked tile
+                this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
+            }
         }
     }
 }

@@ -7,14 +7,22 @@ export default class Building {
         this.height = height;
         this.material = material;
         this.buildProgress = buildProgress; // 0-100, 100 means built
-        this.health = 100; // Once built, this is the health for destruction
+        this.maxHealth = 100; // Max health for destruction
+        this.health = this.maxHealth; // Current health
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        if (this.health < 0) this.health = 0;
     }
 
     render(ctx, tileSize) {
         if (this.buildProgress < 100) {
             ctx.fillStyle = `rgba(169, 169, 169, ${this.buildProgress / 100})`; // Grey, transparent based on progress
         } else {
-            ctx.fillStyle = this.material === "wood" ? "brown" : "gray";
+            // Render based on health
+            const healthOpacity = this.health / this.maxHealth;
+            ctx.fillStyle = this.material === "wood" ? `rgba(139, 69, 19, ${healthOpacity})` : `rgba(128, 128, 128, ${healthOpacity})`;
         }
         ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
         ctx.strokeStyle = "black";

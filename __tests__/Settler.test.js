@@ -1,4 +1,5 @@
 import Settler from '../src/js/settler.js';
+import Task from '../src/js/task.js';
 
 describe('Settler', () => {
     let settler;
@@ -94,5 +95,27 @@ describe('Settler', () => {
         settler.hunger = 50;
         settler.sleep = 50;
         expect(settler.getStatus()).toBe('OK');
+    });
+
+    test('should move towards task target', () => {
+        const task = new Task('move', 10, 10);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+        settler.updateNeeds(1000); // Simulate 1 second
+        // Expect settler to have moved towards (10,10)
+        expect(settler.x).toBeGreaterThan(0);
+        expect(settler.y).toBeGreaterThan(0);
+        expect(settler.x).toBeLessThan(10);
+        expect(settler.y).toBeLessThan(10);
+    });
+
+    test('should complete task when target is reached', () => {
+        const task = new Task('move', 1, 1, null, 1); // Quantity 1 for quick completion
+        settler.currentTask = task;
+        settler.x = 0.99;
+        settler.y = 0.99;
+        settler.updateNeeds(1000); // Simulate 1 second
+        expect(settler.currentTask).toBe(null);
     });
 });

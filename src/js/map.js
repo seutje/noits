@@ -1,12 +1,5 @@
 
 export default class Map {
-    constructor(width, height, tileSize) {
-        this.width = width;
-        this.height = height;
-        this.tileSize = tileSize;
-        this.tiles = this.createEmptyMap();
-    }
-
     import ResourcePile from './resourcePile.js';
 
 export default class Map {

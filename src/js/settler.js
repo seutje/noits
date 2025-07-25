@@ -206,7 +206,8 @@ export default class Settler {
                     }
                 } else if (this.currentTask.type === "explore" && this.currentTask.targetLocation) {
                     // Settler has arrived at the exploration target
-                    console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name}.`);
+                    this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
+                    console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
                     this.currentTask = null;
                 }
             }

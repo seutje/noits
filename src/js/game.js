@@ -18,7 +18,11 @@ export default class Game {
     }
 
     async start() {
-        await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
+        try {
+            await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
+        } catch (error) {
+            console.error("Failed to load sprite:", error);
+        }
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         this.gameLoop(0);

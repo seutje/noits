@@ -44,7 +44,7 @@ This phase introduces settler needs, basic work assignments, and the initial bui
 
 ### **2.5 Basic Work System**
 
-* [ ] 2.5.1 Implement a task queue for settlers (e.g., "Chop Wood", "Mine Stone").  
+* [x] 2.5.1 Implement a task queue for settlers (e.g., "Chop Wood", "Mine Stone").  
 * [ ] 2.5.2 Implement a basic work prioritization system (e.g., manual assignment).  
 * [ ] 2.5.3 Settlers move to designated work locations.
 

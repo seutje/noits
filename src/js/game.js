@@ -6,6 +6,7 @@ import UI from './ui.js';
 import ResourceManager from './resourceManager.js';
 import ResourcePile from './resourcePile.js';
 import Settler from './settler.js';
+import TaskManager from './taskManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -17,6 +18,7 @@ export default class Game {
         this.ui = new UI(ctx);
         this.ui.setGameInstance(this);
         this.resourceManager = new ResourceManager();
+        this.taskManager = new TaskManager();
         this.settlers = [];
         this.keys = {};
         this.gameTime = 0;
@@ -66,6 +68,13 @@ export default class Game {
         // Update settler needs
         this.settlers.forEach(settler => {
             settler.updateNeeds(deltaTime * this.gameSpeed);
+            if (settler.state === "idle" && !settler.currentTask) {
+                const task = this.taskManager.getTask();
+                if (task) {
+                    settler.currentTask = task;
+                    console.log(`${settler.name} picked up task: ${task.type}`);
+                }
+            }
         });
 
         let resourceString = "";

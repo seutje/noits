@@ -9,6 +9,7 @@ export default class Settler {
         this.sleep = 100; // 0-100, 0 means exhausted
         this.mood = 100; // 0-100, 0 means very unhappy
         this.state = "idle"; // e.g., "idle", "seeking_food", "seeking_sleep"
+        this.currentTask = null;
         this.skills = {
             farming: 1,
             mining: 1,
@@ -44,6 +45,17 @@ export default class Settler {
             this.state = "seeking_sleep";
         } else {
             this.state = "idle";
+        }
+
+        // Execute current task
+        if (this.currentTask) {
+            // For now, just complete the task after some time
+            // In future, this will involve movement, interaction, etc.
+            this.currentTask.quantity -= 1 * (deltaTime / 1000); // Simulate work
+            if (this.currentTask.quantity <= 0) {
+                console.log(`${this.name} completed task: ${this.currentTask.type}`);
+                this.currentTask = null;
+            }
         }
     }
 

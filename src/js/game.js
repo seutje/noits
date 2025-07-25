@@ -4,6 +4,7 @@ import Camera from './camera.js';
 import SpriteManager from './spriteManager.js';
 import UI from './ui.js';
 import ResourceManager from './resourceManager.js';
+import ResourcePile from './resourcePile.js';
 
 export default class Game {
     constructor(ctx) {
@@ -20,6 +21,7 @@ export default class Game {
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     async start() {
@@ -33,6 +35,7 @@ export default class Game {
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
+        window.addEventListener('click', this.handleClick);
         this.gameLoop(0);
     }
 
@@ -89,5 +92,21 @@ export default class Game {
 
     handleKeyUp(event) {
         this.keys[event.key] = false;
+    }
+
+    handleClick(event) {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+
+        // Convert mouse coordinates to world coordinates
+        const worldX = (mouseX - this.ctx.canvas.width / 2) / this.camera.zoom + this.camera.x;
+        const worldY = (mouseY - this.ctx.canvas.height / 2) / this.camera.zoom + this.camera.y;
+
+        // Convert world coordinates to tile coordinates
+        const tileX = Math.floor(worldX / this.map.tileSize);
+        const tileY = Math.floor(worldY / this.map.tileSize);
+
+        // Place a wood pile at the clicked tile
+        this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
     }
 }

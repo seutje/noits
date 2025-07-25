@@ -7,6 +7,17 @@ export default class Map {
         this.tiles = this.createEmptyMap();
     }
 
+    import ResourcePile from './resourcePile.js';
+
+export default class Map {
+    constructor(width, height, tileSize) {
+        this.width = width;
+        this.height = height;
+        this.tileSize = tileSize;
+        this.tiles = this.createEmptyMap();
+        this.resourcePiles = [];
+    }
+
     createEmptyMap() {
         const tiles = [];
         for (let y = 0; y < this.height; y++) {
@@ -16,6 +27,10 @@ export default class Map {
             }
         }
         return tiles;
+    }
+
+    addResourcePile(resourcePile) {
+        this.resourcePiles.push(resourcePile);
     }
 
     render(ctx) {
@@ -30,5 +45,10 @@ export default class Map {
                 ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
             }
         }
+
+        for (const pile of this.resourcePiles) {
+            pile.render(ctx);
+        }
     }
+}
 }

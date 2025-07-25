@@ -1,11 +1,21 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
 
+jest.mock('../src/js/resourceManager.js');
+
 describe('Settler', () => {
     let settler;
+    let mockResourceManager;
 
     beforeEach(() => {
-        settler = new Settler('TestSettler', 0, 0);
+        mockResourceManager = {
+            addResource: jest.fn((type, quantity, quality) => {
+                // Simulate adding resource to a mock internal state if needed for more complex tests
+            }),
+            removeResource: jest.fn(),
+            getResourceQuantity: jest.fn(),
+        };
+        settler = new Settler('TestSettler', 0, 0, mockResourceManager);
     });
 
     test('should initialize with correct properties', () => {
@@ -116,6 +126,47 @@ describe('Settler', () => {
         settler.x = 0.99;
         settler.y = 0.99;
         settler.updateNeeds(1000); // Simulate 1 second
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('calculateOutputQuality should return base quality for crafting skill 1', () => {
+        settler.skills.crafting = 1;
+        expect(settler.calculateOutputQuality(1)).toBe(1);
+        expect(settler.calculateOutputQuality(0.5)).toBe(0.5);
+    });
+
+    test('calculateOutputQuality should increase quality with higher crafting skill', () => {
+        settler.skills.crafting = 2;
+        expect(settler.calculateOutputQuality(1)).toBe(1.1);
+        settler.skills.crafting = 5;
+        expect(settler.calculateOutputQuality(1)).toBe(1.4);
+    });
+
+    test('calculateOutputQuality should clamp quality between 0 and 2', () => {
+        settler.skills.crafting = 1;
+        expect(settler.calculateOutputQuality(-1)).toBe(0);
+        settler.skills.crafting = 100;
+        expect(settler.calculateOutputQuality(1)).toBe(2);
+    });
+
+    test('should produce crafted items with correct quality', () => {
+        const mockRecipe = {
+            inputs: [{ resourceType: "wood", quantity: 1 }],
+            outputs: [{ resourceType: "plank", quantity: 1, quality: 1 }],
+            time: 1
+        };
+        const task = new Task("craft", 0, 0, null, 0, 3, null, mockRecipe);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+        mockResourceManager.getResourceQuantity.mockReturnValue(100); // Assume resources are available
+        mockResourceManager.removeResource.mockReturnValue(true);
+
+        settler.skills.crafting = 2; // Set crafting skill for testing quality
+
+        settler.updateNeeds(1000); // Simulate 1 second (crafting time)
+
+        expect(mockResourceManager.addResource).toHaveBeenCalledWith("plank", 1, 1.1); // Expect quality to be 1.1
         expect(settler.currentTask).toBe(null);
     });
 });

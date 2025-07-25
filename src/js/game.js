@@ -85,7 +85,8 @@ export default class Game {
 
         let resourceString = "";
         for (const type in this.resourceManager.getAllResources()) {
-            resourceString += `${type}: ${Math.floor(this.resourceManager.getResourceQuantity(type))}, `;
+            const resource = this.resourceManager.getAllResources()[type];
+            resourceString += `${type}: ${Math.floor(resource.quantity)} (Q:${resource.quality.toFixed(2)}), `;
         }
         this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers[0].hunger, this.settlers[0].sleep, this.settlers[0].mood); // Remove trailing comma and space
     }

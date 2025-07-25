@@ -1,11 +1,18 @@
 import Resource from '../src/js/resource.js';
 
 describe('Resource', () => {
-    test('should create a resource with correct properties', () => {
+    test('should create a resource with correct properties and default quality', () => {
         const wood = new Resource('wood', 100);
         expect(wood.type).toBe('wood');
         expect(wood.quantity).toBe(100);
         expect(wood.quality).toBe(1);
+    });
+
+    test('should create a resource with specified quality', () => {
+        const stone = new Resource('stone', 50, 0.5);
+        expect(stone.type).toBe('stone');
+        expect(stone.quantity).toBe(50);
+        expect(stone.quality).toBe(0.5);
     });
 
     test('should add quantity correctly', () => {

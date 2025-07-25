@@ -109,7 +109,8 @@ export default class Settler {
                         if (this.currentTask.craftingProgress >= recipe.time) {
                             // Produce output resources
                             for (const output of recipe.outputs) {
-                                this.resourceManager.addResource(output.resourceType, output.quantity);
+                                const outputQuality = this.calculateOutputQuality(output.quality);
+                                this.resourceManager.addResource(output.resourceType, output.quantity, outputQuality);
                             }
                             console.log(`${this.name} completed crafting ${recipe.name}.`);
                             this.currentTask = null; // Task completed
@@ -142,5 +143,16 @@ export default class Settler {
         if (this.hunger < 20) return "Hungry";
         if (this.sleep < 20) return "Sleepy";
         return "OK";
+    }
+
+    calculateOutputQuality(baseQuality) {
+        // Simple quality calculation: baseQuality + (craftingSkill - 1) * 0.1
+        // This means a crafting skill of 1 gives baseQuality, 2 gives baseQuality + 0.1, etc.
+        const skillBonus = (this.skills.crafting - 1) * 0.1;
+        let finalQuality = baseQuality + skillBonus;
+        // Clamp quality between 0 and 2 (example range)
+        if (finalQuality < 0) finalQuality = 0;
+        if (finalQuality > 2) finalQuality = 2;
+        return finalQuality;
     }
 }

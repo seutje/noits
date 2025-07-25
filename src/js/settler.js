@@ -1,8 +1,9 @@
 
 export default class Settler {
-    constructor(name, x, y, resourceManager, map) {
+    constructor(name, x, y, resourceManager, map, roomManager) {
         this.resourceManager = resourceManager;
         this.map = map;
+        this.roomManager = roomManager;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -54,7 +55,7 @@ export default class Settler {
 
         // If hauling, find a storage room and set a task
         if (this.state === "hauling" && !this.currentTask) {
-            const storageRooms = this.map.roomManager.rooms.filter(room => room.type === "storage");
+            const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
             if (storageRooms.length > 0) {
                 // For simplicity, just pick the first storage room
                 const targetRoom = storageRooms[0];
@@ -193,9 +194,9 @@ export default class Settler {
                     console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                     this.currentTask = null;
                 } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
-                    const room = this.map.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                    const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                     if (room && room.type === "storage") {
-                        this.map.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
+                        this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
                         this.carrying = null; // Clear carried resource
                         console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
                         this.currentTask = null;

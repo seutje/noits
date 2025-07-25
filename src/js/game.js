@@ -50,7 +50,7 @@ export default class Game {
         this.resourceManager.addResource("stone", 50);
 
         // Create a new settler
-        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map));
+        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);

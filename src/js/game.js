@@ -120,8 +120,13 @@ export default class Game {
     }
 
     toggleBuildMode(buildingType) {
-        this.buildMode = !this.buildMode;
-        this.selectedBuilding = buildingType;
+        if (this.selectedBuilding === buildingType) {
+            this.buildMode = false;
+            this.selectedBuilding = null;
+        } else {
+            this.buildMode = true;
+            this.selectedBuilding = buildingType;
+        }
         console.log(`Build mode: ${this.buildMode}, Selected: ${this.selectedBuilding}`);
     }
 

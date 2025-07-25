@@ -7,6 +7,7 @@ export default class TaskManager {
 
     addTask(task) {
         this.tasks.push(task);
+        this.tasks.sort((a, b) => b.priority - a.priority); // Sort by priority (highest first)
     }
 
     getTask() {

@@ -49,12 +49,30 @@ export default class Settler {
 
         // Execute current task
         if (this.currentTask) {
-            // For now, just complete the task after some time
-            // In future, this will involve movement, interaction, etc.
-            this.currentTask.quantity -= 1 * (deltaTime / 1000); // Simulate work
-            if (this.currentTask.quantity <= 0) {
-                console.log(`${this.name} completed task: ${this.currentTask.type}`);
-                this.currentTask = null;
+            // Move towards the target
+            const speed = 0.05; // tiles per second
+            if (this.x < this.currentTask.targetX) {
+                this.x += speed * (deltaTime / 1000);
+            } else if (this.x > this.currentTask.targetX) {
+                this.x -= speed * (deltaTime / 1000);
+            }
+            if (this.y < this.currentTask.targetY) {
+                this.y += speed * (deltaTime / 1000);
+            } else if (this.y > this.currentTask.targetY) {
+                this.y -= speed * (deltaTime / 1000);
+            }
+
+            // Check if arrived at target
+            if (Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed) {
+                this.x = this.currentTask.targetX; // Snap to tile
+                this.y = this.currentTask.targetY; // Snap to tile
+                // For now, just complete the task after some time
+                // In future, this will involve interaction, etc.
+                this.currentTask.quantity -= 1 * (deltaTime / 1000); // Simulate work
+                if (this.currentTask.quantity <= 0) {
+                    console.log(`${this.name} completed task: ${this.currentTask.type}`);
+                    this.currentTask = null;
+                }
             }
         }
     }

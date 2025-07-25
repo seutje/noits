@@ -29,7 +29,7 @@ This phase focuses on establishing the fundamental game engine, rendering, and b
 
 * [x] 1.7.1 Implement a global resource inventory.  
 * [x] 1.7.2 Allow manual placement of basic resources (e.g., wood piles).  
-* [ ] 1.7.3 Implement a simple resource gathering action (e.g., click tree \-\> get wood).
+* [x] 1.7.3 Implement a simple resource gathering action (e.g., click tree \-\> get wood).
 
 ## **Phase 2: Settlers, Needs, and Basic Building**
 

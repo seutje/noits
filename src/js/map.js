@@ -1,4 +1,3 @@
-
 import ResourcePile from './resourcePile.js';
 
 export default class Map {
@@ -15,7 +14,14 @@ export default class Map {
         for (let y = 0; y < this.height; y++) {
             tiles[y] = [];
             for (let x = 0; x < this.width; x++) {
-                tiles[y][x] = Math.random() > 0.8 ? 1 : 0; // 0 for grass, 1 for dirt
+                const rand = Math.random();
+                if (rand < 0.05) {
+                    tiles[y][x] = 2; // 2 for tree
+                } else if (rand < 0.25) {
+                    tiles[y][x] = 1; // 1 for dirt
+                } else {
+                    tiles[y][x] = 0; // 0 for grass
+                }
             }
         }
         return tiles;
@@ -25,14 +31,29 @@ export default class Map {
         this.resourcePiles.push(resourcePile);
     }
 
+    getTile(x, y) {
+        if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+            return this.tiles[y][x];
+        }
+        return -1; // Or throw an error, depending on desired behavior for out-of-bounds
+    }
+
+    removeTree(x, y) {
+        if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+            this.tiles[y][x] = 0; // Change tree to grass
+        }
+    }
+
     render(ctx) {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const tile = this.tiles[y][x];
                 if (tile === 0) {
                     ctx.fillStyle = '#2c9f45'; // Green for grass
-                } else {
+                } else if (tile === 1) {
                     ctx.fillStyle = '#8b4513'; // Brown for dirt
+                } else if (tile === 2) {
+                    ctx.fillStyle = '#006400'; // Dark green for tree
                 }
                 ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
             }

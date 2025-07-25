@@ -106,7 +106,14 @@ export default class Game {
         const tileX = Math.floor(worldX / this.map.tileSize);
         const tileY = Math.floor(worldY / this.map.tileSize);
 
-        // Place a wood pile at the clicked tile
-        this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
+        const clickedTile = this.map.getTile(tileX, tileY);
+
+        if (clickedTile === 2) { // If a tree is clicked
+            this.resourceManager.addResource("wood", 10); // Add 10 wood
+            this.map.removeTree(tileX, tileY); // Remove the tree
+        } else {
+            // Place a wood pile at the clicked tile
+            this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
+        }
     }
 }

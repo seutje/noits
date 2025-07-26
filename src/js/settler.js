@@ -68,6 +68,21 @@ export default class Settler {
         }
     }
 
+    pickUpPile(type, quantity) {
+        if (this.carrying) {
+            const dropX = Math.floor(this.x);
+            const dropY = Math.floor(this.y);
+            const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.carrying.type);
+            if (existingPile) {
+                existingPile.add(this.carrying.quantity);
+            } else {
+                const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
+                this.map.addResourcePile(newPile);
+            }
+        }
+        this.carrying = { type, quantity };
+    }
+
     setTargetEnemy(enemy) {
         this.targetEnemy = enemy;
         if (enemy) {
@@ -280,7 +295,7 @@ export default class Settler {
                     this.currentTask.quantity -= amountToMine; // Decrease task workload
 
                     if (this.currentTask.quantity <= 0) {
-                        this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
+                        this.pickUpPile(resourceType, 1); // Settler carries the resource
                         if (this.currentTask.type === "dig_dirt") {
                             this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change tile to dirt
                         } else {
@@ -297,7 +312,7 @@ export default class Settler {
                     this.currentTask.quantity -= amountToGather;
 
                     if (this.currentTask.quantity <= 0) {
-                        this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
+                        this.pickUpPile(resourceType, 1); // Settler carries the resource
                         if (this.currentTask.type === "hunt_animal") {
                             // Hunting yields extra materials like bandages dropped on the ground
                             const bandagePile = new ResourcePile('bandage', 1, this.currentTask.targetX, this.currentTask.targetY, this.map.tileSize, this.spriteManager);
@@ -319,7 +334,7 @@ export default class Settler {
 
                         if (this.currentTask.quantity <= 0) {
                             const lootType = this.currentTask.targetEnemy.lootType || 'meat';
-                            this.carrying = { type: lootType, quantity: 1 };
+                            this.pickUpPile(lootType, 1);
                             this.currentTask.targetEnemy.isButchered = true;
                             this.currentTask.targetEnemy.isMarkedForButcher = false;
                             console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
@@ -383,7 +398,7 @@ export default class Settler {
                                 if (pile.quantity <= 0) {
                                     this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                                 }
-                                this.carrying = { type: this.currentTask.resourceType, quantity: this.currentTask.quantity };
+                                this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
                                 this.currentTask.resource = this.carrying;
                                 this.currentTask.targetX = building.x;
                                 this.currentTask.targetY = building.y;
@@ -413,7 +428,7 @@ export default class Settler {
                             if (pile.quantity <= 0) {
                                 this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                             }
-                            this.carrying = { type: this.currentTask.resourceType, quantity: this.currentTask.quantity };
+                            this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
                             this.currentTask.resource = this.carrying;
                             const target = this.roomManager.findStorageRoomAndTile(this.currentTask.resourceType);
                             if (target) {

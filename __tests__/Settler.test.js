@@ -398,4 +398,18 @@ describe('Settler', () => {
         expect(droppedPile.quantity).toBe(2);
         expect(settler.carrying).toBe(null);
     });
+
+    test('should drop current pile when picking up new one', () => {
+        settler.carrying = { type: 'wood', quantity: 1 };
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.pickUpPile('stone', 1);
+
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const dropped = settler.map.addResourcePile.mock.calls[0][0];
+        expect(dropped.type).toBe('wood');
+        expect(dropped.quantity).toBe(1);
+        expect(settler.carrying).toEqual({ type: 'stone', quantity: 1 });
+    });
 });

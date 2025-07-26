@@ -170,6 +170,10 @@ export default class RoomManager {
     assignHaulingTasksForDroppedPiles() {
         if (!this.taskManager) return;
         for (const pile of this.map.resourcePiles) {
+            const roomAtPile = this.getRoomAt(pile.x, pile.y);
+            if (roomAtPile && roomAtPile.type === 'storage') {
+                continue; // Already in storage
+            }
             const target = this.findStorageRoomAndTile(pile.type);
             if (!target) continue;
             const existing = this.taskManager.tasks.some(

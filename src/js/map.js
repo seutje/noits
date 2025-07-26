@@ -56,7 +56,18 @@ export default class Map {
 
     addResourcePile(resourcePile) {
         resourcePile.spriteManager = this.spriteManager; // Assign spriteManager to the resource pile
-        this.resourcePiles.push(resourcePile);
+        const existing = this.resourcePiles.find(p => p.x === resourcePile.x && p.y === resourcePile.y);
+        if (existing) {
+            if (existing.type === resourcePile.type) {
+                existing.add(resourcePile.quantity);
+            } else {
+                console.warn(`Tile ${resourcePile.x},${resourcePile.y} already has a pile.`);
+                return false;
+            }
+        } else {
+            this.resourcePiles.push(resourcePile);
+        }
+        return true;
     }
 
     addBuilding(building) {

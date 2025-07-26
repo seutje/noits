@@ -298,6 +298,10 @@ export default class Settler {
 
                     if (this.currentTask.quantity <= 0) {
                         this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
+                        if (this.currentTask.type === "hunt_animal") {
+                            // Hunting yields extra materials like bandages
+                            this.resourceManager.addResource('bandage', 1);
+                        }
                         this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
                         console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null;

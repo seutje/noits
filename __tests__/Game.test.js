@@ -13,7 +13,11 @@ jest.mock('../src/js/ui.js');
 jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
-jest.mock('../src/js/building.js');
+jest.mock('../src/js/building.js', () => {
+    return jest.fn().mockImplementation((type, x, y, width, height, material, buildProgress, resourcesRequired = 1) => {
+        return { type, x, y, width, height, material, buildProgress, resourcesRequired };
+    });
+});
 jest.mock('../src/js/task.js', () => {
     return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
         return {
@@ -60,6 +64,7 @@ describe('Game', () => {
 
         // Mock instance methods if needed
         game.map = new Map();
+        game.map.tileSize = 32;
         game.ui = new UI();
         game.resourceManager = new ResourceManager();
         game.taskManager = new TaskManager();
@@ -114,7 +119,7 @@ describe('Game', () => {
         const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
 
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
-        expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Building));
+        expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
         // Verify the Building constructor was called with correct arguments
         expect(Building).toHaveBeenCalledWith(
             'wall',
@@ -134,13 +139,38 @@ describe('Game', () => {
             null,
             100,
             2,
-            expect.any(Building)
+            expect.any(Object)
         );
         const haulTask = game.taskManager.addTask.mock.calls[0][0];
         expect(haulTask.type).toBe('haul');
-        expect(haulTask.building).toBeInstanceOf(Building);
+        expect(haulTask.building).toEqual(expect.any(Object));
         expect(game.buildMode).toBe(false);
         expect(game.selectedBuilding).toBe(null);
+    });
+
+    test('handleClick should not create haul task for farm plot', () => {
+        game.toggleBuildMode('farm_plot');
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+
+        const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
+        const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+
+        expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
+        expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
+        expect(Building).toHaveBeenCalledWith(
+            'farm_plot',
+            expectedTileX,
+            expectedTileY,
+            1,
+            1,
+            null,
+            0,
+            0
+        );
+        // Only build task should be added
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        const buildTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(buildTask.type).toBe('build');
     });
 
     test('handleClick should not place a building when not in build mode', () => {

@@ -71,6 +71,7 @@ export default class Game {
             await this.spriteManager.loadImage('deer', 'src/assets/deer.png');
             await this.spriteManager.loadImage('dirt', 'src/assets/dirt.png');
             await this.spriteManager.loadImage('wild_boar', 'src/assets/wild_boar.png');
+            await this.spriteManager.loadImage('forage_food', 'src/assets/forage_food.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);

@@ -75,7 +75,9 @@ export default class Game {
             await this.spriteManager.loadImage('forage_food', 'src/assets/forage_food.png');
             await this.spriteManager.loadImage('wood', 'src/assets/wood.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
-            await this.spriteManager.loadImage('wheat', 'src/assets/wheat.png');
+            await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
+            await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
+            await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }

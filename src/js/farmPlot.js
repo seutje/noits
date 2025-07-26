@@ -46,11 +46,22 @@ export default class FarmPlot extends Building {
 
         // Render crop based on growth stage
         if (this.crop) {
-            if (this.crop === 'wheat' && this.growthStage >= 3) {
-                // Render the wheat sprite when mature
-                const sprite = this.spriteManager.getSprite('wheat');
-                if (sprite) {
-                    ctx.drawImage(sprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+            if (this.crop === 'wheat') {
+                let spriteName;
+                const currentGrowthStage = Math.floor(this.growthStage);
+                if (currentGrowthStage === 1) {
+                    spriteName = 'wheat_1';
+                } else if (currentGrowthStage === 2) {
+                    spriteName = 'wheat_2';
+                } else if (currentGrowthStage >= 3) {
+                    spriteName = 'wheat_3';
+                }
+
+                if (spriteName) {
+                    const sprite = this.spriteManager.getSprite(spriteName);
+                    if (sprite) {
+                        ctx.drawImage(sprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+                    }
                 }
             } else {
                 let color;

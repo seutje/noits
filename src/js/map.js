@@ -102,7 +102,7 @@ export default class Map {
         const ironOreSprite = this.spriteManager.getSprite('iron_ore');
         const deerSprite = this.spriteManager.getSprite('deer');
         const dirtSprite = this.spriteManager.getSprite('dirt');
-        const forageFoodSprite = this.spriteManager.getSprite('forage_food');
+        const forageFoodSprite = this.spriteManager.getSprite('mushroom');
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {

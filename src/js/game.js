@@ -72,10 +72,12 @@ export default class Game {
             await this.spriteManager.loadImage('deer', 'src/assets/deer.png');
             await this.spriteManager.loadImage('dirt', 'src/assets/dirt.png');
             await this.spriteManager.loadImage('wild_boar', 'src/assets/wild_boar.png');
-            await this.spriteManager.loadImage('forage_food', 'src/assets/forage_food.png');
+            await this.spriteManager.loadImage('mushroom', 'src/assets/mushroom.png');
+            await this.spriteManager.loadImage('mushrooms', 'src/assets/mushrooms.png');
             await this.spriteManager.loadImage('wood', 'src/assets/wood.png');
             await this.spriteManager.loadImage('stone_pile', 'src/assets/stone_pile.png');
             await this.spriteManager.loadImage('berries', 'src/assets/berries.png');
+            await this.spriteManager.loadImage('meat', 'src/assets/meat.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
             await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
@@ -485,7 +487,7 @@ export default class Game {
                     this.taskManager.addTask(new Task("mine_iron_ore", tileX, tileY, "iron_ore", 10, 2));
                     console.log(`Mine iron ore task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 6) { // If wild food is clicked
-                    this.taskManager.addTask(new Task("forage_food", tileX, tileY, "food", 1, 2));
+                    this.taskManager.addTask(new Task("mushroom", tileX, tileY, "food", 1, 2));
                     console.log(`Forage food task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 7) { // If animal is clicked
                     this.taskManager.addTask(new Task("hunt_animal", tileX, tileY, "meat", 2.5, 2));

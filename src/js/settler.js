@@ -3,11 +3,12 @@ import Task from './task.js';
 import ResourcePile from './resourcePile.js';
 
 export default class Settler {
-    constructor(name, x, y, resourceManager, map, roomManager, spriteManager) {
+    constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
         this.resourceManager = resourceManager;
         this.map = map;
         this.roomManager = roomManager;
         this.spriteManager = spriteManager;
+        this.allSettlers = allSettlers;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -562,6 +563,17 @@ export default class Settler {
                     this.currentTask = null;
                 }
                 this.state = "combat";
+                if (this.allSettlers) {
+                    this.allSettlers.forEach(ally => {
+                        if (ally !== this && !ally.isDead && ally.state === 'idle' && !ally.currentTask) {
+                            const distance = Math.sqrt(Math.pow(ally.x - this.x, 2) + Math.pow(ally.y - this.y, 2));
+                            if (distance <= 5) {
+                                ally.setTargetEnemy(attacker);
+                                ally.state = 'combat';
+                            }
+                        }
+                    });
+                }
             }
             if (this.health <= 0) {
                 this.isDead = true;

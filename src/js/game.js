@@ -26,7 +26,7 @@ export default class Game {
     constructor(ctx) {
         this.ctx = ctx;
         this.lastTime = 0;
-        this.map = new Map(50, 30, 32);
+        this.map = new Map(50, 30, 32, this.spriteManager);
         this.camera = new Camera(ctx);
         this.spriteManager = new SpriteManager();
         this.ui = new UI(ctx);
@@ -62,6 +62,7 @@ export default class Game {
         try {
             await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
             await this.spriteManager.loadImage('settler', 'src/assets/settler.png');
+            await this.spriteManager.loadImage('tree', 'src/assets/tree.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);

@@ -6,10 +6,11 @@ import AnimalPen from './animalPen.js';
 import Furniture from './furniture.js';
 
 export default class Map {
-    constructor(width, height, tileSize) {
+    constructor(width, height, tileSize, spriteManager) {
         this.width = width;
         this.height = height;
         this.tileSize = tileSize;
+        this.spriteManager = spriteManager;
         this.tiles = this.createEmptyMap();
         this.resourcePiles = [];
         this.buildings = [];
@@ -89,11 +90,16 @@ export default class Map {
     }
 
     render(ctx) {
+        const treeSprite = this.spriteManager.getSprite('tree');
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const tile = this.tiles[y][x];
-                ctx.fillStyle = this.tileColors[tile] || '#000000';
-                ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                if (tile === 2 && treeSprite) {
+                    ctx.drawImage(treeSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else {
+                    ctx.fillStyle = this.tileColors[tile] || '#000000';
+                    ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                }
             }
         }
 

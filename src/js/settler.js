@@ -354,8 +354,9 @@ export default class Settler {
                     const farmPlot = this.currentTask.building;
                     const harvestedCrop = farmPlot.harvest();
                     if (harvestedCrop) {
-                        this.resourceManager.addResource(harvestedCrop, 1); // Add 1 unit of harvested crop
-                        console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y}.`);
+                        const pile = new ResourcePile(harvestedCrop, 1, farmPlot.x, farmPlot.y, this.map.tileSize, this.spriteManager);
+                        this.map.addResourcePile(pile);
+                        console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y} and created a pile.`);
                     } else {
                         console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
                     }

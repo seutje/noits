@@ -1,4 +1,5 @@
 
+import ResourcePile from './resourcePile.js';
 export default class EventManager {
     constructor(game, EnemyClass) {
         this.EnemyClass = EnemyClass;
@@ -68,7 +69,8 @@ export default class EventManager {
                         farmPlots.forEach(plot => {
                             const harvestedCrop = plot.harvest();
                             if (harvestedCrop) {
-                                this.game.resourceManager.addResource(harvestedCrop, 2); // Double the harvest
+                                const pile = new ResourcePile(harvestedCrop, 2, plot.x, plot.y, this.game.map.tileSize, this.game.spriteManager);
+                                this.game.map.addResourcePile(pile);
                                 console.log(`Doubled harvest from a farm plot: ${harvestedCrop}!`);
                                 this.game.notificationManager.addNotification(`Doubled harvest from a farm plot: ${harvestedCrop}!`, 'success');
                             }

@@ -146,3 +146,4 @@ export default class Map {
             return building;
         });
     }
+}

@@ -35,3 +35,4 @@ export default class ResourcePile extends Resource {
         this.y = data.y;
         this.tileSize = data.tileSize;
     }
+}

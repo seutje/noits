@@ -128,11 +128,11 @@ This final phase focuses on adding dynamic events, refining the user experience,
 * [x] 5.3.2 Add detailed tooltips for items, buildings, and settler stats.  
 * [x] 5.3.3 Implement a notification system for important in-game events.  
 * [x] 5.3.4 Implement basic information overlays (e.g., temperature, room stats).  
-* [ ] 5.3.5 Refine overall visual aesthetics (colors, fonts, basic animations).
+* [x] 5.3.5 Refine overall visual aesthetics (colors, fonts, basic animations).
 
 ### **5.6 Game Polish**
 
-* [ ] 5.6.1 Implement save/load functionality (using localStorage or similar).  
+* [x] 5.6.1 Implement save/load functionality (using localStorage or similar).  
 * [ ] 5.6.2 Basic sound effects for key actions.  
 * [ ] 5.6.3 Bug fixing and performance optimization.
 * [ ] 5.6.4 Tutorial or in-game help system.

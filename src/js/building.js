@@ -54,3 +54,4 @@ export default class Building {
         this.maxHealth = data.maxHealth;
         this.health = data.health;
     }
+}

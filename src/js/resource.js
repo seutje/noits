@@ -31,3 +31,4 @@ export default class Resource {
         this.quantity = data.quantity;
         this.quality = data.quality;
     }
+}

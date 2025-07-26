@@ -87,6 +87,7 @@ export default class Game {
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
             await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
             await this.spriteManager.loadImage('farm_plot', 'src/assets/farmPlot.png');
+            await this.spriteManager.loadImage('bandage', 'src/assets/bandage.png');
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }

@@ -36,7 +36,7 @@ export default class Game {
         this.ui.setGameInstance(this);
         this.resourceManager = new ResourceManager();
         this.taskManager = new TaskManager();
-        this.roomManager = new RoomManager(this.map, this.spriteManager, this.map.tileSize);
+        this.roomManager = new RoomManager(this.map, this.spriteManager, this.map.tileSize, this.taskManager);
         this.worldMap = new WorldMap();
         this.factions = {
             bandits: new Faction('Bandits', -50),

@@ -401,6 +401,21 @@ export default class Settler {
                         this.currentTask = null;
                         console.log(`${this.name} delivered ${deliveredType} to building site.`);
                     }
+                } else if (this.currentTask.type === "haul" && this.currentTask.sourceX !== undefined && !this.currentTask.building && !this.currentTask.resource) {
+                    if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
+                        const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === this.currentTask.resourceType);
+                        if (pile && pile.remove(this.currentTask.quantity)) {
+                            if (pile.quantity <= 0) {
+                                this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                            }
+                            this.carrying = { type: this.currentTask.resourceType, quantity: this.currentTask.quantity };
+                            this.currentTask.resource = this.carrying;
+                            // targetX/Y already set to storage tile
+                        } else {
+                            console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
+                            this.currentTask = null;
+                        }
+                    }
                 } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
                     const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                     if (room && room.type === "storage") {

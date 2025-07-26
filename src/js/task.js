@@ -1,5 +1,5 @@
 export default class Task {
-    constructor(type, targetX, targetY, resourceType = null, quantity = 0, priority = 1, building = null, recipe = null, cropType = null, targetLocation = null, carrying = null, targetSettler = null, targetEnemy = null) {
+    constructor(type, targetX, targetY, resourceType = null, quantity = 0, priority = 1, building = null, recipe = null, cropType = null, targetLocation = null, carrying = null, targetSettler = null, targetEnemy = null, sourceX = null, sourceY = null) {
         this.type = type; // e.g., "chop_wood", "mine_stone", "eat", "sleep", "build", "craft", "mine_stone", "mine_iron_ore", "gather_berries", "mine_stone", "mine_iron_ore", "gather_berries", "treatment", "dig_dirt"
         this.targetX = targetX;
         this.targetY = targetY;
@@ -15,6 +15,8 @@ export default class Task {
         this.carrying = carrying; // For haul tasks
         this.targetSettler = targetSettler; // For treatment tasks
         this.targetEnemy = targetEnemy; // For butcher tasks
+        this.sourceX = sourceX; // For haul tasks from a source tile
+        this.sourceY = sourceY; // For haul tasks from a source tile
     }
 
     serialize() {
@@ -34,6 +36,8 @@ export default class Task {
             carrying: this.carrying,
             targetSettler: this.targetSettler ? this.targetSettler.name : null,
             targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null,
+            sourceX: this.sourceX,
+            sourceY: this.sourceY,
         };
     }
 
@@ -54,5 +58,7 @@ export default class Task {
         this.carrying = data.carrying;
         this.targetSettler = data.targetSettler; // Store raw data for now
         this.targetEnemy = data.targetEnemy; // Store raw data for now
+        this.sourceX = data.sourceX;
+        this.sourceY = data.sourceY;
     }
 }

@@ -60,6 +60,7 @@ export default class Game {
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleWheel = this.handleWheel.bind(this);
     }
 
     async start() {
@@ -100,6 +101,7 @@ export default class Game {
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         window.addEventListener('click', this.handleClick);
+        window.addEventListener('wheel', this.handleWheel, { passive: false });
         this.gameLoop(0);
     }
 
@@ -512,6 +514,16 @@ export default class Game {
                     console.log(`Hunt animal task added at ${tileX},${tileY}`);
                 }
             }
+        }
+    }
+
+    handleWheel(event) {
+        event.preventDefault();
+        const zoomStep = 0.1;
+        if (event.deltaY < 0) {
+            this.camera.zoom = Math.min(this.camera.zoom + zoomStep, 3);
+        } else if (event.deltaY > 0) {
+            this.camera.zoom = Math.max(this.camera.zoom - zoomStep, 0.5);
         }
     }
 }

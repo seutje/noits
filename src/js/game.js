@@ -225,6 +225,48 @@ export default class Game {
         this.tradeManager.initiateTrade('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     }
 
+    saveGame() {
+        const gameState = {
+            settlers: this.settlers.map(settler => settler.serialize()),
+            resources: this.resourceManager.serialize(),
+            map: this.map.serialize(),
+            gameTime: this.gameTime,
+            gameSpeed: this.gameSpeed,
+            temperature: this.temperature,
+            // Add other game state properties you want to save
+        };
+        localStorage.setItem('noitsGameState', JSON.stringify(gameState));
+        console.log("Game saved!");
+    }
+
+    loadGame() {
+        const savedState = localStorage.getItem('noitsGameState');
+        if (savedState) {
+            const gameState = JSON.parse(savedState);
+
+            // Restore settlers
+            this.settlers = gameState.settlers.map(sData => {
+                const settler = new Settler(sData.name, sData.x, sData.y, this.resourceManager, this.map, this.roomManager);
+                settler.deserialize(sData);
+                return settler;
+            });
+
+            // Restore resources
+            this.resourceManager.deserialize(gameState.resources);
+
+            // Restore map (buildings, resource piles)
+            this.map.deserialize(gameState.map);
+
+            this.gameTime = gameState.gameTime;
+            this.gameSpeed = gameState.gameSpeed;
+            this.temperature = gameState.temperature;
+
+            console.log("Game loaded!");
+        } else {
+            console.log("No saved game found.");
+        }
+    }
+
     handleKeyDown(event) {
         this.keys[event.key] = true;
     }

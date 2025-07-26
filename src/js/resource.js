@@ -17,4 +17,17 @@ export default class Resource {
         }
         return false;
     }
-}
+
+    serialize() {
+        return {
+            type: this.type,
+            quantity: this.quantity,
+            quality: this.quality
+        };
+    }
+
+    deserialize(data) {
+        this.type = data.type;
+        this.quantity = data.quantity;
+        this.quality = data.quality;
+    }

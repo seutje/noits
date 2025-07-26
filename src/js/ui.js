@@ -118,6 +118,26 @@ export default class UI {
         };
         this.buildMenu.appendChild(injureSettlerButton);
 
+        const saveGameButton = document.createElement('button');
+        saveGameButton.textContent = 'Save Game';
+        saveGameButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.saveGame();
+            }
+        };
+        this.buildMenu.appendChild(saveGameButton);
+
+        const loadGameButton = document.createElement('button');
+        loadGameButton.textContent = 'Load Game';
+        loadGameButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.loadGame();
+            }
+        };
+        this.buildMenu.appendChild(loadGameButton);
+
         this.tooltip = document.createElement('div');
         this.tooltip.id = 'tooltip';
         this.tooltip.style.position = 'absolute';

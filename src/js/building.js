@@ -28,4 +28,29 @@ export default class Building {
         ctx.strokeStyle = "black";
         ctx.strokeRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
     }
-}
+
+    serialize() {
+        return {
+            type: this.type,
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height,
+            material: this.material,
+            buildProgress: this.buildProgress,
+            maxHealth: this.maxHealth,
+            health: this.health
+        };
+    }
+
+    deserialize(data) {
+        this.type = data.type;
+        this.x = data.x;
+        this.y = data.y;
+        this.width = data.width;
+        this.height = data.height;
+        this.material = data.material;
+        this.buildProgress = data.buildProgress;
+        this.maxHealth = data.maxHealth;
+        this.health = data.health;
+    }

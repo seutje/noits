@@ -28,4 +28,21 @@ export default class ResourceManager {
     getAllResources() {
         return this.resources;
     }
+
+    serialize() {
+        const serializedResources = {};
+        for (const type in this.resources) {
+            serializedResources[type] = this.resources[type].serialize();
+        }
+        return serializedResources;
+    }
+
+    deserialize(data) {
+        this.resources = {};
+        for (const type in data) {
+            const resourceData = data[type];
+            const resource = new Resource(resourceData.type, resourceData.quantity, resourceData.quality);
+            this.resources[type] = resource;
+        }
+    }
 }

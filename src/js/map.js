@@ -106,4 +106,43 @@ export default class Map {
             building.render(ctx, this.tileSize);
         }
     }
-}
+
+    serialize() {
+        return {
+            width: this.width,
+            height: this.height,
+            tileSize: this.tileSize,
+            tiles: this.tiles,
+            resourcePiles: this.resourcePiles.map(pile => pile.serialize()),
+            buildings: this.buildings.map(building => building.serialize())
+        };
+    }
+
+    deserialize(data) {
+        this.width = data.width;
+        this.height = data.height;
+        this.tileSize = data.tileSize;
+        this.tiles = data.tiles;
+        this.resourcePiles = data.resourcePiles.map(pileData => {
+            const pile = new ResourcePile(pileData.type, pileData.quantity, pileData.x, pileData.y, this.tileSize);
+            pile.deserialize(pileData);
+            return pile;
+        });
+        this.buildings = data.buildings.map(buildingData => {
+            // Re-instantiate based on type if needed, otherwise use base Building
+            let building;
+            if (buildingData.type === 'crafting_station') {
+                building = new CraftingStation(buildingData.x, buildingData.y);
+            } else if (buildingData.type === 'farm_plot') {
+                building = new FarmPlot(buildingData.x, buildingData.y);
+            } else if (buildingData.type === 'animal_pen') {
+                building = new AnimalPen(buildingData.x, buildingData.y);
+            } else if (buildingData.type === 'bed' || buildingData.type === 'table') {
+                building = new Furniture(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
+            } else {
+                building = new Building(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
+            }
+            building.deserialize(buildingData);
+            return building;
+        });
+    }

@@ -364,4 +364,47 @@ export default class Settler {
         targetSettler.takeDamage(randomBodyPart, damage, true); // Assume bleeding for now
         console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
     }
+
+    serialize() {
+        return {
+            name: this.name,
+            x: this.x,
+            y: this.y,
+            health: this.health,
+            bodyParts: this.bodyParts,
+            hunger: this.hunger,
+            sleep: this.sleep,
+            mood: this.mood,
+            state: this.state,
+            carrying: this.carrying,
+            skills: this.skills,
+            equippedWeapon: this.equippedWeapon ? this.equippedWeapon.serialize() : null,
+            equippedArmor: Object.fromEntries(Object.entries(this.equippedArmor).map(([part, armor]) => [part, armor.serialize()]))
+        };
+    }
+
+    deserialize(data) {
+        this.name = data.name;
+        this.x = data.x;
+        this.y = data.y;
+        this.health = data.health;
+        this.bodyParts = data.bodyParts;
+        this.hunger = data.hunger;
+        this.sleep = data.sleep;
+        this.mood = data.mood;
+        this.state = data.state;
+        this.carrying = data.carrying;
+        this.skills = data.skills;
+        // Re-instantiate Weapon and Armor objects if they exist
+        if (data.equippedWeapon) {
+            // Assuming a Weapon class exists and has a deserialize method
+            // For now, just assign the data, ideally you'd re-instantiate the object
+            this.equippedWeapon = data.equippedWeapon; 
+        }
+        if (data.equippedArmor) {
+            // Assuming an Armor class exists and has a deserialize method
+            // For now, just assign the data, ideally you'd re-instantiate the objects
+            this.equippedArmor = data.equippedArmor;
+        }
+    }
 }

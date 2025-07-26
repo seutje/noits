@@ -97,6 +97,7 @@ export default class Map {
         const ironOreSprite = this.spriteManager.getSprite('iron_ore');
         const deerSprite = this.spriteManager.getSprite('deer');
         const dirtSprite = this.spriteManager.getSprite('dirt');
+        const forageFoodSprite = this.spriteManager.getSprite('forage_food');
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
@@ -121,6 +122,8 @@ export default class Map {
                     ctx.drawImage(deerSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile === 1 && dirtSprite) {
                     ctx.drawImage(dirtSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else if (tile === 6 && forageFoodSprite) {
+                    ctx.drawImage(forageFoodSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile !== 0) {
                     ctx.fillStyle = this.tileColors[tile] || '#000000';
                     ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);

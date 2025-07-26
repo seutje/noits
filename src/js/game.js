@@ -26,9 +26,9 @@ export default class Game {
     constructor(ctx) {
         this.ctx = ctx;
         this.lastTime = 0;
+        this.spriteManager = new SpriteManager();
         this.map = new Map(50, 30, 32, this.spriteManager);
         this.camera = new Camera(ctx);
-        this.spriteManager = new SpriteManager();
         this.ui = new UI(ctx);
         this.ui.setGameInstance(this);
         this.resourceManager = new ResourceManager();

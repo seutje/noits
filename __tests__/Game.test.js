@@ -259,4 +259,24 @@ describe('Game', () => {
         game.handleWheel({ deltaY: 100, preventDefault: jest.fn() });
         expect(game.camera.zoom).toBeLessThan(zoomedIn);
     });
+
+    test('pause and resume toggle isPaused', () => {
+        game.pause();
+        expect(game.isPaused).toBe(true);
+        game.resume();
+        expect(game.isPaused).toBe(false);
+    });
+
+    test('gameLoop skips update and render when paused', () => {
+        global.requestAnimationFrame = jest.fn();
+        const updateSpy = jest.spyOn(game, 'update').mockImplementation(() => {});
+        const renderSpy = jest.spyOn(game, 'render').mockImplementation(() => {});
+        game.pause();
+        game.gameLoop(16);
+        expect(updateSpy).not.toHaveBeenCalled();
+        expect(renderSpy).not.toHaveBeenCalled();
+        expect(global.requestAnimationFrame).toHaveBeenCalled();
+        updateSpy.mockRestore();
+        renderSpy.mockRestore();
+    });
 });

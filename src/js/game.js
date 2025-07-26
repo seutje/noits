@@ -20,6 +20,7 @@ import Furniture from './furniture.js';
 import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
+import SoundManager, { ACTION_BEEP_URL } from './soundManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -40,7 +41,8 @@ export default class Game {
         };
         this.tradeManager = new TradeManager(this.resourceManager, this.factions);
         this.eventManager = new EventManager(this, Enemy);
-        this.notificationManager = new NotificationManager();
+        this.soundManager = new SoundManager();
+        this.notificationManager = new NotificationManager(this.soundManager);
         this.settlers = [];
         this.enemies = [];
         this.keys = {};
@@ -59,6 +61,7 @@ export default class Game {
     async start() {
         try {
             await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
+            await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }
@@ -375,6 +378,7 @@ export default class Game {
             }
             this.map.addBuilding(newBuilding);
             this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 3, newBuilding)); // Build task with 100 quantity (workload)
+            this.soundManager.play('action');
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;
         } else {
@@ -438,6 +442,7 @@ export default class Game {
             } else {
                 // Place a wood pile at the clicked tile
                 this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
+                this.soundManager.play('action');
             }
         }
     }

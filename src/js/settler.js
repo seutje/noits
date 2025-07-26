@@ -2,10 +2,11 @@
 import Task from './task.js';
 
 export default class Settler {
-    constructor(name, x, y, resourceManager, map, roomManager) {
+    constructor(name, x, y, resourceManager, map, roomManager, spriteManager) {
         this.resourceManager = resourceManager;
         this.map = map;
         this.roomManager = roomManager;
+        this.spriteManager = spriteManager;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -286,8 +287,13 @@ export default class Settler {
     // Placeholder for future methods like update, render, etc.
 
     render(ctx) {
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
+        const settlerSprite = this.spriteManager.getSprite('settler');
+        if (settlerSprite) {
+            ctx.drawImage(settlerSprite, this.x * 32, this.y * 32, 32, 32);
+        } else {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
+        }
         ctx.fillStyle = 'white';
         ctx.font = '10px Arial';
         ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);

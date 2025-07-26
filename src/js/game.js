@@ -61,6 +61,7 @@ export default class Game {
     async start() {
         try {
             await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
+            await this.spriteManager.loadImage('settler', 'src/assets/settler.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);
@@ -69,8 +70,8 @@ export default class Game {
         this.resourceManager.addResource("stone", 50);
 
         // Create a new settler
-        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager));
-        this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager));
+        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
+        this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
 
         // Spawn a basic enemy for testing
         this.enemies.push(new Enemy("Goblin", 10, 10, this.settlers[0]));

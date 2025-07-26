@@ -65,7 +65,7 @@ export default class Game {
             await this.spriteManager.loadImage('tree', 'src/assets/tree.png');
             await this.spriteManager.loadImage('grass', 'src/assets/grass.png');
             await this.spriteManager.loadImage('berry_bush', 'src/assets/berry_bush.png');
-            await this.spriteManager.loadImage('berry_bush', 'src/assets/berry_bush.png');
+            await this.spriteManager.loadImage('goblin', 'src/assets/goblin.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);
@@ -78,7 +78,7 @@ export default class Game {
         this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
 
         // Spawn a basic enemy for testing
-        this.enemies.push(new Enemy("Goblin", 10, 10, this.settlers[0]));
+        this.enemies.push(new Enemy("Goblin", 10, 10, this.settlers[0], this.spriteManager));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);

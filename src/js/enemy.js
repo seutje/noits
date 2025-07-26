@@ -2,7 +2,7 @@
 import Settler from './settler.js';
 
 export default class Enemy {
-    constructor(name, x, y, targetSettler) {
+    constructor(name, x, y, targetSettler, spriteManager) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -12,6 +12,7 @@ export default class Enemy {
         this.attackCooldown = 0;
         this.targetSettler = targetSettler; // The settler this enemy is targeting
         this.state = "attacking"; // For now, always attacking
+        this.spriteManager = spriteManager;
     }
 
     update(deltaTime, settlers) {
@@ -73,8 +74,13 @@ export default class Enemy {
     }
 
     render(ctx) {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
+        const goblinSprite = this.spriteManager.getSprite('goblin');
+        if (goblinSprite) {
+            ctx.drawImage(goblinSprite, this.x * 32, this.y * 32, 32, 32);
+        } else {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
+        }
         ctx.fillStyle = 'white';
         ctx.font = '10px Arial';
         ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);

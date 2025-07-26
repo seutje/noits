@@ -280,4 +280,20 @@ describe('Settler', () => {
         expect(settler.carrying).toBe(null);
         expect(settler.currentTask).toBe(null);
     });
+
+    test('should eat from storage when seeking_food', () => {
+        const storageRoom = { id: 1, type: 'storage', tiles: [{ x: 0, y: 0 }], storage: { berries: 1 } };
+        mockRoomManager.rooms = [storageRoom];
+        mockRoomManager.removeResourceFromStorage = jest.fn((room, type, qty) => {
+            room.storage[type] -= qty;
+            return true;
+        });
+        settler.hunger = 10;
+
+        settler.updateNeeds(1000);
+
+        expect(mockRoomManager.removeResourceFromStorage).toHaveBeenCalledWith(storageRoom, 'berries', 1);
+        expect(settler.state).toBe('idle');
+        expect(settler.hunger).toBeGreaterThan(10);
+    });
 });

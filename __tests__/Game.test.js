@@ -149,7 +149,7 @@ describe('Game', () => {
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe("chop_wood");
         expect(addedTask.resourceType).toBe("wood");
-        expect(addedTask.quantity).toBe(50);
+        expect(addedTask.quantity).toBe(2.5);
     });
 
     test('handleClick should add stone and remove tile when stone is clicked', () => {
@@ -158,7 +158,7 @@ describe('Game', () => {
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe("mine_stone");
         expect(addedTask.resourceType).toBe("stone");
-        expect(addedTask.quantity).toBe(50);
+        expect(addedTask.quantity).toBe(2.5);
     });
 
     test('handleClick should add berries and remove tile when berries are clicked', () => {
@@ -167,7 +167,7 @@ describe('Game', () => {
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe("gather_berries");
         expect(addedTask.resourceType).toBe("berries");
-        expect(addedTask.quantity).toBe(20);
+        expect(addedTask.quantity).toBe(1);
     });
 
     test('handleClick should add iron_ore and remove tile when iron_ore is clicked', () => {
@@ -176,7 +176,7 @@ describe('Game', () => {
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe("mine_iron_ore");
         expect(addedTask.resourceType).toBe("iron_ore");
-        expect(addedTask.quantity).toBe(50);
+        expect(addedTask.quantity).toBe(10);
     });
 
     test('startDiggingDirt should set diggingDirtMode to true', () => {

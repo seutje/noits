@@ -127,6 +127,25 @@ export default class Settler {
             this.state = "idle";
         }
 
+        // If hungry, try to consume food from storage
+        if (this.state === "seeking_food" && !this.currentTask) {
+            const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
+            for (const room of storageRooms) {
+                const foodTypes = ["berries", "food", "meat"];
+                for (const food of foodTypes) {
+                    if (room.storage[food] && room.storage[food] > 0) {
+                        if (this.roomManager.removeResourceFromStorage(room, food, 1)) {
+                            this.hunger += 30;
+                            if (this.hunger > 100) this.hunger = 100;
+                            this.state = "idle";
+                            console.log(`${this.name} ate ${food} from storage.`);
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+
         // If hauling, find a storage room and set a task
         if (this.state === "hauling" && !this.currentTask) {
             const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");

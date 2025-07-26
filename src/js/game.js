@@ -84,9 +84,6 @@ export default class Game {
         this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
         this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
 
-        // Spawn a basic enemy for testing
-        this.enemies.push(new Enemy("Goblin", 49, 29, this.settlers[0], this.spriteManager));
-
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
         window.addEventListener('click', this.handleClick);

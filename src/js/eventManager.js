@@ -75,6 +75,21 @@ export default class EventManager {
                         });
                     }
                 }
+            },
+            {
+                name: "Vile Force of Darkness",
+                description: "A vile force of darkness has arrived!",
+                condition: () => true,
+                action: () => {
+                    console.log("Event: Vile Force of Darkness!");
+                    this.game.notificationManager.addNotification("A vile force of darkness has arrived!", 'warning');
+                    if (this.game.settlers.length > 0) {
+                        const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
+                        this.game.enemies.push(new this.EnemyClass("Goblin", 49, 29, targetSettler, this.game.spriteManager));
+                        console.log("A goblin has appeared!");
+                        this.game.notificationManager.addNotification("A goblin has appeared!", 'warning');
+                    }
+                }
             }
         ];
     }

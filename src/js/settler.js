@@ -300,7 +300,8 @@ export default class Settler {
                     this.currentTask.quantity -= amountToButcher;
 
                     if (this.currentTask.quantity <= 0) {
-                        this.carrying = { type: 'meat', quantity: 1 };
+                        const lootType = this.currentTask.targetEnemy.lootType || 'meat';
+                        this.carrying = { type: lootType, quantity: 1 };
                         this.currentTask.targetEnemy.isButchered = true;
                         this.currentTask.targetEnemy.isMarkedForButcher = false;
                         console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);

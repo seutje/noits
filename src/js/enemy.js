@@ -74,9 +74,15 @@ export default class Enemy {
     }
 
     render(ctx) {
-        const goblinSprite = this.spriteManager.getSprite('goblin');
-        if (goblinSprite) {
-            ctx.drawImage(goblinSprite, this.x * 32, this.y * 32, 32, 32);
+        let enemySprite;
+        if (this.name === "Wild Boar") {
+            enemySprite = this.spriteManager.getSprite('wild_boar');
+        } else {
+            enemySprite = this.spriteManager.getSprite('goblin'); // Default to goblin sprite for other enemies
+        }
+
+        if (enemySprite) {
+            ctx.drawImage(enemySprite, this.x * 32, this.y * 32, 32, 32);
         } else {
             ctx.fillStyle = 'red';
             ctx.fillRect(this.x * 32, this.y * 32, 32, 32);

@@ -171,7 +171,7 @@ export default class Settler {
                     const consumptionRate = 0.1; // e.g., 0.1 units of material per second
                     const amountToConsume = consumptionRate * (deltaTime / 1000); // Amount to consume per update
 
-                    if (this.resourceManager.removeResource(material, amountToConsume)) {
+                    if (material && this.resourceManager.removeResource(material, amountToConsume)) {
                         const workAmount = 1 * (deltaTime / 1000); // Amount of work done
                         this.currentTask.building.buildProgress += workAmount; // Increase build progress
                         if (this.currentTask.building.buildProgress >= 100) {
@@ -179,7 +179,16 @@ export default class Settler {
                             console.log(`${this.name} completed building task for ${this.currentTask.building.type}`);
                             this.currentTask = null; // Task completed
                         }
-                    } else {
+                    } else if (!material) { // If no material is required, just build
+                        const workAmount = 1 * (deltaTime / 1000); // Amount of work done
+                        this.currentTask.building.buildProgress += workAmount; // Increase build progress
+                        if (this.currentTask.building.buildProgress >= 100) {
+                            this.currentTask.building.buildProgress = 100;
+                            console.log(`${this.name} completed building task for ${this.currentTask.building.type}`);
+                            this.currentTask = null; // Task completed
+                        }
+                    }
+                    else {
                         console.log(`${this.name} stopped building due to lack of ${material}`);
                         this.currentTask = null; // Clear the task
                     }

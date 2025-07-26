@@ -49,4 +49,18 @@ describe('RoomManager storage rules', () => {
 
         expect(taskManager.tasks.length).toBe(0);
     });
+
+    test('does not create duplicate haul tasks when settler already hauling', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const taskManager = new TaskManager();
+        const roomManager = new RoomManager(map, { getSprite: jest.fn() }, 32, taskManager);
+        const settlers = [{ currentTask: { type: 'haul', sourceX: 2, sourceY: 2, resourceType: 'wood' } }];
+        roomManager.setSettlers(settlers);
+
+        map.addResourcePile(new ResourcePile('wood', 5, 2, 2, 32, { getSprite: jest.fn() }));
+
+        roomManager.assignHaulingTasksForDroppedPiles(settlers);
+
+        expect(taskManager.tasks.length).toBe(0);
+    });
 });

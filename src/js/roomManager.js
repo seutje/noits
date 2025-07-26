@@ -2,7 +2,7 @@ import ResourcePile from './resourcePile.js';
 import Task from './task.js';
 
 export default class RoomManager {
-    constructor(map, spriteManager, tileSize, taskManager = null) {
+    constructor(map, spriteManager, tileSize, taskManager = null, settlers = []) {
         this.map = map;
         this.spriteManager = spriteManager;
         this.tileSize = tileSize;
@@ -10,6 +10,11 @@ export default class RoomManager {
         this.taskManager = taskManager;
         this.rooms = []; // Stores room objects
         this.roomGrid = Array(map.height).fill(0).map(() => Array(map.width).fill(null)); // 2D array to store room references for each tile
+        this.settlers = settlers;
+    }
+
+    setSettlers(settlers) {
+        this.settlers = settlers;
     }
 
     /**
@@ -167,7 +172,7 @@ export default class RoomManager {
         return false;
     }
 
-    assignHaulingTasksForDroppedPiles() {
+    assignHaulingTasksForDroppedPiles(settlers = this.settlers) {
         if (!this.taskManager) return;
         for (const pile of this.map.resourcePiles) {
             const roomAtPile = this.getRoomAt(pile.x, pile.y);
@@ -179,7 +184,13 @@ export default class RoomManager {
             const existing = this.taskManager.tasks.some(
                 t => t.type === 'haul' && t.sourceX === pile.x && t.sourceY === pile.y && t.resourceType === pile.type
             );
-            if (!existing) {
+            const assigned = (settlers || []).some(
+                s => s.currentTask && s.currentTask.type === 'haul' &&
+                     s.currentTask.sourceX === pile.x &&
+                     s.currentTask.sourceY === pile.y &&
+                     s.currentTask.resourceType === pile.type
+            );
+            if (!existing && !assigned) {
                 const task = new Task('haul', pile.x, pile.y, pile.type, pile.quantity, 2, null, null, null, null, null, null, null, pile.x, pile.y);
                 // Initial target is the pile itself; destination will be chosen when picked up
                 this.taskManager.addTask(task);

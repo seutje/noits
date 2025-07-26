@@ -132,7 +132,7 @@ export default class Settler {
             const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
             let assigned = false;
             for (const room of storageRooms) {
-                const foodTypes = ["berries", "food", "meat"];
+                const foodTypes = ["berries", "mushrooms", "meat"];
                 for (const food of foodTypes) {
                     if (room.storage[food] && room.storage[food] > 0) {
                         const targetTile = room.tiles[0];
@@ -267,7 +267,7 @@ export default class Settler {
                         console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null; // Task completed
                     }
-                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "forage_food" || this.currentTask.type === "hunt_animal") {
+                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "mushroom" || this.currentTask.type === "hunt_animal") {
                     const resourceType = this.currentTask.resourceType;
                     const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
                     const amountToGather = gatheringRate * (deltaTime / 1000);

@@ -72,6 +72,7 @@ export default class Game {
             await this.spriteManager.loadImage('dirt', 'src/assets/dirt.png');
             await this.spriteManager.loadImage('wild_boar', 'src/assets/wild_boar.png');
             await this.spriteManager.loadImage('forage_food', 'src/assets/forage_food.png');
+            await this.spriteManager.loadImage('wood', 'src/assets/wood.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);
@@ -458,7 +459,7 @@ export default class Game {
                 console.log(`Hunt animal task added at ${tileX},${tileY}`);
             } else {
                 // Place a wood pile at the clicked tile
-                this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize));
+                this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize, this.spriteManager));
                 this.soundManager.play('action');
             }
         }

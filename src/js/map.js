@@ -55,6 +55,7 @@ export default class Map {
     }
 
     addResourcePile(resourcePile) {
+        resourcePile.spriteManager = this.spriteManager; // Assign spriteManager to the resource pile
         this.resourcePiles.push(resourcePile);
     }
 
@@ -157,7 +158,7 @@ export default class Map {
         this.tileSize = data.tileSize;
         this.tiles = data.tiles;
         this.resourcePiles = data.resourcePiles.map(pileData => {
-            const pile = new ResourcePile(pileData.type, pileData.quantity, pileData.x, pileData.y, this.tileSize);
+            const pile = new ResourcePile(pileData.type, pileData.quantity, pileData.x, pileData.y, this.tileSize, this.spriteManager);
             pile.deserialize(pileData);
             return pile;
         });

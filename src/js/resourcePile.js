@@ -2,16 +2,22 @@
 import Resource from './resource.js';
 
 export default class ResourcePile extends Resource {
-    constructor(type, quantity, x, y, tileSize, quality = 1) {
+    constructor(type, quantity, x, y, tileSize, spriteManager, quality = 1) {
         super(type, quantity, quality);
         this.x = x;
         this.y = y;
         this.tileSize = tileSize;
+        this.spriteManager = spriteManager;
     }
 
     render(ctx) {
-        ctx.fillStyle = 'brown'; // Placeholder color for wood piles
-        ctx.fillRect(this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        const woodSprite = this.spriteManager.getSprite('wood');
+        if (this.type === 'wood' && woodSprite) {
+            ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else {
+            ctx.fillStyle = 'brown'; // Placeholder color for wood piles
+            ctx.fillRect(this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        }
         ctx.fillStyle = 'white';
         ctx.fillText(this.quantity, this.x * this.tileSize + 5, this.y * this.tileSize + this.tileSize / 2);
     }

@@ -95,9 +95,6 @@ export default class Game {
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }
-        // Place initial resource piles instead of using global inventory
-        this.map.addResourcePile(new ResourcePile('wood', 100, 2, 2, this.map.tileSize, this.spriteManager));
-        this.map.addResourcePile(new ResourcePile('stone', 50, 3, 2, this.map.tileSize, this.spriteManager));
 
         // Create a new settler
         this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers));

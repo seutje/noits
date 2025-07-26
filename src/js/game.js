@@ -488,7 +488,7 @@ export default class Game {
                 }
             } else {
                 const clickedEnemy = this.enemies.find(e => Math.floor(e.x) === tileX && Math.floor(e.y) === tileY);
-                if (clickedEnemy && clickedEnemy.isDead && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
+                if (clickedEnemy && clickedEnemy.isDead && clickedEnemy.decay <= 50 && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
                     this.taskManager.addTask(new Task("butcher", tileX, tileY, "meat", 1, 2, null, null, null, null, null, null, clickedEnemy));
                     clickedEnemy.isMarkedForButcher = true;
                     console.log(`Butcher task added at ${tileX},${tileY}`);

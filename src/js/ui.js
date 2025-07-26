@@ -165,6 +165,43 @@ export default class UI {
         };
         this.buildMenu.appendChild(loadGameButton);
 
+        // Help button
+        this.helpButton = document.createElement('button');
+        this.helpButton.textContent = 'Help';
+        this.helpButton.onclick = () => this.toggleHelp();
+        this.uiContainer.appendChild(this.helpButton);
+
+        this.helpOverlay = document.createElement('div');
+        this.helpOverlay.id = 'help-overlay';
+        this.helpOverlay.style.position = 'absolute';
+        this.helpOverlay.style.top = '0';
+        this.helpOverlay.style.left = '0';
+        this.helpOverlay.style.width = '100%';
+        this.helpOverlay.style.height = '100%';
+        this.helpOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        this.helpOverlay.style.color = 'white';
+        this.helpOverlay.style.padding = '20px';
+        this.helpOverlay.style.boxSizing = 'border-box';
+        this.helpOverlay.style.display = 'none';
+        this.helpOverlay.style.overflow = 'auto';
+        this.helpOverlay.style.zIndex = '1001';
+        const helpContent = document.createElement('div');
+        helpContent.innerHTML = `
+            <h2>How to Play</h2>
+            <ul>
+                <li>Use WASD or arrow keys to move the camera.</li>
+                <li>Click on tiles to gather resources or interact.</li>
+                <li>Use the build menu to place buildings and furniture.</li>
+                <li>Manage settlers via tasks automatically assigned.</li>
+            </ul>
+        `;
+        const closeHelpButton = document.createElement('button');
+        closeHelpButton.textContent = 'Close';
+        closeHelpButton.onclick = () => this.hideHelp();
+        helpContent.appendChild(closeHelpButton);
+        this.helpOverlay.appendChild(helpContent);
+        document.body.appendChild(this.helpOverlay);
+
         this.tooltip = document.createElement('div');
         this.tooltip.id = 'tooltip';
         this.tooltip.style.position = 'absolute';
@@ -275,5 +312,21 @@ export default class UI {
             });
             this.settlersElement.appendChild(settlerDiv);
         });
+    }
+
+    showHelp() {
+        this.helpOverlay.style.display = 'block';
+    }
+
+    hideHelp() {
+        this.helpOverlay.style.display = 'none';
+    }
+
+    toggleHelp() {
+        if (this.helpOverlay.style.display === 'none') {
+            this.showHelp();
+        } else {
+            this.hideHelp();
+        }
     }
 }

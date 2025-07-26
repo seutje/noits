@@ -135,4 +135,4 @@ This final phase focuses on adding dynamic events, refining the user experience,
 * [x] 5.6.1 Implement save/load functionality (using localStorage or similar).  
 * [x] 5.6.2 Basic sound effects for key actions.
 * [x] 5.6.3 Bug fixing and performance optimization.
-* [ ] 5.6.4 Tutorial or in-game help system.
+* [x] 5.6.4 Tutorial or in-game help system.

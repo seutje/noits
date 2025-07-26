@@ -250,4 +250,13 @@ describe('Game', () => {
         game.setSoundVolume(0.2);
         expect(game.soundManager.volume).toBe(0.2);
     });
+
+    test('handleWheel adjusts camera zoom', () => {
+        const initialZoom = game.camera.zoom;
+        game.handleWheel({ deltaY: -100, preventDefault: jest.fn() });
+        expect(game.camera.zoom).toBeGreaterThan(initialZoom);
+        const zoomedIn = game.camera.zoom;
+        game.handleWheel({ deltaY: 100, preventDefault: jest.fn() });
+        expect(game.camera.zoom).toBeLessThan(zoomedIn);
+    });
 });

@@ -36,6 +36,7 @@ export default class Settler {
         this.equippedWeapon = null; // Stores a Weapon object
         this.equippedArmor = {}; // Stores Armor objects by body part (e.g., { head: ArmorObject, torso: ArmorObject })
         this.targetEnemy = null; // The enemy the settler is currently targeting
+        this.isDead = false; // New property to track if the settler is dead
     }
 
     equipWeapon(weapon) {
@@ -76,6 +77,7 @@ export default class Settler {
     }
 
     updateNeeds(deltaTime) {
+        if (this.isDead) return; // Do nothing if dead
         // Decrease hunger over time
         this.hunger -= 0.01 * (deltaTime / 1000); // Adjust rate as needed
         if (this.hunger < 0) this.hunger = 0;
@@ -322,7 +324,15 @@ export default class Settler {
     render(ctx) {
         const settlerSprite = this.spriteManager.getSprite('settler');
         if (settlerSprite) {
-            ctx.drawImage(settlerSprite, this.x * 32, this.y * 32, 32, 32);
+            if (this.isDead) {
+                ctx.save();
+                ctx.translate(this.x * 32 + 16, this.y * 32 + 16); // Translate to center of tile
+                ctx.rotate(Math.PI / 2); // Rotate 90 degrees (PI/2 radians)
+                ctx.drawImage(settlerSprite, -16, -16, 32, 32); // Draw image centered
+                ctx.restore();
+            } else {
+                ctx.drawImage(settlerSprite, this.x * 32, this.y * 32, 32, 32);
+            }
         } else {
             ctx.fillStyle = 'blue';
             ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
@@ -361,6 +371,13 @@ export default class Settler {
             console.log(`${this.name} took ${amount} damage to ${bodyPart}. Health: ${this.bodyParts[bodyPart].health}. Bleeding: ${this.bodyParts[bodyPart].bleeding}`);
             if (attacker && this.targetEnemy === null) {
                 this.setTargetEnemy(attacker);
+            }
+            if (this.health <= 0) {
+                this.isDead = true;
+                this.state = "dead";
+                this.currentTask = null; // Clear any current task
+                this.targetEnemy = null; // Clear target enemy
+                console.log(`${this.name} has died.`);
             }
         } else {
             console.warn(`Invalid body part: ${bodyPart}`);
@@ -412,7 +429,14 @@ export default class Settler {
             console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
         } else { // Target is likely an Enemy
             targetSettler.health -= damage;
-            if (targetSettler.health < 0) targetSettler.health = 0;
+            if (targetSettler.health <= 0) {
+                targetSettler.health = 0;
+                targetSettler.isDead = true;
+                targetSettler.state = "dead";
+                targetSettler.currentTask = null; // Clear any current task
+                targetSettler.targetSettler = null; // Clear target settler for enemy
+                console.log(`${targetSettler.name} has died.`);
+            }
             console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage. ${targetSettler.name} health: ${targetSettler.health.toFixed(1)}`);
         }
     }
@@ -433,7 +457,8 @@ export default class Settler {
             skills: this.skills,
             equippedWeapon: this.equippedWeapon ? this.equippedWeapon.serialize() : null,
             equippedArmor: Object.fromEntries(Object.entries(this.equippedArmor).map(([part, armor]) => [part, armor.serialize()])),
-            targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null // Only save ID, actual object will be re-linked
+            targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null, // Only save ID, actual object will be re-linked
+            isDead: this.isDead
         };
     }
 
@@ -480,5 +505,6 @@ export default class Settler {
         }
         // targetEnemy will need to be re-linked by the Game class after all entities are deserialized
         this.targetEnemy = null; 
+        this.isDead = data.isDead || false;
     }
 }

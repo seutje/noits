@@ -111,6 +111,7 @@ export default class Game {
         this.gameTime += (deltaTime / 1000) * this.gameSpeed; // Update game time in seconds
         
         // Update settler needs
+        // Update settler needs
         this.settlers.forEach(settler => {
             settler.updateNeeds(deltaTime * this.gameSpeed);
             if (settler.needsTreatment() && this.resourceManager.getResourceQuantity('bandage') > 0) {

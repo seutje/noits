@@ -16,9 +16,11 @@ export default class Enemy {
         this.targetSettler = targetSettler; // The settler this enemy is targeting
         this.state = "attacking"; // For now, always attacking
         this.spriteManager = spriteManager;
+        this.isDead = false; // New property to track if the enemy is dead
     }
 
     update(deltaTime, settlers) {
+        if (this.isDead) return; // Do nothing if dead
         this.attackCooldown -= deltaTime / 1000;
 
         if (this.targetSettler) {
@@ -85,7 +87,15 @@ export default class Enemy {
         }
 
         if (enemySprite) {
-            ctx.drawImage(enemySprite, this.x * 32, this.y * 32, 32, 32);
+            if (this.isDead) {
+                ctx.save();
+                ctx.translate(this.x * 32 + 16, this.y * 32 + 16); // Translate to center of tile
+                ctx.rotate(Math.PI / 2); // Rotate 90 degrees (PI/2 radians)
+                ctx.drawImage(enemySprite, -16, -16, 32, 32); // Draw image centered
+                ctx.restore();
+            } else {
+                ctx.drawImage(enemySprite, this.x * 32, this.y * 32, 32, 32);
+            }
         } else {
             ctx.fillStyle = 'red';
             ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
@@ -108,7 +118,8 @@ export default class Enemy {
             // targetSettler is a reference, so we save its name/ID if needed for re-linking
             // For now, we'll assume targetSettler is re-established on load based on proximity
             state: this.state,
-            id: this.id
+            id: this.id,
+            isDead: this.isDead
         };
     }
 
@@ -122,5 +133,6 @@ export default class Enemy {
         this.attackCooldown = data.attackCooldown;
         this.state = data.state;
         this.id = data.id;
+        this.isDead = data.isDead || false;
     }
 }

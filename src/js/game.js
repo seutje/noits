@@ -87,12 +87,14 @@ export default class Game {
             await this.spriteManager.loadImage('berries', 'src/assets/berries.png');
             await this.spriteManager.loadImage('meat', 'src/assets/meat.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
-            await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
-            await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
-            await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
+            
             await this.spriteManager.loadImage('dirt_pile', 'src/assets/dirt_pile.png');
             await this.spriteManager.loadImage('farm_plot', 'src/assets/farmPlot.png');
             await this.spriteManager.loadImage('bandage', 'src/assets/bandage.png');
+            await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
+            await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
+            await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
+            await this.spriteManager.loadImage('wheat_pile', 'src/assets/wheat_pile.png');
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }

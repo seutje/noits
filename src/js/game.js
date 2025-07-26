@@ -52,7 +52,7 @@ export default class Game {
         this.gameTime = 0;
         this.gameSpeed = 1; // Default game speed
         this.haulingCheckTimer = 0; // Timer for hauling task assignment
-        this.haulingCheckInterval = 100; // seconds between hauling checks
+        this.haulingCheckInterval = 1; // seconds between hauling checks
         this.temperature = 20; // Initial temperature in Celsius
         this.buildMode = false; // New property for build mode
         this.selectedBuilding = null; // New property to hold the selected building type

@@ -1,6 +1,6 @@
 export default class Task {
-    constructor(type, targetX, targetY, resourceType = null, quantity = 0, priority = 1, building = null, recipe = null, cropType = null, targetLocation = null, carrying = null) {
-        this.type = type; // e.g., "chop_wood", "mine_stone", "eat", "sleep", "build", "craft", "mine_stone", "mine_iron_ore", "gather_berries", "mine_stone", "mine_iron_ore", "gather_berries"
+    constructor(type, targetX, targetY, resourceType = null, quantity = 0, priority = 1, building = null, recipe = null, cropType = null, targetLocation = null, carrying = null, targetSettler = null) {
+        this.type = type; // e.g., "chop_wood", "mine_stone", "eat", "sleep", "build", "craft", "mine_stone", "mine_iron_ore", "gather_berries", "mine_stone", "mine_iron_ore", "gather_berries", "treatment"
         this.targetX = targetX;
         this.targetY = targetY;
         this.resourceType = resourceType; // For gathering tasks
@@ -13,5 +13,6 @@ export default class Task {
         this.cropType = cropType; // For sow_crop tasks
         this.targetLocation = targetLocation; // For explore tasks
         this.carrying = carrying; // For haul tasks
+        this.targetSettler = targetSettler; // For treatment tasks
     }
 }

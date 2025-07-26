@@ -1,4 +1,5 @@
 
+'''
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager) {
         this.resourceManager = resourceManager;
@@ -27,7 +28,8 @@ export default class Settler {
             mining: 1,
             building: 1,
             crafting: 1,
-            combat: 1
+            combat: 1,
+            medical: 1
         };
     }
 
@@ -67,7 +69,9 @@ export default class Settler {
         this.health = totalHealth / Object.keys(this.bodyParts).length; // Average health of all parts
 
         // Basic AI: Change state based on needs
-        if (this.hunger < 20) {
+        if (this.needsTreatment() && this.resourceManager.getResourceQuantity('bandage') > 0) {
+            this.state = "seeking_treatment";
+        } else if (this.hunger < 20) {
             this.state = "seeking_food";
         } else if (this.sleep < 20) {
             this.state = "seeking_sleep";
@@ -234,6 +238,15 @@ export default class Settler {
                     this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
                     console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
                     this.currentTask = null; // Task completed immediately after action
+                } else if (this.currentTask.type === "treatment" && this.currentTask.targetSettler) {
+                    const targetSettler = this.currentTask.targetSettler;
+                    if (this.resourceManager.removeResource('bandage', 1)) {
+                        targetSettler.stopBleeding();
+                        console.log(`${this.name} treated ${targetSettler.name}.`);
+                    } else {
+                        console.log(`${this.name} could not treat ${targetSettler.name} due to lack of bandages.`);
+                    }
+                    this.currentTask = null;
                 }
             }
         }
@@ -253,6 +266,7 @@ export default class Settler {
     }
 
     getStatus() {
+        if (this.needsTreatment()) return "Bleeding";
         if (this.hunger < 20) return "Hungry";
         if (this.sleep < 20) return "Sleepy";
         return "OK";
@@ -279,4 +293,20 @@ export default class Settler {
             console.warn(`Invalid body part: ${bodyPart}`);
         }
     }
+
+    needsTreatment() {
+        for (const part in this.bodyParts) {
+            if (this.bodyParts[part].bleeding) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    stopBleeding() {
+        for (const part in this.bodyParts) {
+            this.bodyParts[part].bleeding = false;
+        }
+    }
 }
+''

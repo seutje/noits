@@ -1,5 +1,6 @@
 
 import Task from './task.js';
+import ResourcePile from './resourcePile.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager) {
@@ -152,19 +153,23 @@ export default class Settler {
             }
         }
 
-        // If hauling, find a storage room and set a task
+        // If hauling, deliver to construction site if possible, otherwise storage
         if (this.state === "hauling" && !this.currentTask) {
-            const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
-            if (storageRooms.length > 0) {
-                // For simplicity, just pick the first storage room
-                const targetRoom = storageRooms[0];
-                // Find a tile within the storage room to drop off resources
-                const targetTile = targetRoom.tiles[0]; // Just use the first tile for now
-                this.currentTask = { type: "haul", targetX: targetTile.x, targetY: targetTile.y, resource: this.carrying };
-                console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
+            const targetBuilding = (this.map.buildings || []).find(b => b.buildProgress < 100 && b.material === this.carrying.type && b.resourcesDelivered < b.resourcesRequired);
+            if (targetBuilding) {
+                this.currentTask = { type: "haul", targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
+                console.log(`${this.name} is hauling ${this.carrying.type} to construction site.`);
             } else {
-                console.log(`${this.name} has resources to haul but no storage room found.`);
-                this.state = "idle"; // Go back to idle if no storage
+                const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
+                if (storageRooms.length > 0) {
+                    const targetRoom = storageRooms[0];
+                    const targetTile = targetRoom.tiles[0];
+                    this.currentTask = { type: "haul", targetX: targetTile.x, targetY: targetTile.y, resource: this.carrying };
+                    console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
+                } else {
+                    console.log(`${this.name} has resources to haul but no storage room found.`);
+                    this.state = "idle"; // Go back to idle if no storage
+                }
             }
         }
 
@@ -192,30 +197,39 @@ export default class Settler {
                     console.log(`${this.name} completed task: ${this.currentTask.type}`);
                     this.currentTask = null;
                 } else if (this.currentTask.type === "build" && this.currentTask.building) {
-                    const material = this.currentTask.building.material;
-                    const consumptionRate = 0.1; // e.g., 0.1 units of material per second
-                    const amountToConsume = consumptionRate * (deltaTime / 1000); // Amount to consume per update
+                    const building = this.currentTask.building;
+                    const material = building.material;
+                    const consumptionRate = 0.1; // units of material per second
+                    const amountToConsume = consumptionRate * (deltaTime / 1000);
 
-                    if (material && this.resourceManager.removeResource(material, amountToConsume)) {
-                        const workAmount = 1 * (deltaTime / 1000); // Amount of work done
-                        this.currentTask.building.buildProgress += workAmount; // Increase build progress
-                        if (this.currentTask.building.buildProgress >= 100) {
-                            this.currentTask.building.buildProgress = 100;
-                            console.log(`${this.name} completed building task for ${this.currentTask.building.type}`);
-                            this.currentTask = null; // Task completed
-                        }
-                    } else if (!material) { // If no material is required, just build
-                        const workAmount = 1 * (deltaTime / 1000); // Amount of work done
-                        this.currentTask.building.buildProgress += workAmount; // Increase build progress
-                        if (this.currentTask.building.buildProgress >= 100) {
-                            this.currentTask.building.buildProgress = 100;
-                            console.log(`${this.name} completed building task for ${this.currentTask.building.type}`);
-                            this.currentTask = null; // Task completed
+                    if (building.resourcesDelivered < building.resourcesRequired) {
+                        const pile = this.map.resourcePiles.find(p => p.x === building.x && p.y === building.y && p.type === material);
+                        if (pile && pile.remove(amountToConsume)) {
+                            building.resourcesDelivered += amountToConsume;
+                            if (pile.quantity <= 0) {
+                                this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                            }
+                        } else if (this.carrying && this.carrying.type === material) {
+                            const needed = building.resourcesRequired - building.resourcesDelivered;
+                            const amountToDrop = Math.min(needed, this.carrying.quantity);
+                            building.resourcesDelivered += amountToDrop;
+                            this.carrying.quantity -= amountToDrop;
+                            if (this.carrying.quantity <= 0) this.carrying = null;
+                        } else {
+                            console.log(`${this.name} needs ${material} delivered to build site.`);
+                            this.currentTask = null;
+                            return;
                         }
                     }
-                    else {
-                        console.log(`${this.name} stopped building due to lack of ${material}`);
-                        this.currentTask = null; // Clear the task
+
+                    if (building.resourcesDelivered >= building.resourcesRequired) {
+                        const workAmount = 1 * (deltaTime / 1000); // Amount of work done
+                        building.buildProgress += workAmount; // Increase build progress
+                        if (building.buildProgress >= 100) {
+                            building.buildProgress = 100;
+                            console.log(`${this.name} completed building task for ${building.type}`);
+                            this.currentTask = null; // Task completed
+                        }
                     }
                 } else if (this.currentTask.type === "craft" && this.currentTask.recipe) {
                     const recipe = this.currentTask.recipe;
@@ -327,15 +341,33 @@ export default class Settler {
                     }
                     this.currentTask = null;
                 } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
-                    const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
-                    if (room && room.type === "storage") {
-                        this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
-                        this.carrying = null; // Clear carried resource
-                        console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
+                    if (this.currentTask.building) {
+                        const building = this.currentTask.building;
+                        if (building.material === this.currentTask.resource.type) {
+                            const existingPile = this.map.resourcePiles.find(p => p.x === building.x && p.y === building.y && p.type === this.currentTask.resource.type);
+                            if (existingPile) {
+                                existingPile.add(this.currentTask.resource.quantity);
+                            } else {
+                                const newPile = new ResourcePile(this.currentTask.resource.type, this.currentTask.resource.quantity, building.x, building.y, this.map.tileSize, this.spriteManager);
+                                this.map.addResourcePile(newPile);
+                            }
+                            this.carrying = null;
+                            console.log(`${this.name} delivered ${this.currentTask.resource.type} to building site.`);
+                        } else {
+                            console.log(`${this.name} cannot deliver ${this.currentTask.resource.type} to this building.`);
+                        }
+                        this.currentTask = null;
                     } else {
-                        console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
+                        const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                        if (room && room.type === "storage") {
+                            this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
+                            this.carrying = null; // Clear carried resource
+                            console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
+                        } else {
+                            console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
+                        }
+                        this.currentTask = null; // Task completed immediately after action
                     }
-                    this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "explore" && this.currentTask.targetLocation) {
                     // Settler has arrived at the exploration target
                     this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);

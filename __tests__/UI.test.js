@@ -23,4 +23,12 @@ describe('UI tooltips', () => {
         expect(mockGame.setSoundVolume).toHaveBeenCalledWith(0.3);
         expect(ui.volumeValueDisplay.textContent).toBe('30%');
     });
+
+    test('showHelp and hideHelp toggle help overlay', () => {
+        const ui = new UI({});
+        ui.showHelp();
+        expect(ui.helpOverlay.style.display).toBe('block');
+        ui.hideHelp();
+        expect(ui.helpOverlay.style.display).toBe('none');
+    });
 });

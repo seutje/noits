@@ -24,37 +24,44 @@ export default class Enemy {
         this.attackCooldown -= deltaTime / 1000;
 
         if (this.targetSettler) {
-            // Move towards the target settler
-            const speed = 0.03; // tiles per second
-            if (this.x < this.targetSettler.x) {
-                this.x += speed * (deltaTime / 1000);
-            } else if (this.x > this.targetSettler.x) {
-                this.x -= speed * (deltaTime / 1000);
-            }
-            if (this.y < this.targetSettler.y) {
-                this.y += speed * (deltaTime / 1000);
-            } else if (this.y > this.targetSettler.y) {
-                this.y -= speed * (deltaTime / 1000);
-            }
+            // If target settler is dead, clear target
+            if (this.targetSettler.isDead) {
+                this.targetSettler = null;
+            } else {
+                // Move towards the target settler
+                const speed = 0.03; // tiles per second
+                if (this.x < this.targetSettler.x) {
+                    this.x += speed * (deltaTime / 1000);
+                } else if (this.x > this.targetSettler.x) {
+                    this.x -= speed * (deltaTime / 1000);
+                }
+                if (this.y < this.targetSettler.y) {
+                    this.y += speed * (deltaTime / 1000);
+                } else if (this.y > this.targetSettler.y) {
+                    this.y -= speed * (deltaTime / 1000);
+                }
 
-            // Check if within attack range (simple distance check)
-            const distance = Math.sqrt(Math.pow(this.x - this.targetSettler.x, 2) + Math.pow(this.y - this.targetSettler.y, 2));
-            if (distance < 1.5) { // Within 1.5 tiles, consider it melee range
-                if (this.attackCooldown <= 0) {
-                    this.dealDamage(this.targetSettler);
-                    this.attackCooldown = 1 / this.attackSpeed; // Reset cooldown
+                // Check if within attack range (simple distance check)
+                const distance = Math.sqrt(Math.pow(this.x - this.targetSettler.x, 2) + Math.pow(this.y - this.targetSettler.y, 2));
+                if (distance < 1.5) { // Within 1.5 tiles, consider it melee range
+                    if (this.attackCooldown <= 0) {
+                        this.dealDamage(this.targetSettler);
+                        this.attackCooldown = 1 / this.attackSpeed; // Reset cooldown
+                    }
                 }
             }
         } else {
-            // If no target, find the closest settler
+            // If no target, find the closest living settler
             if (settlers.length > 0) {
                 let closestSettler = null;
                 let minDistance = Infinity;
                 for (const settler of settlers) {
-                    const dist = Math.sqrt(Math.pow(this.x - settler.x, 2) + Math.pow(this.y - settler.y, 2));
-                    if (dist < minDistance) {
-                        minDistance = dist;
-                        closestSettler = settler;
+                    if (!settler.isDead) { // Only consider living settlers
+                        const dist = Math.sqrt(Math.pow(this.x - settler.x, 2) + Math.pow(this.y - settler.y, 2));
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            closestSettler = settler;
+                        }
                     }
                 }
                 this.targetSettler = closestSettler;

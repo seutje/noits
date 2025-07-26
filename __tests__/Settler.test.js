@@ -255,6 +255,26 @@ describe('Settler', () => {
         expect(settler.currentTask).toBe(null);
     });
 
+    test('should handle hunt_animal task and drop bandage pile', () => {
+        const task = new Task('hunt_animal', 1, 1, 'meat', 0.2);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+        settler.map.removeResourceNode = jest.fn();
+
+        for (let i = 0; i < 5; i++) {
+            settler.updateNeeds(1000);
+        }
+
+        expect(mockResourceManager.addResource).not.toHaveBeenCalled();
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const bandagePile = settler.map.addResourcePile.mock.calls[0][0];
+        expect(bandagePile.type).toBe('bandage');
+        expect(bandagePile.quantity).toBe(1);
+        expect(settler.carrying).toBe(null);
+        expect(settler.currentTask).toBe(null);
+    });
+
     test('should handle explore task', () => {
         const mockLocation = { id: 'forest_outpost', name: 'Forest Outpost' };
         settler.map.worldMap = { discoverLocation: jest.fn() }; // Mock worldMap

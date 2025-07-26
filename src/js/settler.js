@@ -376,6 +376,7 @@ export default class Settler {
             sleep: this.sleep,
             mood: this.mood,
             state: this.state,
+            currentTask: this.currentTask ? this.currentTask.serialize() : null,
             carrying: this.carrying,
             skills: this.skills,
             equippedWeapon: this.equippedWeapon ? this.equippedWeapon.serialize() : null,
@@ -405,6 +406,24 @@ export default class Settler {
             // Assuming an Armor class exists and has a deserialize method
             // For now, just assign the data, ideally you'd re-instantiate the objects
             this.equippedArmor = data.equippedArmor;
+        }
+        if (data.currentTask) {
+            const task = new Task(
+                data.currentTask.type,
+                data.currentTask.targetX,
+                data.currentTask.targetY,
+                data.currentTask.resourceType,
+                data.currentTask.quantity,
+                data.currentTask.priority,
+                data.currentTask.building,
+                data.currentTask.recipe,
+                data.currentTask.cropType,
+                data.currentTask.targetLocation,
+                data.currentTask.carrying,
+                data.currentTask.targetSettler
+            );
+            task.deserialize(data.currentTask);
+            this.currentTask = task;
         }
     }
 }

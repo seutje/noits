@@ -249,6 +249,21 @@ export default class Game {
             this.settlers = gameState.settlers.map(sData => {
                 const settler = new Settler(sData.name, sData.x, sData.y, this.resourceManager, this.map, this.roomManager);
                 settler.deserialize(sData);
+                // Re-link currentTask objects for settlers
+                if (settler.currentTask) {
+                    if (settler.currentTask.building) {
+                        settler.currentTask.building = this.map.getBuildingAt(settler.currentTask.building.x, settler.currentTask.building.y);
+                    }
+                    if (settler.currentTask.assignedSettler) {
+                        settler.currentTask.assignedSettler = this.settlers.find(s => s.name === settler.currentTask.assignedSettler);
+                    }
+                    if (settler.currentTask.targetLocation) {
+                        settler.currentTask.targetLocation = this.worldMap.getLocation(settler.currentTask.targetLocation.id);
+                    }
+                    if (settler.currentTask.targetSettler) {
+                        settler.currentTask.targetSettler = this.settlers.find(s => s.name === settler.currentTask.targetSettler);
+                    }
+                }
                 return settler;
             });
 

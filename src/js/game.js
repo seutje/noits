@@ -46,6 +46,7 @@ export default class Game {
         this.keys = {};
         this.gameTime = 0;
         this.gameSpeed = 1; // Default game speed
+        this.temperature = 20; // Initial temperature in Celsius
         this.buildMode = false; // New property for build mode
         this.selectedBuilding = null; // New property to hold the selected building type
 
@@ -130,7 +131,7 @@ export default class Game {
             const resource = this.resourceManager.getAllResources()[type];
             resourceString += `${type}: ${Math.floor(resource.quantity)} (Q:${resource.quality.toFixed(2)}), `;
         }
-        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers); // Remove trailing comma and space
+        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers, this.temperature); // Remove trailing comma and space
     }
 
     render() {

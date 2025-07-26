@@ -28,6 +28,11 @@ export default class UI {
         this.settlersElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.settlersElement);
 
+        this.temperatureElement = document.createElement('span');
+        this.temperatureElement.id = 'temperature-display';
+        this.temperatureElement.style.marginLeft = '20px';
+        this.uiContainer.appendChild(this.temperatureElement);
+
         // Speed slider
         this.speedLabel = document.createElement('span');
         this.speedLabel.textContent = 'Speed: ';
@@ -163,8 +168,8 @@ export default class UI {
         const createButton = (text, buildModeType, isRoomDesignation = false, tooltipText = '') => {
             const button = document.createElement('button');
             button.textContent = text;
-            button.onmouseover = () => this.showTooltip(tooltipText);
-            button.onmouseout = () => this.hideTooltip();
+            button.addEventListener('mouseover', () => this.showTooltip(tooltipText));
+            button.addEventListener('mouseout', () => this.hideTooltip());
             button.onclick = (event) => {
                 event.stopPropagation();
                 if (this.gameInstance) {
@@ -202,9 +207,10 @@ export default class UI {
         this.gameInstance = gameInstance;
     }
 
-    update(gameTime, resourceString, settlers) {
+    update(gameTime, resourceString, settlers, temperature) {
         this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
         this.resourcesElement.textContent = `Resources: ${resourceString}`;
+        this.temperatureElement.textContent = `Temperature: ${temperature.toFixed(1)}°C`;
         this.settlersElement.innerHTML = '';
         settlers.forEach(settler => {
             const settlerDiv = document.createElement('div');

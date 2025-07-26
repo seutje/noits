@@ -4,15 +4,12 @@ This document provides instructions for AI agents contributing to the developmen
 
 ## **1\. Development Process & Reporting**
 
-* **Commit Frequency:** After successfully completing *each individual subtask* (e.g., 1.1, 1.2, 2.1, 2.2) as outlined in the PLAN.md document, you **MUST** edit the PLAN.md document and check off what you finished and commit your changes.  
-* **Commit Messages:** Each commit message should be concise and clearly describe the work done for that specific subtask.  
-  * **Format:** \[Phase.Subtask\] Description of work  
-  * **Example:** \[1.1\] Initialized HTML5 Canvas and JS environment.  
-  * **Example:** \[2.1\] Implemented basic settler hunger need.  
-* **Reporting to User:** After completing and committing each subtask, you **MUST** stop and report back to the user.  
+* **Commit Frequency:** After successfully completing *each individual task* you **MUST** commit your changes.  
+* **Commit Messages:** Each commit message should be concise and clearly describe the work done for that specific task.
+* **Reporting to User:** After completing and committing each task, you **MUST** stop and report back to the user.  
   * **Purpose:** This allows the user to review, test, and provide feedback on incremental progress.  
-  * **Message Content:** Clearly state which subtask has been completed, a brief summary of the implemented functionality, and confirm that the changes are committed.  
-  * **Example:** "Subtask 1.1 (Initialize HTML5 Canvas and JavaScript environment) is complete and committed. The index.html now sets up the canvas. Please review and test."
+  * **Message Content:** Clearly state which task has been completed, a brief summary of the implemented functionality, and confirm that the changes are committed.  
+  * **Example:** "Task 1.1 (Initialize HTML5 Canvas and JavaScript environment) is complete and committed. The index.html now sets up the canvas. Please review and test."
 
 ## **2\. Project Structure & Execution**
 

@@ -22,4 +22,10 @@ describe('Task', () => {
         expect(task.resourceType).toBe('berries');
         expect(task.quantity).toBe(10);
     });
+
+    test('should store target enemy for butcher task', () => {
+        const mockEnemy = { id: 1, name: 'Goblin' };
+        const task = new Task('butcher', 3, 4, 'meat', 1, 2, null, null, null, null, null, null, mockEnemy);
+        expect(task.targetEnemy).toBe(mockEnemy);
+    });
 });

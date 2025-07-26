@@ -15,7 +15,7 @@ jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
 jest.mock('../src/js/building.js');
 jest.mock('../src/js/task.js', () => {
-    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe, targetLocation) => {
+    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
         return {
             type,
             targetX,
@@ -25,7 +25,11 @@ jest.mock('../src/js/task.js', () => {
             difficulty,
             building,
             recipe,
+            cropType,
             targetLocation, // Add targetLocation here
+            carrying,
+            targetSettler,
+            targetEnemy,
             craftingProgress: 0 // Add craftingProgress for crafting tasks
         };
     });
@@ -208,6 +212,22 @@ describe('Game', () => {
         expect(game.tradeManager.initiateTrade).toHaveBeenCalledTimes(2);
         expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'buy', resource: 'wood', quantity: 10, price: 5 }]);
         expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
+    });
+
+    test('handleClick marks dead enemy for butchering', () => {
+        game.map.tileSize = 32;
+        const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
+        const tileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+        const enemy = { x: tileX, y: tileY, isDead: true, isMarkedForButcher: false, isButchered: false };
+        game.enemies = [enemy];
+
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+
+        expect(enemy.isMarkedForButcher).toBe(true);
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        const addedTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(addedTask.type).toBe('butcher');
+        expect(addedTask.targetEnemy).toBe(enemy);
     });
 
     test('setSoundVolume updates SoundManager volume', () => {

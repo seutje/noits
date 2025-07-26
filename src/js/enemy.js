@@ -18,6 +18,7 @@ export default class Enemy {
         this.spriteManager = spriteManager;
         this.isDead = false; // New property to track if the enemy is dead
         this.isButchered = false; // True when the enemy has been butchered
+        this.isMarkedForButcher = false; // True when player has queued this enemy for butchering
     }
 
     update(deltaTime, settlers) {
@@ -128,7 +129,8 @@ export default class Enemy {
             state: this.state,
             id: this.id,
             isDead: this.isDead,
-            isButchered: this.isButchered
+            isButchered: this.isButchered,
+            isMarkedForButcher: this.isMarkedForButcher
         };
     }
 
@@ -144,5 +146,6 @@ export default class Enemy {
         this.id = data.id;
         this.isDead = data.isDead || false;
         this.isButchered = data.isButchered || false;
+        this.isMarkedForButcher = data.isMarkedForButcher || false;
     }
 }

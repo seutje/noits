@@ -299,7 +299,7 @@ describe('Settler', () => {
     });
 
     test('should butcher dead enemy', () => {
-        const mockEnemy = { id: 1, name: 'Goblin', isButchered: false };
+        const mockEnemy = { id: 1, name: 'Goblin', isButchered: false, isMarkedForButcher: true };
         const task = new Task('butcher', 0, 0, 'meat', 0.2, 2, null, null, null, null, null, null, mockEnemy);
         settler.currentTask = task;
         settler.x = 0;
@@ -310,6 +310,7 @@ describe('Settler', () => {
         }
 
         expect(mockEnemy.isButchered).toBe(true);
+        expect(mockEnemy.isMarkedForButcher).toBe(false);
         expect(settler.carrying.type).toBe('meat');
         expect(settler.currentTask).toBe(null);
     });

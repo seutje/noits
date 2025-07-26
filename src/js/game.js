@@ -242,7 +242,7 @@ export default class Game {
             const settler = this.settlers[0]; // Get the first settler
             const targetLocation = this.worldMap.getLocation('forest_outpost'); // Example target
             if (targetLocation) {
-                this.taskManager.addTask(new Task("explore", targetLocation.x, targetLocation.y, null, 0, 5, null, null, targetLocation));
+                this.taskManager.addTask(new Task("explore", targetLocation.x, targetLocation.y, null, 0, 5, null, null, null, targetLocation, null, null, null));
                 console.log(`${settler.name} is sent to explore ${targetLocation.name}.`);
             }
         }
@@ -468,8 +468,9 @@ export default class Game {
                 }
             } else {
                 const clickedEnemy = this.enemies.find(e => Math.floor(e.x) === tileX && Math.floor(e.y) === tileY);
-                if (clickedEnemy && clickedEnemy.isDead) {
+                if (clickedEnemy && clickedEnemy.isDead && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
                     this.taskManager.addTask(new Task("butcher", tileX, tileY, "meat", 1, 2, null, null, null, null, null, null, clickedEnemy));
+                    clickedEnemy.isMarkedForButcher = true;
                     console.log(`Butcher task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 2) { // If a tree is clicked
                     this.taskManager.addTask(new Task("chop_wood", tileX, tileY, "wood", 2.5, 2));

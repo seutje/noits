@@ -284,6 +284,7 @@ describe('Settler', () => {
     test('should eat from storage when seeking_food', () => {
         const storageRoom = { id: 1, type: 'storage', tiles: [{ x: 0, y: 0 }], storage: { berries: 1 } };
         mockRoomManager.rooms = [storageRoom];
+        mockRoomManager.getRoomAt = jest.fn().mockReturnValue(storageRoom);
         mockRoomManager.removeResourceFromStorage = jest.fn((room, type, qty) => {
             room.storage[type] -= qty;
             return true;

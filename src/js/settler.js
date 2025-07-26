@@ -127,22 +127,28 @@ export default class Settler {
             this.state = "idle";
         }
 
-        // If hungry, try to consume food from storage
+        // If hungry, create a task to go eat from storage
         if (this.state === "seeking_food" && !this.currentTask) {
             const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
+            let assigned = false;
             for (const room of storageRooms) {
                 const foodTypes = ["berries", "food", "meat"];
                 for (const food of foodTypes) {
                     if (room.storage[food] && room.storage[food] > 0) {
-                        if (this.roomManager.removeResourceFromStorage(room, food, 1)) {
-                            this.hunger += 30;
-                            if (this.hunger > 100) this.hunger = 100;
-                            this.state = "idle";
-                            console.log(`${this.name} ate ${food} from storage.`);
-                        }
-                        return;
+                        const targetTile = room.tiles[0];
+                        this.currentTask = {
+                            type: "eat",
+                            targetX: targetTile.x,
+                            targetY: targetTile.y,
+                            foodType: food,
+                            room
+                        };
+                        console.log(`${this.name} is moving to eat ${food} from storage.`);
+                        assigned = true;
+                        break;
                     }
                 }
+                if (assigned) break;
             }
         }
 
@@ -297,6 +303,17 @@ export default class Settler {
                     // Simulate tending animals - perhaps increases animal health/reproduction rate
                     console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                     this.currentTask = null; // Task completed immediately after action
+                } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
+                    const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                    if (room && room.type === "storage" && this.roomManager.removeResourceFromStorage(room, this.currentTask.foodType, 1)) {
+                        this.hunger += 30;
+                        if (this.hunger > 100) this.hunger = 100;
+                        this.state = "idle";
+                        console.log(`${this.name} ate ${this.currentTask.foodType} from storage.`);
+                    } else {
+                        console.log(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
+                    }
+                    this.currentTask = null;
                 } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
                     const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                     if (room && room.type === "storage") {

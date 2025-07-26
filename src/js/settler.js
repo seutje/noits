@@ -235,7 +235,7 @@ export default class Settler {
                     if (this.currentTask.quantity <= 0) {
                         this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
                         if (this.currentTask.type === "dig_dirt") {
-                            this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 0; // Change tile to grass
+                            this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change tile to dirt
                         } else {
                             this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
                         }

@@ -17,16 +17,16 @@ describe('SoundManager', () => {
         global.Audio = jest.fn(() => audioMock);
     });
 
-    test('default volume is half', () => {
+    test('default volume is zero', () => {
         const sm = new SoundManager();
-        expect(sm.volume).toBe(0.5);
+        expect(sm.volume).toBe(0);
     });
 
     test('loadSound stores audio', async () => {
         const sm = new SoundManager();
         await sm.loadSound('test', 'url');
         expect(sm.sounds.test).toBe(audioMock);
-        expect(audioMock.volume).toBe(0.5);
+        expect(audioMock.volume).toBe(0);
     });
 
     test('setVolume updates volume and play uses it', async () => {

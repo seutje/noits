@@ -240,7 +240,10 @@ describe('Settler', () => {
 
         settler.updateNeeds(1000); // Simulate enough time for task to complete
         expect(mockFarmPlot.harvest).toHaveBeenCalled();
-        expect(mockResourceManager.addResource).toHaveBeenCalledWith('wheat', 1);
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const addedPile = settler.map.addResourcePile.mock.calls[0][0];
+        expect(addedPile.type).toBe('wheat');
+        expect(addedPile.quantity).toBe(1);
         expect(settler.currentTask).toBe(null);
     });
 

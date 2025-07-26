@@ -412,4 +412,21 @@ describe('Settler', () => {
         expect(dropped.quantity).toBe(1);
         expect(settler.carrying).toEqual({ type: 'stone', quantity: 1 });
     });
+
+    test('should use bandage pile for treatment', () => {
+        const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        patient.bodyParts.head.bleeding = true;
+        mockMap.resourcePiles.push(new ResourcePile('bandage', 1, 0, 0, 1, { getSprite: jest.fn() }));
+        const task = new Task('treatment', 0, 0, null, 0, 5, null, null, null, null, null, patient);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000);
+
+        expect(patient.needsTreatment()).toBe(false);
+        expect(mockResourceManager.removeResource).not.toHaveBeenCalled();
+        expect(mockMap.resourcePiles.length).toBe(0);
+        expect(settler.currentTask).toBe(null);
+    });
 });

@@ -132,7 +132,7 @@ export default class Settler {
         // Basic AI: Change state based on needs
         if (this.targetEnemy && this.targetEnemy.health > 0) {
             this.state = "combat";
-        } else if (this.needsTreatment() && this.resourceManager.getResourceQuantity('bandage') > 0) {
+        } else if (this.needsTreatment() && this.map.resourcePiles.some(p => p.type === 'bandage' && p.quantity > 0)) {
             this.state = "seeking_treatment";
         } else if (this.hunger < 20) {
             this.state = "seeking_food";
@@ -474,7 +474,11 @@ export default class Settler {
                     this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "treatment" && this.currentTask.targetSettler) {
                     const targetSettler = this.currentTask.targetSettler;
-                    if (this.resourceManager.removeResource('bandage', 1)) {
+                    const bandagePile = this.map.resourcePiles.find(p => p.type === 'bandage' && p.quantity > 0);
+                    if (bandagePile && bandagePile.remove(1)) {
+                        if (bandagePile.quantity <= 0) {
+                            this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== bandagePile);
+                        }
                         targetSettler.stopBleeding();
                         console.log(`${this.name} treated ${targetSettler.name}.`);
                     } else {

@@ -92,6 +92,7 @@ export default class Map {
     render(ctx) {
         const treeSprite = this.spriteManager.getSprite('tree');
         const grassSprite = this.spriteManager.getSprite('grass');
+        const berryBushSprite = this.spriteManager.getSprite('berry_bush');
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
@@ -106,6 +107,8 @@ export default class Map {
 
                 if (tile === 2 && treeSprite) {
                     ctx.drawImage(treeSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else if (tile === 4 && berryBushSprite) {
+                    ctx.drawImage(berryBushSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile !== 0) {
                     ctx.fillStyle = this.tileColors[tile] || '#000000';
                     ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);

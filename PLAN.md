@@ -111,7 +111,7 @@ This phase introduces interactions with the outside world, a more detailed healt
 * [x] 4.6.2 Settlers can equip weapons and armor.  
 * [x] 4.6.3 Implement simple melee combat mechanics (damage calculation).  
 * [x] 4.6.4 Basic enemy AI for simple encounters (e.g., single raider).  
-* [ ] 4.6.5 Implement basic defensive structures (e.g., simple barricades).
+* [x] 4.6.5 Implement basic defensive structures (e.g., simple barricades).
 
 ## **Phase 5: Events, UI/UX, and Polish**
 

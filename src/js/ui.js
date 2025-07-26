@@ -190,6 +190,16 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(injureSettlerButton);
+
+        const barricadeButton = document.createElement('button');
+        barricadeButton.textContent = 'Build Barricade';
+        barricadeButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.toggleBuildMode('barricade');
+            }
+        };
+        this.buildMenu.appendChild(barricadeButton);
     }
 
     setGameInstance(gameInstance) {

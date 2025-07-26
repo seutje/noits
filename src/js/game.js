@@ -275,6 +275,8 @@ export default class Game {
                 newBuilding = new Furniture('bed', tileX, tileY, 1, 2, 'wood', 50);
             } else if (this.selectedBuilding === 'table') {
                 newBuilding = new Furniture('table', tileX, tileY, 2, 1, 'wood', 75);
+            } else if (this.selectedBuilding === 'barricade') {
+                newBuilding = new Building('barricade', tileX, tileY, 1, 1, "wood", 0); // Barricade is a simple building
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
             }

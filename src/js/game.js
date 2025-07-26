@@ -19,6 +19,7 @@ import TradeManager from './tradeManager.js';
 import Furniture from './furniture.js';
 import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
+import NotificationManager from './notificationManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -39,6 +40,7 @@ export default class Game {
         };
         this.tradeManager = new TradeManager(this.resourceManager, this.factions);
         this.eventManager = new EventManager(this);
+        this.notificationManager = new NotificationManager();
         this.settlers = [];
         this.enemies = [];
         this.keys = {};

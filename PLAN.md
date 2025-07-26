@@ -126,7 +126,7 @@ This final phase focuses on adding dynamic events, refining the user experience,
 
 * [x] 5.3.1 Implement a more intuitive and organized build menu.  
 * [x] 5.3.2 Add detailed tooltips for items, buildings, and settler stats.  
-* [ ] 5.3.3 Implement a notification system for important in-game events.  
+* [x] 5.3.3 Implement a notification system for important in-game events.  
 * [ ] 5.3.4 Implement basic information overlays (e.g., temperature, room stats).  
 * [ ] 5.3.5 Refine overall visual aesthetics (colors, fonts, basic animations).
 

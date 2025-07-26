@@ -146,9 +146,7 @@ export default class RoomManager {
                 return false;
             }
         }
-        if (this.taskManager) {
-            this.assignHaulingTasksForDroppedPiles();
-        }
+
         return true;
     }
 

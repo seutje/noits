@@ -12,9 +12,13 @@ export default class ResourcePile extends Resource {
 
     render(ctx) {
         const woodSprite = this.spriteManager.getSprite('wood');
+        const stonePileSprite = this.spriteManager.getSprite('stone_pile');
         if (this.type === 'wood' && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else {
+        } else if (this.type === 'stone' && stonePileSprite) {
+            ctx.drawImage(stonePileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        }
+        else {
             ctx.fillStyle = 'brown'; // Placeholder color for wood piles
             ctx.fillRect(this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }

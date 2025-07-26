@@ -74,6 +74,7 @@ export default class Game {
             await this.spriteManager.loadImage('wild_boar', 'src/assets/wild_boar.png');
             await this.spriteManager.loadImage('forage_food', 'src/assets/forage_food.png');
             await this.spriteManager.loadImage('wood', 'src/assets/wood.png');
+            await this.spriteManager.loadImage('stone_pile', 'src/assets/stone_pile.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
             await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');

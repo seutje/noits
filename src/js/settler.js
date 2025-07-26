@@ -381,9 +381,10 @@ export default class Settler {
                             this.map.addResourcePile(newPile);
                         }
                         building.resourcesDelivered += this.carrying.quantity;
+                        const deliveredType = this.currentTask.resourceType;
                         this.carrying = null;
                         this.currentTask = null;
-                        console.log(`${this.name} delivered ${this.currentTask.resourceType} to building site.`);
+                        console.log(`${this.name} delivered ${deliveredType} to building site.`);
                     }
                 } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
                     const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);

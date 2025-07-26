@@ -29,7 +29,7 @@ describe('Enemy', () => {
         enemy.dealDamage(target);
         Math.random = originalRandom;
 
-        expect(target.takeDamage).toHaveBeenCalledWith('head', 8, true);
+        expect(target.takeDamage).toHaveBeenCalledWith('head', 8, true, enemy);
     });
 
     test('update attacks target when in range', () => {

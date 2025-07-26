@@ -25,7 +25,7 @@ describe('EventManager', () => {
     test('update triggers random event when interval reached', () => {
         const manager = new EventManager(game, EnemyStub);
         jest.spyOn(manager, 'triggerRandomEvent').mockImplementation(() => {});
-        manager.update(61000); // exceed eventInterval of 60s
+        manager.update(1201000); // exceed eventInterval of 1200s
         expect(manager.triggerRandomEvent).toHaveBeenCalled();
     });
 
@@ -45,7 +45,7 @@ describe('EventManager', () => {
     test('Resource Discovery adds resource and notification', () => {
         const manager = new EventManager(game, EnemyStub);
         jest.spyOn(Math, 'random')
-            .mockReturnValueOnce(0.5) // pick second event
+            .mockReturnValueOnce(0.3) // pick Resource Discovery event
             .mockReturnValueOnce(0)    // pick resource index 0 -> wood
             .mockReturnValueOnce(0);    // quantity -> 20
         manager.triggerRandomEvent();

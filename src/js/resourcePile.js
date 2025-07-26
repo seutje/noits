@@ -25,6 +25,7 @@ export default class ResourcePile extends Resource {
         const bandageSprite = this.spriteManager.getSprite('bandage');
         const dirtPileSprite = this.spriteManager.getSprite('dirt_pile');
         const wheatPileSprite = this.spriteManager.getSprite('wheat_pile');
+        const ironOrePileSprite = this.spriteManager.getSprite('iron_ore_pile');
         if (this.type === 'wood' && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === 'stone' && stonePileSprite) {
@@ -41,6 +42,8 @@ export default class ResourcePile extends Resource {
             ctx.drawImage(dirtPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === 'wheat' && wheatPileSprite) {
             ctx.drawImage(wheatPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else if (this.type === 'iron_ore' && ironOrePileSprite) {
+            ctx.drawImage(ironOrePileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
         else {
             ctx.fillStyle = 'brown'; // Placeholder color for wood piles

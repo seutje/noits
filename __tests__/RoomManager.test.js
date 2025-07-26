@@ -37,4 +37,16 @@ describe('RoomManager storage rules', () => {
         expect(taskManager.tasks[0].targetX).toBe(2); // initial target is pile
         expect(taskManager.tasks[0].targetY).toBe(2);
     });
+
+    test('piles already in storage do not create haul tasks', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const taskManager = new TaskManager();
+        const roomManager = new RoomManager(map, { getSprite: jest.fn() }, 32, taskManager);
+
+        map.addResourcePile(new ResourcePile('wood', 5, 1, 1, 32, { getSprite: jest.fn() }));
+
+        roomManager.designateRoom(1, 1, 1, 1, 'storage');
+
+        expect(taskManager.tasks.length).toBe(0);
+    });
 });

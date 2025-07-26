@@ -29,6 +29,9 @@ export default class Game {
         this.spriteManager = new SpriteManager();
         this.map = new Map(50, 30, 32, this.spriteManager);
         this.camera = new Camera(ctx);
+        // Move camera half a screen width to the right and half a screen height down
+        this.camera.x += ctx.canvas.width / 2;
+        this.camera.y += ctx.canvas.height / 2;
         this.ui = new UI(ctx);
         this.ui.setGameInstance(this);
         this.resourceManager = new ResourceManager();

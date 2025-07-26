@@ -233,7 +233,7 @@ export default class Game {
             gameTime: this.gameTime,
             gameSpeed: this.gameSpeed,
             temperature: this.temperature,
-            // Add other game state properties you want to save
+            enemies: this.enemies.map(enemy => enemy.serialize()),
         };
         localStorage.setItem('noitsGameState', JSON.stringify(gameState));
         console.log("Game saved!");
@@ -260,6 +260,13 @@ export default class Game {
             this.gameTime = gameState.gameTime;
             this.gameSpeed = gameState.gameSpeed;
             this.temperature = gameState.temperature;
+
+            // Restore enemies
+            this.enemies = gameState.enemies.map(eData => {
+                const enemy = new Enemy(eData.name, eData.x, eData.y, null); // Target settler will be re-assigned in update
+                enemy.deserialize(eData);
+                return enemy;
+            });
 
             console.log("Game loaded!");
         } else {

@@ -80,4 +80,31 @@ export default class Enemy {
         ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);
         ctx.fillText(`Health: ${this.health.toFixed(1)}`, this.x * 32, this.y * 32 + 40);
     }
+
+    serialize() {
+        return {
+            name: this.name,
+            x: this.x,
+            y: this.y,
+            health: this.health,
+            damage: this.damage,
+            attackSpeed: this.attackSpeed,
+            attackCooldown: this.attackCooldown,
+            // targetSettler is a reference, so we save its name/ID if needed for re-linking
+            // For now, we'll assume targetSettler is re-established on load based on proximity
+            state: this.state
+        };
+    }
+
+    deserialize(data) {
+        this.name = data.name;
+        this.x = data.x;
+        this.y = data.y;
+        this.health = data.health;
+        this.damage = data.damage;
+        this.attackSpeed = data.attackSpeed;
+        this.attackCooldown = data.attackCooldown;
+        this.state = data.state;
+        // targetSettler will be re-assigned in Game.loadGame based on game state
+    }
 }

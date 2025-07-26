@@ -60,7 +60,7 @@ export default class Game {
 
     async start() {
         try {
-            await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
+            
             await this.spriteManager.loadImage('settler', 'src/assets/settler.png');
             await this.spriteManager.loadImage('tree', 'src/assets/tree.png');
             await this.spriteManager.loadImage('grass', 'src/assets/grass.png');
@@ -155,10 +155,7 @@ export default class Game {
         this.map.render(this.ctx);
         this.roomManager.render(this.ctx, this.map.tileSize);
 
-        const placeholderSprite = this.spriteManager.getSprite('placeholder');
-        if (placeholderSprite) {
-            this.ctx.drawImage(placeholderSprite, 0, 0, 32, 32);
-        }
+        
 
         // Render settlers
         this.settlers.forEach(settler => {

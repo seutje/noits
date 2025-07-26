@@ -461,27 +461,23 @@ export default class Game {
                     console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
                 }
             } else if (clickedTile === 2) { // If a tree is clicked
-                this.taskManager.addTask(new Task("chop_wood", tileX, tileY, "wood", 50, 2));
+                this.taskManager.addTask(new Task("chop_wood", tileX, tileY, "wood", 2.5, 2));
                 console.log(`Chop wood task added at ${tileX},${tileY}`);
             } else if (clickedTile === 3) { // If a stone is clicked
-                this.taskManager.addTask(new Task("mine_stone", tileX, tileY, "stone", 50, 2));
+                this.taskManager.addTask(new Task("mine_stone", tileX, tileY, "stone", 2.5, 2));
                 console.log(`Mine stone task added at ${tileX},${tileY}`);
             } else if (clickedTile === 4) { // If berries are clicked
-                this.taskManager.addTask(new Task("gather_berries", tileX, tileY, "berries", 20, 2));
+                this.taskManager.addTask(new Task("gather_berries", tileX, tileY, "berries", 1, 2));
                 console.log(`Gather berries task added at ${tileX},${tileY}`);
             } else if (clickedTile === 5) { // If iron_ore is clicked
-                this.taskManager.addTask(new Task("mine_iron_ore", tileX, tileY, "iron_ore", 50, 2));
+                this.taskManager.addTask(new Task("mine_iron_ore", tileX, tileY, "iron_ore", 10, 2));
                 console.log(`Mine iron ore task added at ${tileX},${tileY}`);
             } else if (clickedTile === 6) { // If wild food is clicked
-                this.taskManager.addTask(new Task("forage_food", tileX, tileY, "food", 20, 2));
+                this.taskManager.addTask(new Task("forage_food", tileX, tileY, "food", 1, 2));
                 console.log(`Forage food task added at ${tileX},${tileY}`);
             } else if (clickedTile === 7) { // If animal is clicked
-                this.taskManager.addTask(new Task("hunt_animal", tileX, tileY, "meat", 50, 2));
+                this.taskManager.addTask(new Task("hunt_animal", tileX, tileY, "meat", 2.5, 2));
                 console.log(`Hunt animal task added at ${tileX},${tileY}`);
-            } else {
-                // Place a wood pile at the clicked tile
-                this.map.addResourcePile(new ResourcePile("wood", 10, tileX, tileY, this.map.tileSize, this.spriteManager));
-                this.soundManager.play('action');
             }
         }
     }

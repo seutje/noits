@@ -338,4 +338,31 @@ export default class Settler {
             this.bodyParts[part].bleeding = false;
         }
     }
+
+    dealDamage(targetSettler) {
+        if (!this.equippedWeapon) {
+            console.log(`${this.name} has no weapon to attack with.`);
+            return;
+        }
+
+        // Base damage from weapon
+        let damage = this.equippedWeapon.damage;
+
+        // Add combat skill bonus
+        damage += this.skills.combat * 0.5; // Each skill point adds 0.5 damage
+
+        // Choose a random body part to hit
+        const bodyParts = Object.keys(targetSettler.bodyParts);
+        const randomBodyPart = bodyParts[Math.floor(Math.random() * bodyParts.length)];
+
+        // Apply armor defense
+        if (targetSettler.equippedArmor[randomBodyPart]) {
+            damage -= targetSettler.equippedArmor[randomBodyPart].defense;
+            if (damage < 0) damage = 0; // Damage cannot be negative
+        }
+
+        // Apply damage to the target settler
+        targetSettler.takeDamage(randomBodyPart, damage, true); // Assume bleeding for now
+        console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
+    }
 }

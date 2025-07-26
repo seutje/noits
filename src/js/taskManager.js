@@ -6,8 +6,18 @@ export default class TaskManager {
     }
 
     addTask(task) {
-        this.tasks.push(task);
-        this.tasks.sort((a, b) => b.priority - a.priority); // Sort by priority (highest first)
+        // Insert task by priority without resorting the entire array
+        let low = 0;
+        let high = this.tasks.length;
+        while (low < high) {
+            const mid = Math.floor((low + high) / 2);
+            if (this.tasks[mid].priority < task.priority) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        this.tasks.splice(low, 0, task);
     }
 
     getTask() {

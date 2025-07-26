@@ -1,4 +1,9 @@
 import ResourcePile from './resourcePile.js';
+import Building from './building.js';
+import CraftingStation from './craftingStation.js';
+import FarmPlot from './farmPlot.js';
+import AnimalPen from './animalPen.js';
+import Furniture from './furniture.js';
 
 export default class Map {
     constructor(width, height, tileSize) {
@@ -8,6 +13,16 @@ export default class Map {
         this.tiles = this.createEmptyMap();
         this.resourcePiles = [];
         this.buildings = [];
+        this.tileColors = {
+            0: '#2c9f45', // grass
+            1: '#8b4513', // dirt
+            2: '#006400', // tree
+            3: '#808080', // stone
+            4: '#FF0000', // berries
+            5: '#A9A9A9', // iron ore
+            6: '#8B4513', // wild food
+            7: '#800000'  // animal
+        };
     }
 
     createEmptyMap() {
@@ -77,23 +92,7 @@ export default class Map {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const tile = this.tiles[y][x];
-                if (tile === 0) {
-                    ctx.fillStyle = '#2c9f45'; // Green for grass
-                } else if (tile === 1) {
-                    ctx.fillStyle = '#8b4513'; // Brown for dirt
-                } else if (tile === 2) {
-                    ctx.fillStyle = '#006400'; // Dark green for tree
-                } else if (tile === 3) {
-                    ctx.fillStyle = '#808080'; // Grey for stone
-                } else if (tile === 4) {
-                    ctx.fillStyle = '#FF0000'; // Red for berries
-                } else if (tile === 5) {
-                    ctx.fillStyle = '#A9A9A9'; // Darker grey for iron_ore
-                } else if (tile === 6) {
-                    ctx.fillStyle = '#8B4513'; // Brown for wild food (bush)
-                } else if (tile === 7) {
-                    ctx.fillStyle = '#800000'; // Maroon for animal
-                }
+                ctx.fillStyle = this.tileColors[tile] || '#000000';
                 ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
             }
         }

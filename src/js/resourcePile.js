@@ -2,12 +2,18 @@
 import Resource from './resource.js';
 
 export default class ResourcePile extends Resource {
+    static MAX_QUANTITY = 999;
+
     constructor(type, quantity, x, y, tileSize, spriteManager, quality = 1) {
-        super(type, quantity, quality);
+        super(type, Math.min(quantity, ResourcePile.MAX_QUANTITY), quality);
         this.x = x;
         this.y = y;
         this.tileSize = tileSize;
         this.spriteManager = spriteManager;
+    }
+
+    add(amount) {
+        this.quantity = Math.min(this.quantity + amount, ResourcePile.MAX_QUANTITY);
     }
 
     render(ctx) {
@@ -48,7 +54,7 @@ export default class ResourcePile extends Resource {
 
     deserialize(data) {
         this.type = data.type;
-        this.quantity = data.quantity;
+        this.quantity = Math.min(data.quantity, ResourcePile.MAX_QUANTITY);
         this.quality = data.quality;
         this.x = data.x;
         this.y = data.y;

@@ -23,6 +23,7 @@ export default class ResourcePile extends Resource {
         const meatSprite = this.spriteManager.getSprite('meat');
         const mushroomsSprite = this.spriteManager.getSprite('mushrooms');
         const bandageSprite = this.spriteManager.getSprite('bandage');
+        const dirtPileSprite = this.spriteManager.getSprite('dirt_pile');
         if (this.type === 'wood' && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === 'stone' && stonePileSprite) {
@@ -35,6 +36,8 @@ export default class ResourcePile extends Resource {
             ctx.drawImage(mushroomsSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === 'bandage' && bandageSprite) {
             ctx.drawImage(bandageSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else if (this.type === 'dirt' && dirtPileSprite) {
+            ctx.drawImage(dirtPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
         else {
             ctx.fillStyle = 'brown'; // Placeholder color for wood piles

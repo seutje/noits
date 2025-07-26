@@ -209,4 +209,9 @@ describe('Game', () => {
         expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'buy', resource: 'wood', quantity: 10, price: 5 }]);
         expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     });
+
+    test('setSoundVolume updates SoundManager volume', () => {
+        game.setSoundVolume(0.2);
+        expect(game.soundManager.volume).toBe(0.2);
+    });
 });

@@ -19,4 +19,11 @@ describe('NotificationManager', () => {
         expect(container.children.length).toBe(1);
         expect(nm.notifications.length).toBe(1);
     });
+
+    test('plays sound when soundManager provided', () => {
+        const sm = { play: jest.fn() };
+        const nm = new NotificationManager(sm);
+        nm.addNotification('Hi');
+        expect(sm.play).toHaveBeenCalledWith('action');
+    });
 });

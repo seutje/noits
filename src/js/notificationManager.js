@@ -1,6 +1,7 @@
 
 export default class NotificationManager {
-    constructor() {
+    constructor(soundManager = null) {
+        this.soundManager = soundManager;
         this.notifications = [];
         this.notificationContainer = document.createElement('div');
         this.notificationContainer.id = 'notification-container';
@@ -26,6 +27,10 @@ export default class NotificationManager {
         notificationElement.style.opacity = '0';
         notificationElement.style.transition = 'opacity 0.5s ease-in-out';
         notificationElement.textContent = message;
+
+        if (this.soundManager) {
+            this.soundManager.play('action');
+        }
 
         this.notificationContainer.prepend(notificationElement); // Add to top
 

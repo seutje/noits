@@ -165,21 +165,25 @@ export default class Settler {
                         console.log(`${this.name} stopped crafting ${recipe.name} due to lack of resources.`);
                         this.currentTask = null; // Clear the task
                     }
-                } else if (this.currentTask.type === "mine_stone" || this.currentTask.type === "mine_iron_ore") {
-                    const resourceType = this.currentTask.type.replace("mine_", "");
+                } else if (this.currentTask.type === "mine_stone" || this.currentTask.type === "mine_iron_ore" || this.currentTask.type === "dig_dirt") {
+                    const resourceType = this.currentTask.type.replace("mine_", "").replace("dig_", "");
                     const miningRate = 0.1; // e.g., 0.1 units of resource per second
                     const amountToMine = miningRate * (deltaTime / 1000);
 
                     // Simulate mining progress
-                    this.currentTask.quantity -= amountToMine; // Decrease task quantity (workload)
+                    this.currentTask.quantity -= amountToMine; // Decrease task workload
 
                     if (this.currentTask.quantity <= 0) {
                         this.carrying = { type: resourceType, quantity: 1 }; // Settler carries the resource
-                        this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
-                        console.log(`${this.name} completed mining ${resourceType} and is now carrying ${this.carrying.type}.`);
+                        if (this.currentTask.type === "dig_dirt") {
+                            this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change tile to dirt
+                        } else {
+                            this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
+                        }
+                        console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null; // Task completed
                     }
-                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "forage_food" || this.currentTask.type === "hunt_animal" || this.currentTask.type === "sow_crop" || this.currentTask.type === "harvest_crop" || this.currentTask.type === "tend_animals") {
+                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "forage_food" || this.currentTask.type === "hunt_animal") {
                     const resourceType = this.currentTask.resourceType;
                     const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
                     const amountToGather = gatheringRate * (deltaTime / 1000);
@@ -196,43 +200,40 @@ export default class Settler {
                     const farmPlot = this.currentTask.building;
                     if (farmPlot.plant(this.currentTask.cropType)) {
                         console.log(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
-                        this.currentTask = null;
                     } else {
                         console.log(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
-                        this.currentTask = null;
                     }
+                    this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "harvest_crop" && this.currentTask.building) {
                     const farmPlot = this.currentTask.building;
                     const harvestedCrop = farmPlot.harvest();
                     if (harvestedCrop) {
                         this.resourceManager.addResource(harvestedCrop, 1); // Add 1 unit of harvested crop
                         console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y}.`);
-                        this.currentTask = null;
                     } else {
                         console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
-                        this.currentTask = null;
                     }
+                    this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "tend_animals" && this.currentTask.building) {
                     const animalPen = this.currentTask.building;
                     // Simulate tending animals - perhaps increases animal health/reproduction rate
                     console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
-                    this.currentTask = null;
+                    this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
                     const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                     if (room && room.type === "storage") {
                         this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
                         this.carrying = null; // Clear carried resource
                         console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
-                        this.currentTask = null;
                     } else {
                         console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
-                        this.currentTask = null;
                     }
+                    this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "explore" && this.currentTask.targetLocation) {
                     // Settler has arrived at the exploration target
                     this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
                     console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
-                    this.currentTask = null;
+                    this.currentTask = null; // Task completed immediately after action
                 }
             }
         }

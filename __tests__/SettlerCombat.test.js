@@ -78,4 +78,18 @@ describe('Settler Health and Combat', () => {
         expect(settler.targetEnemy).toBe(enemy);
         expect(settler.state).toBe('combat');
     });
+
+    test('idle allies target attacker when settler is hit', () => {
+        const settlers = [];
+        const alice = new Settler('Alice', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, settlers);
+        const bob = new Settler('Bob', 1, 1, mockResourceManager, mockMap, mockRoomManager, undefined, settlers);
+        settlers.push(alice, bob);
+
+        const enemy = new Enemy('Goblin', 1, 1, null, { getSprite: jest.fn() });
+
+        alice.takeDamage('torso', 5, false, enemy);
+
+        expect(bob.targetEnemy).toBe(enemy);
+        expect(bob.state).toBe('combat');
+    });
 });

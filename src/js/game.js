@@ -100,8 +100,8 @@ export default class Game {
         this.map.addResourcePile(new ResourcePile('stone', 50, 3, 2, this.map.tileSize, this.spriteManager));
 
         // Create a new settler
-        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
-        this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
+        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers));
+        this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -331,10 +331,11 @@ export default class Game {
             const gameState = JSON.parse(savedState);
 
             // Restore settlers
-            this.settlers = gameState.settlers.map(sData => {
-                const settler = new Settler(sData.name, sData.x, sData.y, this.resourceManager, this.map, this.roomManager);
+            this.settlers = [];
+            gameState.settlers.forEach(sData => {
+                const settler = new Settler(sData.name, sData.x, sData.y, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers);
                 settler.deserialize(sData);
-                return settler;
+                this.settlers.push(settler);
             });
 
             // After all settlers and enemies are deserialized, re-link their targets

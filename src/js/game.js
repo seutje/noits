@@ -17,6 +17,7 @@ import WorldMap from './worldMap.js';
 import Faction from './faction.js';
 import TradeManager from './tradeManager.js';
 import Furniture from './furniture.js';
+import Enemy from './enemy.js';
 
 export default class Game {
     constructor(ctx) {
@@ -37,6 +38,7 @@ export default class Game {
         };
         this.tradeManager = new TradeManager(this.resourceManager, this.factions);
         this.settlers = [];
+        this.enemies = [];
         this.keys = {};
         this.gameTime = 0;
         this.gameSpeed = 1; // Default game speed
@@ -61,6 +63,9 @@ export default class Game {
         // Create a new settler
         this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager));
         this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager));
+
+        // Spawn a basic enemy for testing
+        this.enemies.push(new Enemy("Goblin", 10, 10, this.settlers[0]));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -108,6 +113,11 @@ export default class Game {
             
         });
 
+        // Update enemies
+        this.enemies.forEach(enemy => {
+            enemy.update(deltaTime * this.gameSpeed, this.settlers);
+        });
+
         let resourceString = "";
         for (const type in this.resourceManager.getAllResources()) {
             const resource = this.resourceManager.getAllResources()[type];
@@ -130,6 +140,11 @@ export default class Game {
         // Render settlers
         this.settlers.forEach(settler => {
             settler.render(this.ctx);
+        });
+
+        // Render enemies
+        this.enemies.forEach(enemy => {
+            enemy.render(this.ctx);
         });
 
         this.camera.resetTransform();

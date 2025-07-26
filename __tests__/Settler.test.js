@@ -8,6 +8,7 @@ describe('Settler', () => {
     let settler;
     let mockResourceManager;
     let mockMap;
+    let mockRoomManager;
 
     beforeEach(() => {
         mockResourceManager = {
@@ -19,6 +20,11 @@ describe('Settler', () => {
         };
         mockMap = {
             removeResourceNode: jest.fn(),
+        };
+        mockRoomManager = {
+            rooms: [],
+            getRoomAt: jest.fn(),
+            addResourceToStorage: jest.fn(),
         };
         settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager);
     });
@@ -206,7 +212,7 @@ describe('Settler', () => {
         const mockFarmPlot = {
             plant: jest.fn().mockReturnValue(true)
         };
-        const task = new Task('sow_crop', 1, 1, null, 0, 3, mockFarmPlot, 'wheat');
+        const task = new Task('sow_crop', 1, 1, null, 0, 3, mockFarmPlot, null, 'wheat');
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -245,7 +251,7 @@ describe('Settler', () => {
     test('should handle explore task', () => {
         const mockLocation = { id: 'forest_outpost', name: 'Forest Outpost' };
         settler.map.worldMap = { discoverLocation: jest.fn() }; // Mock worldMap
-        const task = new Task('explore', 1, 1, null, 0, 5, null, null, mockLocation);
+        const task = new Task('explore', 1, 1, null, 0, 5, null, null, null, mockLocation);
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -262,7 +268,7 @@ describe('Settler', () => {
         };
         settler.roomManager = mockRoomManager; // Assign mock roomManager
         settler.carrying = { type: 'wood', quantity: 1 };
-        const task = new Task('haul', 1, 1, null, 0, 3, null, null, null, settler.carrying);
+        const task = { type: 'haul', targetX: 1, targetY: 1, resource: settler.carrying };
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;

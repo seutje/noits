@@ -30,6 +30,37 @@ export default class Settler {
             combat: 1,
             medical: 1
         };
+        this.equippedWeapon = null; // Stores a Weapon object
+        this.equippedArmor = {}; // Stores Armor objects by body part (e.g., { head: ArmorObject, torso: ArmorObject })
+    }
+
+    equipWeapon(weapon) {
+        this.equippedWeapon = weapon;
+        console.log(`${this.name} equipped ${weapon.name}.`);
+    }
+
+    unequipWeapon() {
+        if (this.equippedWeapon) {
+            console.log(`${this.name} unequipped ${this.equippedWeapon.name}.`);
+            this.equippedWeapon = null;
+        }
+    }
+
+    equipArmor(armor) {
+        if (armor.bodyPart) {
+            this.equippedArmor[armor.bodyPart] = armor;
+            console.log(`${this.name} equipped ${armor.name} on ${armor.bodyPart}.`);
+        } else {
+            console.warn(`Armor ${armor.name} has no specified body part.`);
+        }
+    }
+
+    unequipArmor(bodyPart) {
+        if (this.equippedArmor[bodyPart]) {
+            console.log(`${this.name} unequipped ${this.equippedArmor[bodyPart].name} from ${bodyPart}.`);
+            delete this.equippedArmor[bodyPart];
+        }
+    }
     }
 
     updateNeeds(deltaTime) {

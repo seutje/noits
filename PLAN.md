@@ -107,7 +107,7 @@ This phase introduces interactions with the outside world, a more detailed healt
 
 ### **4.6 Basic Combat**
 
-* [ ] 4.6.1 Implement Weapon and Armor item types.  
+* [x] 4.6.1 Implement Weapon and Armor item types.  
 * [ ] 4.6.2 Settlers can equip weapons and armor.  
 * [ ] 4.6.3 Implement simple melee combat mechanics (damage calculation).  
 * [ ] 4.6.4 Basic enemy AI for simple encounters (e.g., single raider).  

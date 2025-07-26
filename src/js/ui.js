@@ -23,20 +23,10 @@ export default class UI {
         this.resourcesElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.resourcesElement);
 
-        this.settlerHungerElement = document.createElement('span');
-        this.settlerHungerElement.id = 'settler-hunger-display';
-        this.settlerHungerElement.style.marginLeft = '20px';
-        this.uiContainer.appendChild(this.settlerHungerElement);
-
-        this.settlerSleepElement = document.createElement('span');
-        this.settlerSleepElement.id = 'settler-sleep-display';
-        this.settlerSleepElement.style.marginLeft = '20px';
-        this.uiContainer.appendChild(this.settlerSleepElement);
-
-        this.settlerMoodElement = document.createElement('span');
-        this.settlerMoodElement.id = 'settler-mood-display';
-        this.settlerMoodElement.style.marginLeft = '20px';
-        this.uiContainer.appendChild(this.settlerMoodElement);
+        this.settlersElement = document.createElement('div');
+        this.settlersElement.id = 'settlers-display';
+        this.settlersElement.style.marginLeft = '20px';
+        this.uiContainer.appendChild(this.settlersElement);
 
         // Speed slider
         this.speedLabel = document.createElement('span');
@@ -206,11 +196,14 @@ export default class UI {
         this.gameInstance = gameInstance;
     }
 
-    update(gameTime, resourceString, settlerHunger, settlerSleep, settlerMood) {
+    update(gameTime, resourceString, settlers) {
         this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
         this.resourcesElement.textContent = `Resources: ${resourceString}`;
-        this.settlerHungerElement.textContent = `Settler Hunger: ${settlerHunger.toFixed(1)}`;
-        this.settlerSleepElement.textContent = `Settler Sleep: ${settlerSleep.toFixed(1)}`;
-        this.settlerMoodElement.textContent = `Settler Mood: ${settlerMood.toFixed(1)}`;
+        this.settlersElement.innerHTML = '';
+        settlers.forEach(settler => {
+            const settlerDiv = document.createElement('div');
+            settlerDiv.innerHTML = `<strong>${settler.name}</strong> - Health: ${settler.health.toFixed(1)} | Hunger: ${settler.hunger.toFixed(1)} | Sleep: ${settler.sleep.toFixed(1)} | Mood: ${settler.mood.toFixed(1)} | Status: ${settler.getStatus()}`;
+            this.settlersElement.appendChild(settlerDiv);
+        });
     }
 }

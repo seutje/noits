@@ -60,6 +60,7 @@ export default class Game {
 
         // Create a new settler
         this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager));
+        this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager));
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -109,7 +110,7 @@ export default class Game {
             const resource = this.resourceManager.getAllResources()[type];
             resourceString += `${type}: ${Math.floor(resource.quantity)} (Q:${resource.quality.toFixed(2)}), `;
         }
-        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers[0].hunger, this.settlers[0].sleep, this.settlers[0].mood); // Remove trailing comma and space
+        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers); // Remove trailing comma and space
     }
 
     render() {

@@ -69,12 +69,12 @@ export default class UI {
         this.volumeSlider.min = '0';
         this.volumeSlider.max = '1';
         this.volumeSlider.step = '0.1';
-        this.volumeSlider.value = '0.5';
+        this.volumeSlider.value = '0';
         this.volumeSlider.id = 'volume-slider';
         this.uiContainer.appendChild(this.volumeSlider);
 
         this.volumeValueDisplay = document.createElement('span');
-        this.volumeValueDisplay.textContent = '50%';
+        this.volumeValueDisplay.textContent = '0%';
         this.uiContainer.appendChild(this.volumeValueDisplay);
 
         this.volumeSlider.addEventListener('input', (event) => {

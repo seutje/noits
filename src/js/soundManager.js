@@ -3,7 +3,7 @@ export const ACTION_BEEP_URL = "data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAA
 export default class SoundManager {
     constructor() {
         this.sounds = {};
-        this.volume = 0.5; // Default to half volume
+        this.volume = 0; // Default to 0 volume
     }
 
     loadSound(name, url) {

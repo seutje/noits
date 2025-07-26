@@ -29,6 +29,7 @@ describe('Settler', () => {
             rooms: [],
             getRoomAt: jest.fn(),
             addResourceToStorage: jest.fn(),
+            findStorageRoomAndTile: jest.fn()
         };
         settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager);
     });
@@ -269,7 +270,8 @@ describe('Settler', () => {
     test('should handle haul task', () => {
         const mockRoomManager = {
             getRoomAt: jest.fn().mockReturnValue({ type: 'storage' }),
-            addResourceToStorage: jest.fn()
+            addResourceToStorage: jest.fn().mockReturnValue(true),
+            findStorageRoomAndTile: jest.fn().mockReturnValue({ room: { type: 'storage', tiles: [{ x: 1, y: 1 }] }, tile: { x: 1, y: 1 } })
         };
         settler.roomManager = mockRoomManager; // Assign mock roomManager
         settler.carrying = { type: 'wood', quantity: 1 };

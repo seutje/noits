@@ -60,6 +60,39 @@ export default class RoomManager {
         return null;
     }
 
+    /**
+     * Find a storage room and tile that can accept a given resource type.
+     * Returns an object with the room and tile coordinates or null if none found.
+     * @param {string} resourceType
+     */
+    findStorageRoomAndTile(resourceType) {
+        for (const room of this.rooms) {
+            if (room.type !== "storage") continue;
+
+            let emptyTile = null;
+            for (const tile of room.tiles) {
+                const pileAtTile = this.map.resourcePiles.find(p => p.x === tile.x && p.y === tile.y);
+
+                if (pileAtTile) {
+                    if (pileAtTile.type === resourceType && pileAtTile.quantity < ResourcePile.MAX_QUANTITY) {
+                        return { room, tile };
+                    }
+                    continue;
+                }
+
+                if (!emptyTile) {
+                    emptyTile = tile;
+                }
+            }
+
+            if (emptyTile) {
+                return { room, tile: emptyTile };
+            }
+        }
+
+        return null;
+    }
+
     addResourceToStorage(room, resourceType, quantity) {
         if (room.type !== "storage") {
             console.warn(`Room ${room.id} is not a storage room.`);

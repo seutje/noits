@@ -63,6 +63,7 @@ export default class Game {
             await this.spriteManager.loadImage('placeholder', 'src/assets/placeholder.png');
             await this.spriteManager.loadImage('settler', 'src/assets/settler.png');
             await this.spriteManager.loadImage('tree', 'src/assets/tree.png');
+            await this.spriteManager.loadImage('grass', 'src/assets/grass.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);

@@ -91,12 +91,22 @@ export default class Map {
 
     render(ctx) {
         const treeSprite = this.spriteManager.getSprite('tree');
+        const grassSprite = this.spriteManager.getSprite('grass');
+
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 const tile = this.tiles[y][x];
+
+                if (grassSprite) {
+                    ctx.drawImage(grassSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else {
+                    ctx.fillStyle = this.tileColors[0];
+                    ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                }
+
                 if (tile === 2 && treeSprite) {
                     ctx.drawImage(treeSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
-                } else {
+                } else if (tile !== 0) {
                     ctx.fillStyle = this.tileColors[tile] || '#000000';
                     ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 }

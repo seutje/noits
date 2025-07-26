@@ -305,17 +305,23 @@ export default class Settler {
                         this.currentTask = null;
                     }
                 } else if (this.currentTask.type === "butcher" && this.currentTask.targetEnemy) {
-                    const butcheringRate = 0.1;
-                    const amountToButcher = butcheringRate * (deltaTime / 1000);
-                    this.currentTask.quantity -= amountToButcher;
-
-                    if (this.currentTask.quantity <= 0) {
-                        const lootType = this.currentTask.targetEnemy.lootType || 'meat';
-                        this.carrying = { type: lootType, quantity: 1 };
-                        this.currentTask.targetEnemy.isButchered = true;
+                    if (this.currentTask.targetEnemy.decay > 50) {
                         this.currentTask.targetEnemy.isMarkedForButcher = false;
-                        console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
+                        console.log(`${this.currentTask.targetEnemy.name} is too decayed to butcher.`);
                         this.currentTask = null;
+                    } else {
+                        const butcheringRate = 0.1;
+                        const amountToButcher = butcheringRate * (deltaTime / 1000);
+                        this.currentTask.quantity -= amountToButcher;
+
+                        if (this.currentTask.quantity <= 0) {
+                            const lootType = this.currentTask.targetEnemy.lootType || 'meat';
+                            this.carrying = { type: lootType, quantity: 1 };
+                            this.currentTask.targetEnemy.isButchered = true;
+                            this.currentTask.targetEnemy.isMarkedForButcher = false;
+                            console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
+                            this.currentTask = null;
+                        }
                     }
                 } else if (this.currentTask.type === "sow_crop" && this.currentTask.building) {
                     const farmPlot = this.currentTask.building;

@@ -320,6 +320,23 @@ describe('Settler', () => {
         expect(settler.currentTask).toBe(null);
     });
 
+    test('should not butcher enemy decayed over 50%', () => {
+        const mockEnemy = { id: 2, name: 'Goblin', decay: 60, isButchered: false, isMarkedForButcher: true };
+        const task = new Task('butcher', 0, 0, 'meat', 0.2, 2, null, null, null, null, null, null, mockEnemy);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        for (let i = 0; i < 10; i++) {
+            settler.updateNeeds(1000);
+        }
+
+        expect(mockEnemy.isButchered).toBe(false);
+        expect(mockEnemy.isMarkedForButcher).toBe(false);
+        expect(settler.carrying).toBe(null);
+        expect(settler.currentTask).toBe(null);
+    });
+
     test('should drop carried resource if no storage room found', () => {
         settler.roomManager.rooms = [];
         settler.carrying = { type: 'wood', quantity: 2 };

@@ -17,13 +17,19 @@ export default class Enemy {
         this.state = "attacking"; // For now, always attacking
         this.spriteManager = spriteManager;
         this.lootType = lootType; // Resource type yielded when butchered
-        this.isDead = false; // New property to track if the enemy is dead
+        this.isDead = false; // True when the enemy has been killed
         this.isButchered = false; // True when the enemy has been butchered
         this.isMarkedForButcher = false; // True when player has queued this enemy for butchering
+        this.decay = 0; // 0-100 percentage of decay
+        this.decayRate = 0.01; // percent per second
     }
 
     update(deltaTime, settlers) {
-        if (this.isDead) return; // Do nothing if dead
+        if (this.isDead) {
+            this.decay += this.decayRate * (deltaTime / 1000);
+            if (this.decay > 100) this.decay = 100;
+            return; // No actions when dead
+        }
         this.attackCooldown -= deltaTime / 1000;
 
         if (this.targetSettler) {
@@ -132,7 +138,8 @@ export default class Enemy {
             isDead: this.isDead,
             isButchered: this.isButchered,
             isMarkedForButcher: this.isMarkedForButcher,
-            lootType: this.lootType
+            lootType: this.lootType,
+            decay: this.decay
         };
     }
 
@@ -150,5 +157,6 @@ export default class Enemy {
         this.isButchered = data.isButchered || false;
         this.isMarkedForButcher = data.isMarkedForButcher || false;
         this.lootType = data.lootType || 'meat';
+        this.decay = data.decay || 0;
     }
 }

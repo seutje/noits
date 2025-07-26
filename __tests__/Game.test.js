@@ -221,7 +221,7 @@ describe('Game', () => {
         game.map.tileSize = 32;
         const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const tileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
-        const enemy = { x: tileX, y: tileY, isDead: true, isMarkedForButcher: false, isButchered: false };
+        const enemy = { x: tileX, y: tileY, isDead: true, decay: 0, isMarkedForButcher: false, isButchered: false };
         game.enemies = [enemy];
 
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
@@ -231,6 +231,19 @@ describe('Game', () => {
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
         expect(addedTask.type).toBe('butcher');
         expect(addedTask.targetEnemy).toBe(enemy);
+    });
+
+    test('handleClick does not mark heavily decayed enemy for butchering', () => {
+        game.map.tileSize = 32;
+        const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
+        const tileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+        const enemy = { x: tileX, y: tileY, isDead: true, decay: 60, isMarkedForButcher: false, isButchered: false };
+        game.enemies = [enemy];
+
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+
+        expect(enemy.isMarkedForButcher).toBe(false);
+        expect(game.taskManager.addTask).not.toHaveBeenCalled();
     });
 
     test('setSoundVolume updates SoundManager volume', () => {

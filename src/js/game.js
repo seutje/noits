@@ -39,7 +39,7 @@ export default class Game {
             traders: new Faction('Traders', 50)
         };
         this.tradeManager = new TradeManager(this.resourceManager, this.factions);
-        this.eventManager = new EventManager(this);
+        this.eventManager = new EventManager(this, Enemy);
         this.notificationManager = new NotificationManager();
         this.settlers = [];
         this.enemies = [];

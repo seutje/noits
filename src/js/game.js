@@ -141,6 +141,13 @@ export default class Game {
         // Update event manager
         this.eventManager.update(deltaTime * this.gameSpeed);
 
+        // Update buildings (e.g., farm plots)
+        this.map.getAllBuildings().forEach(building => {
+            if (typeof building.update === 'function') {
+                building.update(deltaTime * this.gameSpeed);
+            }
+        });
+
         let resourceString = "";
         for (const type in this.resourceManager.getAllResources()) {
             const resource = this.resourceManager.getAllResources()[type];

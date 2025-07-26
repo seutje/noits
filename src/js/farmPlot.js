@@ -21,7 +21,7 @@ export default class FarmPlot extends Building {
     }
 
     update(deltaTime) {
-        if (this.growthStage > 1 && this.growthStage < 3) {
+        if (this.growthStage >= 1 && this.growthStage < 3) {
             this.growthStage += this.growthRate * (deltaTime / 1000);
             if (this.growthStage >= 3) {
                 this.growthStage = 3; // Mature
@@ -46,7 +46,7 @@ export default class FarmPlot extends Building {
 
         // Render crop based on growth stage
         if (this.crop) {
-            if (this.crop === 'wheat' && this.growthStage === 3) {
+            if (this.crop === 'wheat' && this.growthStage >= 3) {
                 // Render the wheat sprite when mature
                 const sprite = this.spriteManager.getSprite('wheat');
                 if (sprite) {

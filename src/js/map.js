@@ -90,6 +90,10 @@ export default class Map {
         this.buildings = this.buildings.filter(building => building !== buildingToRemove);
     }
 
+    getAllBuildings() {
+        return this.buildings;
+    }
+
     render(ctx) {
         const treeSprite = this.spriteManager.getSprite('tree');
         const grassSprite = this.spriteManager.getSprite('grass');

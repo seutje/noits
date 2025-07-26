@@ -64,94 +64,16 @@ export default class UI {
         this.buildMenu.style.borderRadius = '5px';
         document.body.appendChild(this.buildMenu);
 
-        const wallButton = document.createElement('button');
-        wallButton.textContent = 'Build Wall';
-        wallButton.onclick = () => {
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('wall');
-            }
-        };
-        this.buildMenu.appendChild(wallButton);
+        this.buildMenuTabs = document.createElement('div');
+        this.buildMenuTabs.id = 'build-menu-tabs';
+        this.buildMenu.appendChild(this.buildMenuTabs);
 
-        const floorButton = document.createElement('button');
-        floorButton.textContent = 'Build Floor';
-        floorButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('floor');
-            }
-        };
-        this.buildMenu.appendChild(floorButton);
+        this.buildMenuContent = document.createElement('div');
+        this.buildMenuContent.id = 'build-menu-content';
+        this.buildMenu.appendChild(this.buildMenuContent);
 
-        const craftingStationButton = document.createElement('button');
-        craftingStationButton.textContent = 'Build Crafting Station';
-        craftingStationButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('crafting_station');
-            }
-        };
-        this.buildMenu.appendChild(craftingStationButton);
-
-        const farmPlotButton = document.createElement('button');
-        farmPlotButton.textContent = 'Build Farm Plot';
-        farmPlotButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('farm_plot');
-            }
-        };
-        this.buildMenu.appendChild(farmPlotButton);
-
-        const animalPenButton = document.createElement('button');
-        animalPenButton.textContent = 'Build Animal Pen';
-        animalPenButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('animal_pen');
-            }
-        };
-        this.buildMenu.appendChild(animalPenButton);
-
-        const designateBedroomButton = document.createElement('button');
-        designateBedroomButton.textContent = 'Designate Bedroom';
-        designateBedroomButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.startRoomDesignation('bedroom');
-            }
-        };
-        this.buildMenu.appendChild(designateBedroomButton);
-
-        const designateStorageButton = document.createElement('button');
-        designateStorageButton.textContent = 'Designate Storage';
-        designateStorageButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.startRoomDesignation('storage');
-            }
-        };
-        this.buildMenu.appendChild(designateStorageButton);
-
-        const bedButton = document.createElement('button');
-        bedButton.textContent = 'Place Bed';
-        bedButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('bed');
-            }
-        };
-        this.buildMenu.appendChild(bedButton);
-
-        const tableButton = document.createElement('button');
-        tableButton.textContent = 'Place Table';
-        tableButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('table');
-            }
-        };
-        this.buildMenu.appendChild(tableButton);
+        this.createBuildMenuTabs();
+        this.showBuildCategory('buildings'); // Default category
 
         const exploreButton = document.createElement('button');
         exploreButton.textContent = 'Explore';
@@ -190,16 +112,77 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(injureSettlerButton);
+    }
 
-        const barricadeButton = document.createElement('button');
-        barricadeButton.textContent = 'Build Barricade';
-        barricadeButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.toggleBuildMode('barricade');
-            }
+    createBuildMenuTabs() {
+        const categories = [
+            { id: 'buildings', name: 'Buildings' },
+            { id: 'furniture', name: 'Furniture' },
+            { id: 'zones', name: 'Zones' }
+        ];
+
+        categories.forEach(category => {
+            const tabButton = document.createElement('button');
+            tabButton.textContent = category.name;
+            tabButton.onclick = () => this.showBuildCategory(category.id);
+            this.buildMenuTabs.appendChild(tabButton);
+        });
+    }
+
+    showBuildCategory(categoryId) {
+        this.buildMenuContent.innerHTML = ''; // Clear previous content
+
+        const createButton = (text, buildModeType, isRoomDesignation = false) => {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.onclick = (event) => {
+                event.stopPropagation();
+                if (this.gameInstance) {
+                    if (isRoomDesignation) {
+                        this.gameInstance.startRoomDesignation(buildModeType);
+                    } else {
+                        this.gameInstance.toggleBuildMode(buildModeType);
+                    }
+                }
+            };
+            this.buildMenuContent.appendChild(button);
         };
-        this.buildMenu.appendChild(barricadeButton);
+
+        switch (categoryId) {
+            case 'buildings':
+                createButton('Build Wall', 'wall');
+                createButton('Build Floor', 'floor');
+                createButton('Build Crafting Station', 'crafting_station');
+                createButton('Build Farm Plot', 'farm_plot');
+                createButton('Build Animal Pen', 'animal_pen');
+                createButton('Build Barricade', 'barricade');
+                break;
+            case 'furniture':
+                createButton('Place Bed', 'bed');
+                createButton('Place Table', 'table');
+                break;
+            case 'zones':
+                createButton('Designate Bedroom', 'bedroom', true);
+                createButton('Designate Storage', 'storage', true);
+                break;
+        }
+    }
+
+    setGameInstance(gameInstance) {
+        this.gameInstance = gameInstance;
+    }
+
+    update(gameTime, resourceString, settlers) {
+        this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
+        this.resourcesElement.textContent = `Resources: ${resourceString}`;
+        this.settlersElement.innerHTML = '';
+        settlers.forEach(settler => {
+            const settlerDiv = document.createElement('div');
+            settlerDiv.innerHTML = `<strong>${settler.name}</strong> - Health: ${settler.health.toFixed(1)} | Hunger: ${settler.hunger.toFixed(1)} | Sleep: ${settler.sleep.toFixed(1)} | Mood: ${settler.mood.toFixed(1)} | Status: ${settler.getStatus()}`;
+            this.settlersElement.appendChild(settlerDiv);
+        });
+    }
+}
     }
 
     setGameInstance(gameInstance) {

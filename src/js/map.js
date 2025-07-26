@@ -109,6 +109,8 @@ export default class Map {
                     ctx.drawImage(treeSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile === 4 && berryBushSprite) {
                     ctx.drawImage(berryBushSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else if (tile === 3 && stoneSprite) {
+                    ctx.drawImage(stoneSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile !== 0) {
                     ctx.fillStyle = this.tileColors[tile] || '#000000';
                     ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);

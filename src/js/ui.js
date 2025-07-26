@@ -182,8 +182,6 @@ export default class UI {
             this.settlersElement.appendChild(settlerDiv);
         });
     }
-}
-    }
 
     setGameInstance(gameInstance) {
         this.gameInstance = gameInstance;

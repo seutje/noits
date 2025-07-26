@@ -8,6 +8,7 @@ export default class FarmPlot extends Building {
         this.growthStage = 0; // 0: empty, 1: planted, 2: growing, 3: mature
         this.growthRate = 0.01; // How fast it grows per game tick
         this.spriteManager = spriteManager;
+        this.farmPlotSprite = spriteManager.getSprite('farm_plot');
     }
 
     plant(cropType) {
@@ -42,7 +43,12 @@ export default class FarmPlot extends Building {
     }
 
     render(ctx, tileSize) {
-        super.render(ctx, tileSize); // Render the base building (dirt tile)
+        super.render(ctx, tileSize); // Render the base building (dirt tile or construction progress)
+
+        if (this.buildProgress === 100 && this.farmPlotSprite) {
+            console.log("build progress", this.buildProgress);
+            ctx.drawImage(this.farmPlotSprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+        }
 
         // Render crop based on growth stage
         if (this.crop) {
@@ -63,23 +69,6 @@ export default class FarmPlot extends Building {
                         ctx.drawImage(sprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
                     }
                 }
-            } else {
-                let color;
-                switch (Math.floor(this.growthStage)) {
-                    case 1: // Planted
-                        color = 'brown'; // Small sprout
-                        break;
-                    case 2: // Growing
-                        color = 'lightgreen'; // Growing plant
-                        break;
-                    case 3: // Mature (but not wheat, or wheat not yet mature)
-                        color = 'gold'; // Ready to harvest
-                        break;
-                    default:
-                        color = 'transparent';
-                }
-                ctx.fillStyle = color;
-                ctx.fillRect(this.x * tileSize + tileSize / 4, this.y * tileSize + tileSize / 4, tileSize / 2, tileSize / 2);
             }
         }
     }

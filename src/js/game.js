@@ -428,7 +428,7 @@ export default class Game {
                 } else if (clickedBuilding.type === 'farm_plot') {
                     const farmPlot = clickedBuilding;
                     if (farmPlot.growthStage === 0) {
-                        this.taskManager.addTask(new Task("sow_crop", tileX, tileY, null, 0, 3, farmPlot, 'wheat')); // Hardcode wheat for now
+                        this.taskManager.addTask(new Task("sow_crop", tileX, tileY, null, 0, 3, farmPlot, null, 'wheat')); // Hardcode wheat for now
                         console.log(`Sow crop task added for wheat at ${tileX},${tileY}`);
                     } else if (farmPlot.growthStage === 3) {
                         this.taskManager.addTask(new Task("harvest_crop", tileX, tileY, null, 0, 3, farmPlot));

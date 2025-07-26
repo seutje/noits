@@ -68,6 +68,7 @@ export default class Game {
             await this.spriteManager.loadImage('goblin', 'src/assets/goblin.png');
             await this.spriteManager.loadImage('stone', 'src/assets/stone.png');
             await this.spriteManager.loadImage('iron_ore', 'src/assets/iron_ore.png');
+            await this.spriteManager.loadImage('deer', 'src/assets/deer.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
         } catch (error) {
             console.error("Failed to load sprite:", error);

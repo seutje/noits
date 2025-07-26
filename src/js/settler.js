@@ -1,5 +1,4 @@
 
-'''
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager) {
         this.resourceManager = resourceManager;
@@ -309,4 +308,3 @@ export default class Settler {
         }
     }
 }
-''

@@ -182,6 +182,24 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(merchantButton);
+
+        const addBandageButton = document.createElement('button');
+        addBandageButton.textContent = 'Add Bandage';
+        addBandageButton.onclick = () => {
+            if (this.gameInstance) {
+                this.gameInstance.resourceManager.addResource('bandage', 1);
+            }
+        };
+        this.buildMenu.appendChild(addBandageButton);
+
+        const injureSettlerButton = document.createElement('button');
+        injureSettlerButton.textContent = 'Injure Settler';
+        injureSettlerButton.onclick = () => {
+            if (this.gameInstance && this.gameInstance.settlers.length > 0) {
+                this.gameInstance.settlers[0].takeDamage('torso', 20, true);
+            }
+        };
+        this.buildMenu.appendChild(injureSettlerButton);
     }
 
     setGameInstance(gameInstance) {

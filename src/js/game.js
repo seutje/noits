@@ -505,7 +505,7 @@ export default class Game {
                     this.taskManager.addTask(new Task("mine_iron_ore", tileX, tileY, "iron_ore", 10, 2));
                     console.log(`Mine iron ore task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 6) { // If wild food is clicked
-                    this.taskManager.addTask(new Task("mushroom", tileX, tileY, "food", 1, 2));
+                    this.taskManager.addTask(new Task("mushroom", tileX, tileY, "mushrooms", 1, 2));
                     console.log(`Forage food task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 7) { // If animal is clicked
                     this.taskManager.addTask(new Task("hunt_animal", tileX, tileY, "meat", 2.5, 2));

@@ -93,6 +93,7 @@ export default class Map {
         const treeSprite = this.spriteManager.getSprite('tree');
         const grassSprite = this.spriteManager.getSprite('grass');
         const berryBushSprite = this.spriteManager.getSprite('berry_bush');
+        const stoneSprite = this.spriteManager.getSprite('stone');
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {

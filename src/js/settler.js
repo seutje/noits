@@ -474,17 +474,61 @@ export default class Settler {
                     this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "treatment" && this.currentTask.targetSettler) {
                     const targetSettler = this.currentTask.targetSettler;
-                    const bandagePile = this.map.resourcePiles.find(p => p.type === 'bandage' && p.quantity > 0);
-                    if (bandagePile && bandagePile.remove(1)) {
-                        if (bandagePile.quantity <= 0) {
-                            this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== bandagePile);
+
+                    if (!this.currentTask.stage) {
+                        this.currentTask.stage = 'pickup';
+                        const pile = this.map.resourcePiles.find(p => p.type === 'bandage' && p.quantity > 0);
+                        if (pile) {
+                            this.currentTask.sourceX = pile.x;
+                            this.currentTask.sourceY = pile.y;
+                            this.currentTask.targetX = pile.x;
+                            this.currentTask.targetY = pile.y;
+                        } else {
+                            console.log(`${this.name} could not find bandages for treatment.`);
+                            this.currentTask = null;
+                            return;
                         }
-                        targetSettler.stopBleeding();
-                        console.log(`${this.name} treated ${targetSettler.name}.`);
-                    } else {
-                        console.log(`${this.name} could not treat ${targetSettler.name} due to lack of bandages.`);
                     }
-                    this.currentTask = null;
+
+                    if (this.currentTask.stage === 'pickup') {
+                        if (this.x === this.currentTask.targetX && this.y === this.currentTask.targetY) {
+                            const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === 'bandage');
+                            if (pile && pile.remove(1)) {
+                                if (pile.quantity <= 0) {
+                                    this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                                }
+                                this.pickUpPile('bandage', 1);
+                                if (this.x === targetSettler.x && this.y === targetSettler.y) {
+                                    if (this.carrying && this.carrying.type === 'bandage') {
+                                        this.carrying.quantity -= 1;
+                                        if (this.carrying.quantity <= 0) this.carrying = null;
+                                        targetSettler.stopBleeding();
+                                        console.log(`${this.name} treated ${targetSettler.name}.`);
+                                        this.currentTask = null;
+                                        return;
+                                    }
+                                }
+                                this.currentTask.stage = 'treat';
+                                this.currentTask.targetX = targetSettler.x;
+                                this.currentTask.targetY = targetSettler.y;
+                            } else {
+                                console.log(`${this.name} failed to pick up bandage.`);
+                                this.currentTask = null;
+                            }
+                        }
+                    } else if (this.currentTask.stage === 'treat') {
+                        if (this.x === targetSettler.x && this.y === targetSettler.y) {
+                            if (this.carrying && this.carrying.type === 'bandage') {
+                                this.carrying.quantity -= 1;
+                                if (this.carrying.quantity <= 0) this.carrying = null;
+                                targetSettler.stopBleeding();
+                                console.log(`${this.name} treated ${targetSettler.name}.`);
+                            } else {
+                                console.log(`${this.name} lost the bandage before treating ${targetSettler.name}.`);
+                            }
+                            this.currentTask = null;
+                        }
+                    }
                 }
             }
         } else if (this.state === "combat" && this.targetEnemy) {

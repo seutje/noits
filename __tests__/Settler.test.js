@@ -427,6 +427,37 @@ describe('Settler', () => {
         expect(patient.needsTreatment()).toBe(false);
         expect(mockResourceManager.removeResource).not.toHaveBeenCalled();
         expect(mockMap.resourcePiles.length).toBe(0);
+        expect(settler.carrying).toBe(null);
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should haul bandage to patient before treatment', () => {
+        const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        patient.bodyParts.head.bleeding = true;
+        mockMap.resourcePiles.push(new ResourcePile('bandage', 1, 1, 0, 1, { getSprite: jest.fn() }));
+        const task = new Task('treatment', 0, 0, null, 0, 5, null, null, null, null, null, patient);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        // First update - move towards bandage pile
+        settler.updateNeeds(1000);
+        expect(settler.currentTask.stage).toBe('pickup');
+        expect(settler.currentTask.targetX).toBe(1);
+
+        // Arrive at pile and pick up bandage
+        settler.x = 1;
+        settler.updateNeeds(1000);
+        expect(settler.carrying).toEqual({ type: 'bandage', quantity: 1 });
+        expect(settler.currentTask.stage).toBe('treat');
+        expect(settler.currentTask.targetX).toBe(0);
+
+        // Return to patient and treat
+        settler.x = 0;
+        settler.updateNeeds(1000);
+        expect(patient.needsTreatment()).toBe(false);
+        expect(settler.carrying).toBe(null);
+        expect(mockMap.resourcePiles.length).toBe(0);
         expect(settler.currentTask).toBe(null);
     });
 });

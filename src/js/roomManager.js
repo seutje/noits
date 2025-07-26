@@ -1,5 +1,10 @@
+import ResourcePile from './resourcePile.js';
+
 export default class RoomManager {
-    constructor(map) {
+    constructor(map, spriteManager, tileSize) {
+        this.map = map;
+        this.spriteManager = spriteManager;
+        this.tileSize = tileSize;
         this.map = map;
         this.rooms = []; // Stores room objects
         this.roomGrid = Array(map.height).fill(0).map(() => Array(map.width).fill(null)); // 2D array to store room references for each tile
@@ -62,6 +67,19 @@ export default class RoomManager {
             }
             room.storage[resourceType] += quantity;
             console.log(`Added ${quantity} ${resourceType} to storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+            
+            // Find a suitable tile in the storage room to place the resource pile
+            if (room.tiles.length > 0) {
+                const { x, y } = room.tiles[0]; // Use the first tile of the room for now
+                const existingPile = this.map.resourcePiles.find(pile => pile.x === x && pile.y === y && pile.type === resourceType);
+
+                if (existingPile) {
+                    existingPile.add(quantity);
+                } else {
+                    const newPile = new ResourcePile(resourceType, quantity, x, y, this.tileSize, this.spriteManager);
+                    this.map.addResourcePile(newPile);
+                }
+            }
             return true;
         }
         console.warn(`Room ${room.id} is not a storage room.`);

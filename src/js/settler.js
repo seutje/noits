@@ -558,6 +558,10 @@ export default class Settler {
             console.log(`${this.name} took ${amount} damage to ${bodyPart}. Health: ${this.bodyParts[bodyPart].health}. Bleeding: ${this.bodyParts[bodyPart].bleeding}`);
             if (attacker && this.targetEnemy === null) {
                 this.setTargetEnemy(attacker);
+                if (this.currentTask) {
+                    this.currentTask = null;
+                }
+                this.state = "combat";
             }
             if (this.health <= 0) {
                 this.isDead = true;

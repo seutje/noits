@@ -47,6 +47,7 @@ export default class Game {
         this.soundManager = new SoundManager();
         this.notificationManager = new NotificationManager(this.soundManager);
         this.settlers = [];
+        this.roomManager.setSettlers(this.settlers);
         this.enemies = [];
         this.keys = {};
         this.isPaused = false; // Track pause state
@@ -133,7 +134,7 @@ export default class Game {
         // Periodically assign hauling tasks for dropped resource piles
         this.haulingCheckTimer += (deltaTime / 1000) * this.gameSpeed;
         if (this.haulingCheckTimer >= this.haulingCheckInterval) {
-            this.roomManager.assignHaulingTasksForDroppedPiles();
+            this.roomManager.assignHaulingTasksForDroppedPiles(this.settlers);
             this.haulingCheckTimer = 0;
         }
         

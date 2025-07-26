@@ -58,7 +58,7 @@ export default class UI {
         this.buildMenu.id = 'build-menu';
         this.buildMenu.style.position = 'absolute';
         this.buildMenu.style.bottom = '10px';
-        this.buildMenu.style.right = '10px';
+        this.buildMenu.style.left = '10px';
         this.buildMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         this.buildMenu.style.padding = '10px';
         this.buildMenu.style.borderRadius = '5px';
@@ -112,6 +112,34 @@ export default class UI {
             }
         };
         this.buildMenu.appendChild(injureSettlerButton);
+
+        this.tooltip = document.createElement('div');
+        this.tooltip.id = 'tooltip';
+        this.tooltip.style.position = 'absolute';
+        this.tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        this.tooltip.style.color = 'white';
+        this.tooltip.style.padding = '5px';
+        this.tooltip.style.borderRadius = '3px';
+        this.tooltip.style.pointerEvents = 'none'; // Allow clicks to pass through
+        this.tooltip.style.display = 'none';
+        document.body.appendChild(this.tooltip);
+
+        // Global mouse move listener for tooltip positioning
+        document.addEventListener('mousemove', (event) => {
+            if (this.tooltip.style.display === 'block') {
+                this.tooltip.style.left = `${event.clientX + 10}px`;
+                this.tooltip.style.top = `${event.clientY + 10}px`;
+            }
+        });
+    }
+
+    showTooltip(text) {
+        this.tooltip.innerHTML = text;
+        this.tooltip.style.display = 'block';
+    }
+
+    hideTooltip() {
+        this.tooltip.style.display = 'none';
     }
 
     createBuildMenuTabs() {
@@ -132,9 +160,11 @@ export default class UI {
     showBuildCategory(categoryId) {
         this.buildMenuContent.innerHTML = ''; // Clear previous content
 
-        const createButton = (text, buildModeType, isRoomDesignation = false) => {
+        const createButton = (text, buildModeType, isRoomDesignation = false, tooltipText = '') => {
             const button = document.createElement('button');
             button.textContent = text;
+            button.onmouseover = () => this.showTooltip(tooltipText);
+            button.onmouseout = () => this.hideTooltip();
             button.onclick = (event) => {
                 event.stopPropagation();
                 if (this.gameInstance) {
@@ -150,20 +180,20 @@ export default class UI {
 
         switch (categoryId) {
             case 'buildings':
-                createButton('Build Wall', 'wall');
-                createButton('Build Floor', 'floor');
-                createButton('Build Crafting Station', 'crafting_station');
-                createButton('Build Farm Plot', 'farm_plot');
-                createButton('Build Animal Pen', 'animal_pen');
-                createButton('Build Barricade', 'barricade');
+                createButton('Build Wall', 'wall', false, 'Builds a defensive wall.');
+                createButton('Build Floor', 'floor', false, 'Lays down a floor tile.');
+                createButton('Build Crafting Station', 'crafting_station', false, 'Allows settlers to craft items.');
+                createButton('Build Farm Plot', 'farm_plot', false, 'Used for growing crops.');
+                createButton('Build Animal Pen', 'animal_pen', false, 'Houses livestock.');
+                createButton('Build Barricade', 'barricade', false, 'A simple defensive barrier.');
                 break;
             case 'furniture':
-                createButton('Place Bed', 'bed');
-                createButton('Place Table', 'table');
+                createButton('Place Bed', 'bed', false, 'Provides a place for settlers to sleep.');
+                createButton('Place Table', 'table', false, 'A surface for various activities.');
                 break;
             case 'zones':
-                createButton('Designate Bedroom', 'bedroom', true);
-                createButton('Designate Storage', 'storage', true);
+                createButton('Designate Bedroom', 'bedroom', true, 'Designates an area as a bedroom.');
+                createButton('Designate Storage', 'storage', true, 'Designates an area for resource storage.');
                 break;
         }
     }
@@ -178,22 +208,13 @@ export default class UI {
         this.settlersElement.innerHTML = '';
         settlers.forEach(settler => {
             const settlerDiv = document.createElement('div');
-            settlerDiv.innerHTML = `<strong>${settler.name}</strong> - Health: ${settler.health.toFixed(1)} | Hunger: ${settler.hunger.toFixed(1)} | Sleep: ${settler.sleep.toFixed(1)} | Mood: ${settler.mood.toFixed(1)} | Status: ${settler.getStatus()}`;
-            this.settlersElement.appendChild(settlerDiv);
-        });
-    }
-
-    setGameInstance(gameInstance) {
-        this.gameInstance = gameInstance;
-    }
-
-    update(gameTime, resourceString, settlers) {
-        this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
-        this.resourcesElement.textContent = `Resources: ${resourceString}`;
-        this.settlersElement.innerHTML = '';
-        settlers.forEach(settler => {
-            const settlerDiv = document.createElement('div');
-            settlerDiv.innerHTML = `<strong>${settler.name}</strong> - Health: ${settler.health.toFixed(1)} | Hunger: ${settler.hunger.toFixed(1)} | Sleep: ${settler.sleep.toFixed(1)} | Mood: ${settler.mood.toFixed(1)} | Status: ${settler.getStatus()}`;
+            settlerDiv.innerHTML = `<strong>${settler.name}</strong> - 
+                Health: <span onmouseover="this.ui.showTooltip('Current Health: ${settler.health.toFixed(1)} / 100')" onmouseout="this.ui.hideTooltip()">${settler.health.toFixed(1)}</span> | 
+                Hunger: <span onmouseover="this.ui.showTooltip('Hunger: ${settler.hunger.toFixed(1)}%')" onmouseout="this.ui.hideTooltip()">${settler.hunger.toFixed(1)}</span> | 
+                Sleep: <span onmouseover="this.ui.showTooltip('Sleep: ${settler.sleep.toFixed(1)}%')" onmouseout="this.ui.hideTooltip()">${settler.sleep.toFixed(1)}</span> | 
+                Mood: <span onmouseover="this.ui.showTooltip('Mood: ${settler.mood.toFixed(1)}%')" onmouseout="this.ui.hideTooltip()">${settler.mood.toFixed(1)}</span> | 
+                Status: <span onmouseover="this.ui.showTooltip('Current Status: ${settler.getStatus()}')" onmouseout="this.ui.hideTooltip()">${settler.getStatus()}</span>`;
+            settlerDiv.ui = this; // Pass UI instance to the element for event handlers
             this.settlersElement.appendChild(settlerDiv);
         });
     }

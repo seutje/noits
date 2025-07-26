@@ -209,12 +209,17 @@ export default class UI {
         settlers.forEach(settler => {
             const settlerDiv = document.createElement('div');
             settlerDiv.innerHTML = `<strong>${settler.name}</strong> - 
-                Health: <span onmouseover="this.ui.showTooltip('Current Health: ${settler.health.toFixed(1)} / 100')" onmouseout="this.ui.hideTooltip()">${settler.health.toFixed(1)}</span> | 
-                Hunger: <span onmouseover="this.ui.showTooltip('Hunger: ${settler.hunger.toFixed(1)}%')" onmouseout="this.ui.hideTooltip()">${settler.hunger.toFixed(1)}</span> | 
-                Sleep: <span onmouseover="this.ui.showTooltip('Sleep: ${settler.sleep.toFixed(1)}%')" onmouseout="this.ui.hideTooltip()">${settler.sleep.toFixed(1)}</span> | 
-                Mood: <span onmouseover="this.ui.showTooltip('Mood: ${settler.mood.toFixed(1)}%')" onmouseout="this.ui.hideTooltip()">${settler.mood.toFixed(1)}</span> | 
-                Status: <span onmouseover="this.ui.showTooltip('Current Status: ${settler.getStatus()}')" onmouseout="this.ui.hideTooltip()">${settler.getStatus()}</span>`;
-            settlerDiv.ui = this; // Pass UI instance to the element for event handlers
+                Health: <span class="tooltip-trigger" data-tooltip-text="Current Health: ${settler.health.toFixed(1)} / 100">${settler.health.toFixed(1)}</span> | 
+                Hunger: <span class="tooltip-trigger" data-tooltip-text="Hunger: ${settler.hunger.toFixed(1)}%">${settler.hunger.toFixed(1)}</span> | 
+                Sleep: <span class="tooltip-trigger" data-tooltip-text="Sleep: ${settler.sleep.toFixed(1)}%">${settler.sleep.toFixed(1)}</span> | 
+                Mood: <span class="tooltip-trigger" data-tooltip-text="Mood: ${settler.mood.toFixed(1)}%">${settler.mood.toFixed(1)}</span> | 
+                Status: <span class="tooltip-trigger" data-tooltip-text="Current Status: ${settler.getStatus()}">${settler.getStatus()}</span>`;
+            
+            // Attach event listeners to tooltip triggers
+            settlerDiv.querySelectorAll('.tooltip-trigger').forEach(span => {
+                span.addEventListener('mouseover', (event) => this.showTooltip(event.target.dataset.tooltipText));
+                span.addEventListener('mouseout', () => this.hideTooltip());
+            });
             this.settlersElement.appendChild(settlerDiv);
         });
     }

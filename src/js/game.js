@@ -51,6 +51,8 @@ export default class Game {
         this.keys = {};
         this.gameTime = 0;
         this.gameSpeed = 1; // Default game speed
+        this.haulingCheckTimer = 0; // Timer for hauling task assignment
+        this.haulingCheckInterval = 100; // seconds between hauling checks
         this.temperature = 20; // Initial temperature in Celsius
         this.buildMode = false; // New property for build mode
         this.selectedBuilding = null; // New property to hold the selected building type
@@ -123,6 +125,12 @@ export default class Game {
         }
 
         this.gameTime += (deltaTime / 1000) * this.gameSpeed; // Update game time in seconds
+        // Periodically assign hauling tasks for dropped resource piles
+        this.haulingCheckTimer += (deltaTime / 1000) * this.gameSpeed;
+        if (this.haulingCheckTimer >= this.haulingCheckInterval) {
+            this.roomManager.assignHaulingTasksForDroppedPiles();
+            this.haulingCheckTimer = 0;
+        }
         
         // Update settler needs
         // Update settler needs

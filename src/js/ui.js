@@ -57,7 +57,7 @@ export default class UI {
         this.buildMenu = document.createElement('div');
         this.buildMenu.id = 'build-menu';
         this.buildMenu.style.position = 'absolute';
-        this.buildMenu.style.top = '60px';
+        this.buildMenu.style.bottom = '10px';
         this.buildMenu.style.right = '10px';
         this.buildMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
         this.buildMenu.style.padding = '10px';

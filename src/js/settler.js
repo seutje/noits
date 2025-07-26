@@ -61,7 +61,6 @@ export default class Settler {
             delete this.equippedArmor[bodyPart];
         }
     }
-    }
 
     updateNeeds(deltaTime) {
         // Decrease hunger over time

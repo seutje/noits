@@ -1,6 +1,7 @@
 import Settler from '../src/js/settler.js';
 import Weapon from '../src/js/weapon.js';
 import Armor from '../src/js/armor.js';
+import Enemy from '../src/js/enemy.js';
 
 describe('Settler Health and Combat', () => {
     let settler;
@@ -64,5 +65,17 @@ describe('Settler Health and Combat', () => {
 
         expect(defender.bodyParts.head.health).toBe(90); // 10 +1 -1 = 10 damage
         expect(defender.bodyParts.head.bleeding).toBe(true);
+    });
+
+    test('settler stops task and targets attacker when hit', () => {
+        const enemy = new Enemy('Goblin', 1, 1, null, { getSprite: jest.fn() });
+        settler.currentTask = { type: 'move', targetX: 5, targetY: 5 };
+        settler.state = 'idle';
+
+        settler.takeDamage('leftArm', 5, false, enemy);
+
+        expect(settler.currentTask).toBe(null);
+        expect(settler.targetEnemy).toBe(enemy);
+        expect(settler.state).toBe('combat');
     });
 });

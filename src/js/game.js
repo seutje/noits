@@ -75,6 +75,7 @@ export default class Game {
             await this.spriteManager.loadImage('forage_food', 'src/assets/forage_food.png');
             await this.spriteManager.loadImage('wood', 'src/assets/wood.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
+            await this.spriteManager.loadImage('wheat', 'src/assets/wheat.png');
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }
@@ -392,7 +393,7 @@ export default class Game {
             if (this.selectedBuilding === 'crafting_station') {
                 newBuilding = new CraftingStation(tileX, tileY);
             } else if (this.selectedBuilding === 'farm_plot') {
-                newBuilding = new FarmPlot(tileX, tileY);
+                newBuilding = new FarmPlot(tileX, tileY, this.spriteManager);
             } else if (this.selectedBuilding === 'animal_pen') {
                 newBuilding = new AnimalPen(tileX, tileY);
             } else if (this.selectedBuilding === 'bed') {

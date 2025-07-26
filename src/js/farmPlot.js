@@ -1,11 +1,13 @@
 import Building from './building.js';
+import SpriteManager from './spriteManager.js';
 
 export default class FarmPlot extends Building {
-    constructor(x, y) {
+    constructor(x, y, spriteManager) {
         super('farm_plot', x, y, 1, 1, null, 100); // Farm plots are built on dirt, 100 health
         this.crop = null; // What is planted (e.g., 'wheat')
         this.growthStage = 0; // 0: empty, 1: planted, 2: growing, 3: mature
         this.growthRate = 0.01; // How fast it grows per game tick
+        this.spriteManager = spriteManager;
     }
 
     plant(cropType) {
@@ -44,22 +46,30 @@ export default class FarmPlot extends Building {
 
         // Render crop based on growth stage
         if (this.crop) {
-            let color;
-            switch (Math.floor(this.growthStage)) {
-                case 1: // Planted
-                    color = 'brown'; // Small sprout
-                    break;
-                case 2: // Growing
-                    color = 'lightgreen'; // Growing plant
-                    break;
-                case 3: // Mature
-                    color = 'gold'; // Ready to harvest
-                    break;
-                default:
-                    color = 'transparent';
+            if (this.crop === 'wheat' && this.growthStage === 3) {
+                // Render the wheat sprite when mature
+                const sprite = this.spriteManager.getSprite('wheat');
+                if (sprite) {
+                    ctx.drawImage(sprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+                }
+            } else {
+                let color;
+                switch (Math.floor(this.growthStage)) {
+                    case 1: // Planted
+                        color = 'brown'; // Small sprout
+                        break;
+                    case 2: // Growing
+                        color = 'lightgreen'; // Growing plant
+                        break;
+                    case 3: // Mature (but not wheat, or wheat not yet mature)
+                        color = 'gold'; // Ready to harvest
+                        break;
+                    default:
+                        color = 'transparent';
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect(this.x * tileSize + tileSize / 4, this.y * tileSize + tileSize / 4, tileSize / 2, tileSize / 2);
             }
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x * tileSize + tileSize / 4, this.y * tileSize + tileSize / 4, tileSize / 2, tileSize / 2);
         }
     }
 }

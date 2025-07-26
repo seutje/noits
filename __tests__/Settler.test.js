@@ -20,6 +20,10 @@ describe('Settler', () => {
         };
         mockMap = {
             removeResourceNode: jest.fn(),
+            resourcePiles: [],
+            addResourcePile: jest.fn(function(pile) { this.resourcePiles.push(pile); }),
+            tileSize: 1,
+            buildings: []
         };
         mockRoomManager = {
             rooms: [],
@@ -311,7 +315,23 @@ describe('Settler', () => {
 
         expect(mockEnemy.isButchered).toBe(true);
         expect(mockEnemy.isMarkedForButcher).toBe(false);
-        expect(settler.carrying.type).toBe('meat');
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        expect(settler.carrying).toBe(null);
         expect(settler.currentTask).toBe(null);
+    });
+
+    test('should drop carried resource if no storage room found', () => {
+        settler.roomManager.rooms = [];
+        settler.carrying = { type: 'wood', quantity: 2 };
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000);
+
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const droppedPile = settler.map.addResourcePile.mock.calls[0][0];
+        expect(droppedPile.type).toBe('wood');
+        expect(droppedPile.quantity).toBe(2);
+        expect(settler.carrying).toBe(null);
     });
 });

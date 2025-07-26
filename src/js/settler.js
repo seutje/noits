@@ -167,8 +167,18 @@ export default class Settler {
                     this.currentTask = { type: "haul", targetX: targetTile.x, targetY: targetTile.y, resource: this.carrying };
                     console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
                 } else {
-                    console.log(`${this.name} has resources to haul but no storage room found.`);
-                    this.state = "idle"; // Go back to idle if no storage
+                    console.log(`${this.name} has resources to haul but no storage room found. Dropping on the ground.`);
+                    const dropX = Math.floor(this.x);
+                    const dropY = Math.floor(this.y);
+                    const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.carrying.type);
+                    if (existingPile) {
+                        existingPile.add(this.carrying.quantity);
+                    } else {
+                        const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
+                        this.map.addResourcePile(newPile);
+                    }
+                    this.carrying = null;
+                    this.state = "idle"; // Go back to idle after dropping
                 }
             }
         }

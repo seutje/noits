@@ -25,4 +25,28 @@ export default class TaskManager {
     hasTaskForTargetSettler(targetSettler) {
         return this.tasks.some(task => task.type === 'treatment' && task.targetSettler === targetSettler);
     }
-}
+
+    serialize() {
+        return this.tasks.map(task => task.serialize());
+    }
+
+    deserialize(data) {
+        this.tasks = data.map(taskData => {
+            const task = new Task(
+                taskData.type,
+                taskData.targetX,
+                taskData.targetY,
+                taskData.resourceType,
+                taskData.quantity,
+                taskData.priority,
+                taskData.building,
+                taskData.recipe,
+                taskData.cropType,
+                taskData.targetLocation,
+                taskData.carrying,
+                taskData.targetSettler
+            );
+            task.deserialize(taskData);
+            return task;
+        });
+    }

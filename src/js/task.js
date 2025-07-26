@@ -15,4 +15,41 @@ export default class Task {
         this.carrying = carrying; // For haul tasks
         this.targetSettler = targetSettler; // For treatment tasks
     }
+
+    serialize() {
+        return {
+            type: this.type,
+            targetX: this.targetX,
+            targetY: this.targetY,
+            resourceType: this.resourceType,
+            quantity: this.quantity,
+            priority: this.priority,
+            building: this.building ? { type: this.building.type, x: this.building.x, y: this.building.y } : null,
+            recipe: this.recipe ? { name: this.recipe.name } : null,
+            assignedSettler: this.assignedSettler ? this.assignedSettler.name : null,
+            craftingProgress: this.craftingProgress,
+            cropType: this.cropType,
+            targetLocation: this.targetLocation ? { id: this.targetLocation.id } : null,
+            carrying: this.carrying,
+            targetSettler: this.targetSettler ? this.targetSettler.name : null,
+        };
+    }
+
+    deserialize(data) {
+        this.type = data.type;
+        this.targetX = data.targetX;
+        this.targetY = data.targetY;
+        this.resourceType = data.resourceType;
+        this.quantity = data.quantity;
+        this.priority = data.priority;
+        // Building, recipe, assignedSettler, targetLocation, targetSettler will be re-linked in TaskManager or Game.loadGame
+        this.building = data.building; // Store raw data for now
+        this.recipe = data.recipe; // Store raw data for now
+        this.assignedSettler = data.assignedSettler; // Store raw data for now
+        this.craftingProgress = data.craftingProgress;
+        this.cropType = data.cropType;
+        this.targetLocation = data.targetLocation; // Store raw data for now
+        this.carrying = data.carrying;
+        this.targetSettler = data.targetSettler; // Store raw data for now
+    }
 }

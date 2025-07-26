@@ -234,6 +234,7 @@ export default class Game {
             gameSpeed: this.gameSpeed,
             temperature: this.temperature,
             enemies: this.enemies.map(enemy => enemy.serialize()),
+            tasks: this.taskManager.serialize(),
         };
         localStorage.setItem('noitsGameState', JSON.stringify(gameState));
         console.log("Game saved!");
@@ -266,6 +267,26 @@ export default class Game {
                 const enemy = new Enemy(eData.name, eData.x, eData.y, null); // Target settler will be re-assigned in update
                 enemy.deserialize(eData);
                 return enemy;
+            });
+
+            // Restore tasks
+            this.taskManager.deserialize(gameState.tasks);
+            // Re-link task objects (building, recipe, assignedSettler, targetLocation, targetSettler)
+            this.taskManager.tasks.forEach(task => {
+                if (task.building) {
+                    task.building = this.map.getBuildingAt(task.building.x, task.building.y);
+                }
+                if (task.assignedSettler) {
+                    task.assignedSettler = this.settlers.find(s => s.name === task.assignedSettler);
+                }
+                if (task.targetLocation) {
+                    task.targetLocation = this.worldMap.getLocation(task.targetLocation.id);
+                }
+                if (task.targetSettler) {
+                    task.targetSettler = this.settlers.find(s => s.name === task.targetSettler);
+                }
+                // Recipes are currently hardcoded or simple objects, so direct assignment is fine for now
+                // If recipes become complex objects, they would need their own serialization/deserialization
             });
 
             console.log("Game loaded!");

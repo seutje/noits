@@ -86,8 +86,9 @@ export default class Game {
         } catch (error) {
             console.error("Failed to load sprite:", error);
         }
-        this.resourceManager.addResource("wood", 100);
-        this.resourceManager.addResource("stone", 50);
+        // Place initial resource piles instead of using global inventory
+        this.map.addResourcePile(new ResourcePile('wood', 100, 2, 2, this.map.tileSize, this.spriteManager));
+        this.map.addResourcePile(new ResourcePile('stone', 50, 3, 2, this.map.tileSize, this.spriteManager));
 
         // Create a new settler
         this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager));
@@ -153,6 +154,15 @@ export default class Game {
         this.map.getAllBuildings().forEach(building => {
             if (typeof building.update === 'function') {
                 building.update(deltaTime * this.gameSpeed);
+            }
+
+            // Ensure a build task exists for unfinished buildings
+            if (building.buildProgress < 100) {
+                const hasTask = this.taskManager.tasks.some(t => t.type === 'build' && t.building === building);
+                const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === 'build' && s.currentTask.building === building);
+                if (!hasTask && !inProgress) {
+                    this.taskManager.addTask(new Task('build', building.x, building.y, null, 100, 2, building));
+                }
             }
         });
 
@@ -420,11 +430,16 @@ export default class Game {
                 newBuilding = new Furniture('table', tileX, tileY, 2, 1, 'wood', 75);
             } else if (this.selectedBuilding === 'barricade') {
                 newBuilding = new Building('barricade', tileX, tileY, 1, 1, "wood", 0); // Barricade is a simple building
+            } else if (this.selectedBuilding === 'wall') {
+                newBuilding = new Building('wall', tileX, tileY, 1, 1, 'wood', 0, 1); // Walls require 1 wood
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
             }
             this.map.addBuilding(newBuilding);
-            this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 3, newBuilding)); // Build task with 100 quantity (workload)
+            // Hauling should happen before building starts
+            this.taskManager.addTask(new Task("haul", 0, 0, newBuilding.material, newBuilding.resourcesRequired, 3, newBuilding));
+            // Build task has lower priority so it begins once resources arrive
+            this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 2, newBuilding));
             this.soundManager.play('action');
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;

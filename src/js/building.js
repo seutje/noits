@@ -1,5 +1,5 @@
 export default class Building {
-    constructor(type, x, y, width, height, material, buildProgress) {
+    constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 10) {
         this.type = type; // e.g., "wall", "floor", "house"
         this.x = x;
         this.y = y;
@@ -9,6 +9,10 @@ export default class Building {
         this.buildProgress = buildProgress; // 0-100, 100 means built
         this.maxHealth = 100; // Max health for destruction
         this.health = this.maxHealth; // Current health
+
+        // New properties for resource delivery
+        this.resourcesRequired = resourcesRequired;
+        this.resourcesDelivered = 0;
     }
 
     takeDamage(amount) {
@@ -38,6 +42,8 @@ export default class Building {
             height: this.height,
             material: this.material,
             buildProgress: this.buildProgress,
+            resourcesRequired: this.resourcesRequired,
+            resourcesDelivered: this.resourcesDelivered,
             maxHealth: this.maxHealth,
             health: this.health
         };
@@ -51,6 +57,8 @@ export default class Building {
         this.height = data.height;
         this.material = data.material;
         this.buildProgress = data.buildProgress;
+        this.resourcesRequired = data.resourcesRequired ?? 10;
+        this.resourcesDelivered = data.resourcesDelivered ?? 0;
         this.maxHealth = data.maxHealth;
         this.health = data.health;
     }

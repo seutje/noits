@@ -123,19 +123,22 @@ describe('Game', () => {
             1,
             1,
             'wood',
-            0 // buildProgress starts at 0
+            0,
+            1
         );
-        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(2);
         expect(Task).toHaveBeenCalledWith(
             'build',
             expectedTileX,
             expectedTileY,
             null,
             100,
-            3,
+            2,
             expect.any(Building)
         );
-        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        const haulTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(haulTask.type).toBe('haul');
+        expect(haulTask.building).toBeInstanceOf(Building);
         expect(game.buildMode).toBe(false);
         expect(game.selectedBuilding).toBe(null);
     });

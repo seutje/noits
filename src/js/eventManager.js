@@ -22,7 +22,7 @@ export default class EventManager {
                     // Spawn a new enemy
                     if (this.game.settlers.length > 0) {
                         const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
-                        this.game.enemies.push(new this.EnemyClass("Wild Boar", targetSettler.x + 2, targetSettler.y + 2, targetSettler));
+                        this.game.enemies.push(new this.EnemyClass("Wild Boar", targetSettler.x + 2, targetSettler.y + 2, targetSettler, this.game.spriteManager));
                         console.log("A wild boar has appeared!");
                     this.game.notificationManager.addNotification("A wild boar has appeared!", 'warning');
                     }

@@ -4,7 +4,7 @@ import Settler from './settler.js';
 let enemyIdCounter = 0;
 
 export default class Enemy {
-    constructor(name, x, y, targetSettler, spriteManager) {
+    constructor(name, x, y, targetSettler, spriteManager, lootType = 'meat') {
         this.id = enemyIdCounter++;
         this.name = name;
         this.x = x;
@@ -16,6 +16,7 @@ export default class Enemy {
         this.targetSettler = targetSettler; // The settler this enemy is targeting
         this.state = "attacking"; // For now, always attacking
         this.spriteManager = spriteManager;
+        this.lootType = lootType; // Resource type yielded when butchered
         this.isDead = false; // New property to track if the enemy is dead
         this.isButchered = false; // True when the enemy has been butchered
         this.isMarkedForButcher = false; // True when player has queued this enemy for butchering
@@ -130,7 +131,8 @@ export default class Enemy {
             id: this.id,
             isDead: this.isDead,
             isButchered: this.isButchered,
-            isMarkedForButcher: this.isMarkedForButcher
+            isMarkedForButcher: this.isMarkedForButcher,
+            lootType: this.lootType
         };
     }
 
@@ -147,5 +149,6 @@ export default class Enemy {
         this.isDead = data.isDead || false;
         this.isButchered = data.isButchered || false;
         this.isMarkedForButcher = data.isMarkedForButcher || false;
+        this.lootType = data.lootType || 'meat';
     }
 }

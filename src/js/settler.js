@@ -383,30 +383,38 @@ export default class Settler {
     }
 
     dealDamage(targetSettler) {
-        if (!this.equippedWeapon) {
-            console.log(`${this.name} has no weapon to attack with.`);
-            return;
+        let weapon = this.equippedWeapon;
+        if (!weapon) {
+            // If no weapon, use fists
+            weapon = { name: "fists", damage: 5 }; // Base damage for unarmed combat
+            console.log(`${this.name} is fighting with ${weapon.name}.`);
         }
 
-        // Base damage from weapon
-        let damage = this.equippedWeapon.damage;
+        // Base damage from weapon (or fists)
+        let damage = weapon.damage;
 
         // Add combat skill bonus
         damage += this.skills.combat * 0.5; // Each skill point adds 0.5 damage
 
-        // Choose a random body part to hit
-        const bodyParts = Object.keys(targetSettler.bodyParts);
-        const randomBodyPart = bodyParts[Math.floor(Math.random() * bodyParts.length)];
+        if (targetSettler.bodyParts) { // Check if target has body parts (i.e., is a Settler)
+            // Choose a random body part to hit
+            const bodyParts = Object.keys(targetSettler.bodyParts);
+            const randomBodyPart = bodyParts[Math.floor(Math.random() * bodyParts.length)];
 
-        // Apply armor defense
-        if (targetSettler.equippedArmor[randomBodyPart]) {
-            damage -= targetSettler.equippedArmor[randomBodyPart].defense;
-            if (damage < 0) damage = 0; // Damage cannot be negative
+            // Apply armor defense
+            if (targetSettler.equippedArmor[randomBodyPart]) {
+                damage -= targetSettler.equippedArmor[randomBodyPart].defense;
+                if (damage < 0) damage = 0; // Damage cannot be negative
+            }
+
+            // Apply damage to the target settler
+            targetSettler.takeDamage(randomBodyPart, damage, true); // Assume bleeding for now
+            console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
+        } else { // Target is likely an Enemy
+            targetSettler.health -= damage;
+            if (targetSettler.health < 0) targetSettler.health = 0;
+            console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage. ${targetSettler.name} health: ${targetSettler.health.toFixed(1)}`);
         }
-
-        // Apply damage to the target settler
-        targetSettler.takeDamage(randomBodyPart, damage, true); // Assume bleeding for now
-        console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
     }
 
     serialize() {

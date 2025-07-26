@@ -52,7 +52,8 @@ describe('Settler', () => {
             mining: 1,
             building: 1,
             crafting: 1,
-            combat: 1
+            combat: 1,
+            medical: 1
         });
     });
 

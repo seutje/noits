@@ -483,9 +483,13 @@ export default class Game {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
             }
             this.map.addBuilding(newBuilding);
-            // Hauling should happen before building starts
-            this.taskManager.addTask(new Task("haul", 0, 0, newBuilding.material, newBuilding.resourcesRequired, 3, newBuilding));
-            // Build task has lower priority so it begins once resources arrive
+            // Hauling should happen before building starts if resources are needed
+            if (newBuilding.resourcesRequired > 0 && newBuilding.material) {
+                this.taskManager.addTask(
+                    new Task("haul", 0, 0, newBuilding.material, newBuilding.resourcesRequired, 3, newBuilding)
+                );
+            }
+            // Build task has lower priority so it begins once resources arrive (if any)
             this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 2, newBuilding));
             this.soundManager.play('action');
             this.buildMode = false; // Exit build mode after placing

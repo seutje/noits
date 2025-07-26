@@ -35,6 +35,7 @@ export default class Settler {
         };
         this.equippedWeapon = null; // Stores a Weapon object
         this.equippedArmor = {}; // Stores Armor objects by body part (e.g., { head: ArmorObject, torso: ArmorObject })
+        this.targetEnemy = null; // The enemy the settler is currently targeting
     }
 
     equipWeapon(weapon) {
@@ -62,6 +63,15 @@ export default class Settler {
         if (this.equippedArmor[bodyPart]) {
             console.log(`${this.name} unequipped ${this.equippedArmor[bodyPart].name} from ${bodyPart}.`);
             delete this.equippedArmor[bodyPart];
+        }
+    }
+
+    setTargetEnemy(enemy) {
+        this.targetEnemy = enemy;
+        if (enemy) {
+            console.log(`${this.name} is now targeting ${enemy.name}.`);
+        } else {
+            console.log(`${this.name} no longer has a target enemy.`);
         }
     }
 
@@ -101,7 +111,9 @@ export default class Settler {
         this.health = totalHealth / Object.keys(this.bodyParts).length; // Average health of all parts
 
         // Basic AI: Change state based on needs
-        if (this.needsTreatment() && this.resourceManager.getResourceQuantity('bandage') > 0) {
+        if (this.targetEnemy && this.targetEnemy.health > 0) {
+            this.state = "combat";
+        } else if (this.needsTreatment() && this.resourceManager.getResourceQuantity('bandage') > 0) {
             this.state = "seeking_treatment";
         } else if (this.hunger < 20) {
             this.state = "seeking_food";
@@ -281,6 +293,27 @@ export default class Settler {
                     this.currentTask = null;
                 }
             }
+        } else if (this.state === "combat" && this.targetEnemy) {
+            // Move towards the enemy
+            const speed = 0.05; // tiles per second
+            const distance = Math.sqrt(Math.pow(this.x - this.targetEnemy.x, 2) + Math.pow(this.y - this.targetEnemy.y, 2));
+            const attackRange = 1.5; // Settler needs to be within this range to attack
+
+            if (distance > attackRange) {
+                // Move closer
+                const angle = Math.atan2(this.targetEnemy.y - this.y, this.targetEnemy.x - this.x);
+                this.x += Math.cos(angle) * speed * (deltaTime / 1000);
+                this.y += Math.sin(angle) * speed * (deltaTime / 1000);
+            } else {
+                // Within range, attack!
+                this.dealDamage(this.targetEnemy);
+                // Check if enemy is defeated
+                if (this.targetEnemy.health <= 0) {
+                    console.log(`${this.name} defeated ${this.targetEnemy.name}!`);
+                    this.targetEnemy = null; // Clear target
+                    this.state = "idle"; // Return to idle
+                }
+            }
         }
     }
 
@@ -320,12 +353,15 @@ export default class Settler {
         return finalQuality;
     }
 
-    takeDamage(bodyPart, amount, bleeding = false) {
+    takeDamage(bodyPart, amount, bleeding = false, attacker = null) {
         if (this.bodyParts[bodyPart]) {
             this.bodyParts[bodyPart].health -= amount;
             if (this.bodyParts[bodyPart].health < 0) this.bodyParts[bodyPart].health = 0;
             this.bodyParts[bodyPart].bleeding = bleeding;
             console.log(`${this.name} took ${amount} damage to ${bodyPart}. Health: ${this.bodyParts[bodyPart].health}. Bleeding: ${this.bodyParts[bodyPart].bleeding}`);
+            if (attacker && this.targetEnemy === null) {
+                this.setTargetEnemy(attacker);
+            }
         } else {
             console.warn(`Invalid body part: ${bodyPart}`);
         }
@@ -388,7 +424,8 @@ export default class Settler {
             carrying: this.carrying,
             skills: this.skills,
             equippedWeapon: this.equippedWeapon ? this.equippedWeapon.serialize() : null,
-            equippedArmor: Object.fromEntries(Object.entries(this.equippedArmor).map(([part, armor]) => [part, armor.serialize()]))
+            equippedArmor: Object.fromEntries(Object.entries(this.equippedArmor).map(([part, armor]) => [part, armor.serialize()])),
+            targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null // Only save ID, actual object will be re-linked
         };
     }
 
@@ -433,5 +470,7 @@ export default class Settler {
             task.deserialize(data.currentTask);
             this.currentTask = task;
         }
+        // targetEnemy will need to be re-linked by the Game class after all entities are deserialized
+        this.targetEnemy = null; 
     }
 }

@@ -1,8 +1,11 @@
 
 import Settler from './settler.js';
 
+let enemyIdCounter = 0;
+
 export default class Enemy {
     constructor(name, x, y, targetSettler, spriteManager) {
+        this.id = enemyIdCounter++;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -69,7 +72,7 @@ export default class Enemy {
             if (finalDamage < 0) finalDamage = 0;
         }
 
-        targetSettler.takeDamage(randomBodyPart, finalDamage, true); // Assume bleeding for now
+        targetSettler.takeDamage(randomBodyPart, finalDamage, true, this); // Pass enemy as attacker
         console.log(`${this.name} attacked ${targetSettler.name} dealing ${finalDamage.toFixed(1)} damage to ${randomBodyPart}.`);
     }
 
@@ -104,7 +107,8 @@ export default class Enemy {
             attackCooldown: this.attackCooldown,
             // targetSettler is a reference, so we save its name/ID if needed for re-linking
             // For now, we'll assume targetSettler is re-established on load based on proximity
-            state: this.state
+            state: this.state,
+            id: this.id
         };
     }
 
@@ -117,6 +121,6 @@ export default class Enemy {
         this.attackSpeed = data.attackSpeed;
         this.attackCooldown = data.attackCooldown;
         this.state = data.state;
-        // targetSettler will be re-assigned in Game.loadGame based on game state
+        this.id = data.id;
     }
 }

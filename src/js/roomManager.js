@@ -61,42 +61,55 @@ export default class RoomManager {
     }
 
     addResourceToStorage(room, resourceType, quantity) {
-        if (room.type === "storage") {
-            if (!room.storage[resourceType]) {
-                room.storage[resourceType] = 0;
-            }
-            room.storage[resourceType] += quantity;
-            console.log(`Added ${quantity} ${resourceType} to storage room ${room.id}. Current: ${room.storage[resourceType]}`);
-            
-            if (room.tiles.length > 0) {
-                let emptyTile = null;
-                let pile = null;
-
-                for (const tile of room.tiles) {
-                    const pileAtTile = this.map.resourcePiles.find(p => p.x === tile.x && p.y === tile.y);
-                    if (pileAtTile) {
-                        if (pileAtTile.type === resourceType) {
-                            pile = pileAtTile;
-                            break;
-                        }
-                    } else if (!emptyTile) {
-                        emptyTile = tile;
-                    }
-                }
-
-                if (pile) {
-                    pile.add(quantity);
-                } else if (emptyTile) {
-                    const newPile = new ResourcePile(resourceType, quantity, emptyTile.x, emptyTile.y, this.tileSize, this.spriteManager);
-                    this.map.addResourcePile(newPile);
-                } else {
-                    console.warn('No available storage tile for resource pile.');
-                }
-            }
-            return true;
+        if (room.type !== "storage") {
+            console.warn(`Room ${room.id} is not a storage room.`);
+            return false;
         }
-        console.warn(`Room ${room.id} is not a storage room.`);
-        return false;
+
+        if (!room.storage[resourceType]) {
+            room.storage[resourceType] = 0;
+        }
+        room.storage[resourceType] += quantity;
+        console.log(`Added ${quantity} ${resourceType} to storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+
+        if (room.tiles.length > 0) {
+            let emptyTile = null;
+            let pile = null;
+
+            for (const tile of room.tiles) {
+                const pileAtTile = this.map.resourcePiles.find(p => p.x === tile.x && p.y === tile.y);
+
+                // If a pile already exists on this tile, we can't place another one
+                if (pileAtTile) {
+                    if (pileAtTile.type === resourceType) {
+                        // Found a pile of the same type to stack onto
+                        pile = pileAtTile;
+                        break;
+                    }
+                    continue;
+                }
+
+                // First completely empty tile becomes a candidate
+                if (!emptyTile) {
+                    emptyTile = tile;
+                }
+            }
+
+            if (pile) {
+                pile.add(quantity);
+            } else if (emptyTile) {
+                const newPile = new ResourcePile(resourceType, quantity, emptyTile.x, emptyTile.y, this.tileSize, this.spriteManager);
+                const added = this.map.addResourcePile(newPile);
+                if (!added) {
+                    console.warn('Failed to add resource pile to map.');
+                }
+            } else {
+                console.warn('No available storage tile for resource pile.');
+                return false;
+            }
+        }
+
+        return true;
     }
 
     removeResourceFromStorage(room, resourceType, quantity) {

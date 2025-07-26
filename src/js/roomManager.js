@@ -177,8 +177,7 @@ export default class RoomManager {
             );
             if (!existing) {
                 const task = new Task('haul', pile.x, pile.y, pile.type, pile.quantity, 2, null, null, null, null, null, null, null, pile.x, pile.y);
-                task.targetX = target.tile.x;
-                task.targetY = target.tile.y;
+                // Initial target is the pile itself; destination will be chosen when picked up
                 this.taskManager.addTask(task);
             }
         }

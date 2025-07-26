@@ -32,5 +32,9 @@ describe('RoomManager storage rules', () => {
 
         expect(taskManager.tasks.length).toBe(1);
         expect(taskManager.tasks[0].type).toBe('haul');
+        expect(taskManager.tasks[0].sourceX).toBe(2);
+        expect(taskManager.tasks[0].sourceY).toBe(2);
+        expect(taskManager.tasks[0].targetX).toBe(2); // initial target is pile
+        expect(taskManager.tasks[0].targetY).toBe(2);
     });
 });

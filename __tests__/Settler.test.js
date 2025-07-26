@@ -1,5 +1,6 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
+import ResourcePile from '../src/js/resourcePile.js';
 
 jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/map.js');
@@ -283,6 +284,30 @@ describe('Settler', () => {
         settler.updateNeeds(1000); // Simulate enough time for task to complete
         expect(mockRoomManager.getRoomAt).toHaveBeenCalledWith(1, 1);
         expect(mockRoomManager.addResourceToStorage).toHaveBeenCalledWith({ type: 'storage' }, 'wood', 1);
+        expect(settler.carrying).toBe(null);
+        expect(settler.currentTask).toBe(null);
+    });
+
+    test('should haul pile from ground to storage', () => {
+        mockMap.resourcePiles.push(new ResourcePile('wood', 1, 0, 0, 1, { getSprite: jest.fn() }));
+        mockRoomManager.findStorageRoomAndTile.mockReturnValue({ room: { type: 'storage', tiles: [{ x: 1, y: 1 }], storage: {} }, tile: { x: 1, y: 1 } });
+        mockRoomManager.getRoomAt.mockReturnValue({ type: 'storage', tiles: [{ x: 1, y: 1 }], storage: {} });
+        mockRoomManager.addResourceToStorage.mockReturnValue(true);
+
+        const task = new Task('haul', 0, 0, 'wood', 1, 2, null, null, null, null, null, null, null, 0, 0);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000); // pick up pile
+        expect(settler.carrying).toEqual({ type: 'wood', quantity: 1 });
+        expect(settler.currentTask.targetX).toBe(1);
+        expect(settler.currentTask.targetY).toBe(1);
+
+        settler.x = 1;
+        settler.y = 1;
+        settler.updateNeeds(1000); // deposit
+        expect(mockRoomManager.addResourceToStorage).toHaveBeenCalled();
         expect(settler.carrying).toBe(null);
         expect(settler.currentTask).toBe(null);
     });

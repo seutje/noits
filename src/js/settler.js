@@ -410,7 +410,14 @@ export default class Settler {
                             }
                             this.carrying = { type: this.currentTask.resourceType, quantity: this.currentTask.quantity };
                             this.currentTask.resource = this.carrying;
-                            // targetX/Y already set to storage tile
+                            const target = this.roomManager.findStorageRoomAndTile(this.currentTask.resourceType);
+                            if (target) {
+                                this.currentTask.targetX = target.tile.x;
+                                this.currentTask.targetY = target.tile.y;
+                            } else {
+                                console.log(`${this.name} couldn't find storage for ${this.currentTask.resourceType}.`);
+                                this.currentTask = null;
+                            }
                         } else {
                             console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
                             this.currentTask = null;

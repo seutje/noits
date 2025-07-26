@@ -49,6 +49,7 @@ export default class Game {
         this.settlers = [];
         this.enemies = [];
         this.keys = {};
+        this.isPaused = false; // Track pause state
         this.gameTime = 0;
         this.gameSpeed = 1; // Default game speed
         this.haulingCheckTimer = 0; // Timer for hauling task assignment
@@ -106,6 +107,13 @@ export default class Game {
         window.addEventListener('keyup', this.handleKeyUp);
         window.addEventListener('click', this.handleClick);
         window.addEventListener('wheel', this.handleWheel, { passive: false });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pause();
+            } else {
+                this.resume();
+            }
+        });
         this.gameLoop(0);
     }
 
@@ -214,8 +222,10 @@ export default class Game {
         const deltaTime = timestamp - this.lastTime;
         this.lastTime = timestamp;
 
-        this.update(deltaTime);
-        this.render();
+        if (!this.isPaused) {
+            this.update(deltaTime);
+            this.render();
+        }
 
         requestAnimationFrame(this.gameLoop);
     }
@@ -227,6 +237,23 @@ export default class Game {
     setSoundVolume(volume) {
         if (this.soundManager) {
             this.soundManager.setVolume(volume);
+        }
+    }
+
+    pause() {
+        this.isPaused = true;
+    }
+
+    resume() {
+        this.isPaused = false;
+        this.lastTime = performance.now();
+    }
+
+    togglePause() {
+        if (this.isPaused) {
+            this.resume();
+        } else {
+            this.pause();
         }
     }
 
@@ -378,7 +405,11 @@ export default class Game {
     }
 
     handleKeyDown(event) {
-        this.keys[event.key] = true;
+        if (event.key === 'p') {
+            this.togglePause();
+        } else {
+            this.keys[event.key] = true;
+        }
     }
 
     handleKeyUp(event) {

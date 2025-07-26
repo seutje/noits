@@ -119,8 +119,8 @@ This final phase focuses on adding dynamic events, refining the user experience,
 
 ### **5.0 Random Events**
 
-* [ ] 5.1 Implement a system for triggering random events (e.g., "Wild Animal Attack", "Resource Discovery").  
-* [ ] 5.2 Create a few simple positive and negative random events.
+* [x] 5.1 Implement a system for triggering random events (e.g., "Wild Animal Attack", "Resource Discovery").  
+* [x] 5.2 Create a few simple positive and negative random events.
 
 ### **5.3 User Interface & Accessibility**
 

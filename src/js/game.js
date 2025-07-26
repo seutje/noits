@@ -18,6 +18,7 @@ import Faction from './faction.js';
 import TradeManager from './tradeManager.js';
 import Furniture from './furniture.js';
 import Enemy from './enemy.js';
+import EventManager from './eventManager.js';
 
 export default class Game {
     constructor(ctx) {
@@ -37,6 +38,7 @@ export default class Game {
             traders: new Faction('Traders', 50)
         };
         this.tradeManager = new TradeManager(this.resourceManager, this.factions);
+        this.eventManager = new EventManager(this);
         this.settlers = [];
         this.enemies = [];
         this.keys = {};
@@ -117,6 +119,9 @@ export default class Game {
         this.enemies.forEach(enemy => {
             enemy.update(deltaTime * this.gameSpeed, this.settlers);
         });
+
+        // Update event manager
+        this.eventManager.update(deltaTime * this.gameSpeed);
 
         let resourceString = "";
         for (const type in this.resourceManager.getAllResources()) {

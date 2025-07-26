@@ -1,11 +1,13 @@
 import ResourcePile from './resourcePile.js';
+import Task from './task.js';
 
 export default class RoomManager {
-    constructor(map, spriteManager, tileSize) {
+    constructor(map, spriteManager, tileSize, taskManager = null) {
         this.map = map;
         this.spriteManager = spriteManager;
         this.tileSize = tileSize;
         this.map = map;
+        this.taskManager = taskManager;
         this.rooms = []; // Stores room objects
         this.roomGrid = Array(map.height).fill(0).map(() => Array(map.width).fill(null)); // 2D array to store room references for each tile
     }
@@ -48,6 +50,9 @@ export default class RoomManager {
         if (newRoom.tiles.length > 0) {
             this.rooms.push(newRoom);
             console.log(`Designated a ${type} room with ${newRoom.tiles.length} tiles.`);
+            if (type === 'storage' && this.taskManager) {
+                this.assignHaulingTasksForDroppedPiles();
+            }
             return newRoom;
         }
         return null;
@@ -150,6 +155,9 @@ export default class RoomManager {
             if (room.storage[resourceType] && room.storage[resourceType] >= quantity) {
                 room.storage[resourceType] -= quantity;
                 console.log(`Removed ${quantity} ${resourceType} from storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+                if (this.taskManager) {
+                    this.assignHaulingTasksForDroppedPiles();
+                }
                 return true;
             }
             console.warn(`Not enough ${resourceType} in storage room ${room.id}.`);
@@ -157,6 +165,22 @@ export default class RoomManager {
         }
         console.warn(`Room ${room.id} is not a storage room.`);
         return false;
+    }
+
+    assignHaulingTasksForDroppedPiles() {
+        if (!this.taskManager) return;
+        for (const pile of this.map.resourcePiles) {
+            const target = this.findStorageRoomAndTile(pile.type);
+            if (!target) continue;
+            const existing = this.taskManager.tasks.some(
+                t => t.type === 'haul' && t.sourceX === pile.x && t.sourceY === pile.y && t.resourceType === pile.type
+            );
+            if (!existing) {
+                const task = new Task('haul', pile.x, pile.y, pile.type, pile.quantity, 2, null, null, null, null, null, null, null, pile.x, pile.y);
+                // Initial target is the pile itself; destination will be chosen when picked up
+                this.taskManager.addTask(task);
+            }
+        }
     }
 
     // Future: removeRoom, getRoomsByType, etc.

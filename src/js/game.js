@@ -51,6 +51,7 @@ export default class Game {
         this.temperature = 20; // Initial temperature in Celsius
         this.buildMode = false; // New property for build mode
         this.selectedBuilding = null; // New property to hold the selected building type
+        this.diggingDirtMode = false; // New property for digging dirt mode
 
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -371,6 +372,14 @@ export default class Game {
                 const startX = this.roomDesignationStart.x;
                 const startY = this.roomDesignationStart.y;
                 this.roomManager.designateRoom(startX, startY, tileX, tileY, this.selectedRoomType);
+                if (this.selectedRoomType === 'dig_dirt') {
+                    this.taskManager.addTask(new Task("dig_dirt", tileX, tileY, "dirt", 50, 2));
+                    console.log(`Dig dirt task added at ${tileX},${tileY}`);
+                } else {
+                    const startX = this.roomDesignationStart.x;
+                    const startY = this.roomDesignationStart.y;
+                    this.roomManager.designateRoom(startX, startY, tileX, tileY, this.selectedRoomType);
+                }
                 this.roomDesignationStart = null;
                 this.selectedRoomType = null;
             }

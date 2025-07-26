@@ -283,6 +283,7 @@ export default class UI {
             case 'zones':
                 createButton('Designate Bedroom', 'bedroom', true, 'Designates an area as a bedroom.');
                 createButton('Designate Storage', 'storage', true, 'Designates an area for resource storage.');
+                createButton('Dig Dirt', 'dig_dirt', true, 'Designates a tile to be dug.');
                 break;
         }
     }

@@ -94,6 +94,7 @@ export default class Map {
         const grassSprite = this.spriteManager.getSprite('grass');
         const berryBushSprite = this.spriteManager.getSprite('berry_bush');
         const stoneSprite = this.spriteManager.getSprite('stone');
+        const ironOreSprite = this.spriteManager.getSprite('iron_ore');
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
@@ -112,6 +113,8 @@ export default class Map {
                     ctx.drawImage(berryBushSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile === 3 && stoneSprite) {
                     ctx.drawImage(stoneSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else if (tile === 5 && ironOreSprite) {
+                    ctx.drawImage(ironOreSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile !== 0) {
                     ctx.fillStyle = this.tileColors[tile] || '#000000';
                     ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);

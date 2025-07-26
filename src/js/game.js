@@ -175,6 +175,12 @@ export default class Game {
         this.gameSpeed = speed;
     }
 
+    setSoundVolume(volume) {
+        if (this.soundManager) {
+            this.soundManager.setVolume(volume);
+        }
+    }
+
     toggleBuildMode(buildingType) {
         if (this.selectedBuilding === buildingType) {
             this.buildMode = false;

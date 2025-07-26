@@ -58,6 +58,33 @@ export default class UI {
             }
         });
 
+        // Volume slider
+        this.volumeLabel = document.createElement('span');
+        this.volumeLabel.textContent = 'Volume: ';
+        this.volumeLabel.style.marginLeft = '20px';
+        this.uiContainer.appendChild(this.volumeLabel);
+
+        this.volumeSlider = document.createElement('input');
+        this.volumeSlider.type = 'range';
+        this.volumeSlider.min = '0';
+        this.volumeSlider.max = '1';
+        this.volumeSlider.step = '0.1';
+        this.volumeSlider.value = '0.5';
+        this.volumeSlider.id = 'volume-slider';
+        this.uiContainer.appendChild(this.volumeSlider);
+
+        this.volumeValueDisplay = document.createElement('span');
+        this.volumeValueDisplay.textContent = '50%';
+        this.uiContainer.appendChild(this.volumeValueDisplay);
+
+        this.volumeSlider.addEventListener('input', (event) => {
+            const value = parseFloat(event.target.value);
+            this.volumeValueDisplay.textContent = `${Math.round(value * 100)}%`;
+            if (this.gameInstance) {
+                this.gameInstance.setSoundVolume(value);
+            }
+        });
+
         // Build menu
         this.buildMenu = document.createElement('div');
         this.buildMenu.id = 'build-menu';

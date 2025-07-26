@@ -3,11 +3,13 @@ export const ACTION_BEEP_URL = "data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAA
 export default class SoundManager {
     constructor() {
         this.sounds = {};
+        this.volume = 0.5; // Default to half volume
     }
 
     loadSound(name, url) {
         return new Promise((resolve, reject) => {
             const audio = new Audio(url);
+            audio.volume = this.volume; // Set default volume
             const onLoad = () => {
                 this.sounds[name] = audio;
                 resolve();
@@ -20,9 +22,18 @@ export default class SoundManager {
         });
     }
 
+    setVolume(volume) {
+        this.volume = Math.max(0, Math.min(1, volume));
+        // Update volume of already loaded sounds
+        Object.values(this.sounds).forEach(audio => {
+            audio.volume = this.volume;
+        });
+    }
+
     play(name) {
         const audio = this.sounds[name];
         if (audio) {
+            audio.volume = this.volume;
             audio.currentTime = 0;
             audio.play();
         }

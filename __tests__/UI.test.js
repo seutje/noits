@@ -13,4 +13,14 @@ describe('UI tooltips', () => {
         ui.hideTooltip();
         expect(ui.tooltip.style.display).toBe('none');
     });
+
+    test('volume slider updates game volume', () => {
+        const ui = new UI({});
+        const mockGame = { setSoundVolume: jest.fn() };
+        ui.setGameInstance(mockGame);
+        ui.volumeSlider.value = '0.3';
+        ui.volumeSlider.dispatchEvent(new Event('input'));
+        expect(mockGame.setSoundVolume).toHaveBeenCalledWith(0.3);
+        expect(ui.volumeValueDisplay.textContent).toBe('30%');
+    });
 });

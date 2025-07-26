@@ -17,6 +17,7 @@ export default class Enemy {
         this.state = "attacking"; // For now, always attacking
         this.spriteManager = spriteManager;
         this.isDead = false; // New property to track if the enemy is dead
+        this.isButchered = false; // True when the enemy has been butchered
     }
 
     update(deltaTime, settlers) {
@@ -126,7 +127,8 @@ export default class Enemy {
             // For now, we'll assume targetSettler is re-established on load based on proximity
             state: this.state,
             id: this.id,
-            isDead: this.isDead
+            isDead: this.isDead,
+            isButchered: this.isButchered
         };
     }
 
@@ -141,5 +143,6 @@ export default class Enemy {
         this.state = data.state;
         this.id = data.id;
         this.isDead = data.isDead || false;
+        this.isButchered = data.isButchered || false;
     }
 }

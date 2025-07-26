@@ -50,3 +50,4 @@ export default class TaskManager {
             return task;
         });
     }
+}

@@ -1,5 +1,5 @@
 export default class Building {
-    constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 10) {
+    constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1) {
         this.type = type; // e.g., "wall", "floor", "house"
         this.x = x;
         this.y = y;

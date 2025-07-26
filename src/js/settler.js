@@ -340,34 +340,61 @@ export default class Settler {
                         console.log(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
                     }
                     this.currentTask = null;
-                } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
-                    if (this.currentTask.building) {
-                        const building = this.currentTask.building;
-                        if (building.material === this.currentTask.resource.type) {
-                            const existingPile = this.map.resourcePiles.find(p => p.x === building.x && p.y === building.y && p.type === this.currentTask.resource.type);
-                            if (existingPile) {
-                                existingPile.add(this.currentTask.resource.quantity);
+                } else if (this.currentTask.type === "haul" && this.currentTask.building) {
+                    const building = this.currentTask.building;
+                    // Stage 1: acquire resource if not already carrying
+                    if (!this.currentTask.resource && !this.carrying) {
+                        if (!this.currentTask.sourceX) {
+                            const pile = this.map.resourcePiles.find(p => p.type === this.currentTask.resourceType && p.quantity > 0);
+                            if (pile) {
+                                this.currentTask.sourceX = pile.x;
+                                this.currentTask.sourceY = pile.y;
+                                this.currentTask.targetX = pile.x;
+                                this.currentTask.targetY = pile.y;
                             } else {
-                                const newPile = new ResourcePile(this.currentTask.resource.type, this.currentTask.resource.quantity, building.x, building.y, this.map.tileSize, this.spriteManager);
-                                this.map.addResourcePile(newPile);
+                                console.log(`${this.name} couldn't find ${this.currentTask.resourceType} to haul.`);
+                                this.currentTask = null;
+                                return;
                             }
-                            this.carrying = null;
-                            console.log(`${this.name} delivered ${this.currentTask.resource.type} to building site.`);
-                        } else {
-                            console.log(`${this.name} cannot deliver ${this.currentTask.resource.type} to this building.`);
                         }
+                        if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
+                            const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === this.currentTask.resourceType);
+                            if (pile && pile.remove(this.currentTask.quantity)) {
+                                if (pile.quantity <= 0) {
+                                    this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                                }
+                                this.carrying = { type: this.currentTask.resourceType, quantity: this.currentTask.quantity };
+                                this.currentTask.resource = this.carrying;
+                                this.currentTask.targetX = building.x;
+                                this.currentTask.targetY = building.y;
+                            } else {
+                                console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
+                                this.currentTask = null;
+                            }
+                        }
+                    } else if (this.carrying && this.x === building.x && this.y === building.y) {
+                        const existingPile = this.map.resourcePiles.find(p => p.x === building.x && p.y === building.y && p.type === this.carrying.type);
+                        if (existingPile) {
+                            existingPile.add(this.carrying.quantity);
+                        } else {
+                            const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, building.x, building.y, this.map.tileSize, this.spriteManager);
+                            this.map.addResourcePile(newPile);
+                        }
+                        building.resourcesDelivered += this.carrying.quantity;
+                        this.carrying = null;
                         this.currentTask = null;
-                    } else {
-                        const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
-                        if (room && room.type === "storage") {
-                            this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
-                            this.carrying = null; // Clear carried resource
-                            console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
-                        } else {
-                            console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
-                        }
-                        this.currentTask = null; // Task completed immediately after action
+                        console.log(`${this.name} delivered ${this.currentTask.resourceType} to building site.`);
                     }
+                } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
+                    const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                    if (room && room.type === "storage") {
+                        this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
+                        this.carrying = null; // Clear carried resource
+                        console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
+                    } else {
+                        console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
+                    }
+                    this.currentTask = null; // Task completed immediately after action
                 } else if (this.currentTask.type === "explore" && this.currentTask.targetLocation) {
                     // Settler has arrived at the exploration target
                     this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);

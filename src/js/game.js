@@ -426,6 +426,8 @@ export default class Game {
             }
             this.map.addBuilding(newBuilding);
             this.taskManager.addTask(new Task("build", tileX, tileY, null, 100, 3, newBuilding)); // Build task with 100 quantity (workload)
+            // Create a haul task to bring required materials to the new building
+            this.taskManager.addTask(new Task("haul", 0, 0, newBuilding.material, newBuilding.resourcesRequired, 2, newBuilding));
             this.soundManager.play('action');
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;

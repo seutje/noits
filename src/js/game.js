@@ -90,7 +90,10 @@ export default class Game {
             settler.updateNeeds(deltaTime * this.gameSpeed);
             if (settler.needsTreatment() && this.resourceManager.getResourceQuantity('bandage') > 0) {
                 const availableSettler = this.settlers.find(s => s.state === 'idle' && s !== settler);
-                if (availableSettler && !this.taskManager.hasTaskForTargetSettler(settler)) {
+                const existingTreatmentTask = this.taskManager.hasTaskForTargetSettler(settler) ||
+                                             this.settlers.some(s => s.currentTask && s.currentTask.type === 'treatment' && s.currentTask.targetSettler === settler);
+
+                if (availableSettler && !existingTreatmentTask) {
                     this.taskManager.addTask(new Task('treatment', settler.x, settler.y, null, 0, 5, null, null, null, null, null, settler));
                     console.log(`Treatment task created for ${settler.name}`);
                 }

@@ -25,3 +25,4 @@ export default class TaskManager {
     hasTaskForTargetSettler(targetSettler) {
         return this.tasks.some(task => task.type === 'treatment' && task.targetSettler === targetSettler);
     }
+}

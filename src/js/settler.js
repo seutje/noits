@@ -280,6 +280,17 @@ export default class Settler {
                         console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null;
                     }
+                } else if (this.currentTask.type === "butcher" && this.currentTask.targetEnemy) {
+                    const butcheringRate = 0.1;
+                    const amountToButcher = butcheringRate * (deltaTime / 1000);
+                    this.currentTask.quantity -= amountToButcher;
+
+                    if (this.currentTask.quantity <= 0) {
+                        this.carrying = { type: 'meat', quantity: 1 };
+                        this.currentTask.targetEnemy.isButchered = true;
+                        console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
+                        this.currentTask = null;
+                    }
                 } else if (this.currentTask.type === "sow_crop" && this.currentTask.building) {
                     const farmPlot = this.currentTask.building;
                     if (farmPlot.plant(this.currentTask.cropType)) {
@@ -543,7 +554,8 @@ export default class Settler {
                 data.currentTask.cropType,
                 data.currentTask.targetLocation,
                 data.currentTask.carrying,
-                data.currentTask.targetSettler
+                data.currentTask.targetSettler,
+                data.currentTask.targetEnemy
             );
             task.deserialize(data.currentTask);
             this.currentTask = task;

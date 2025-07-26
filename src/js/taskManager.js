@@ -54,7 +54,8 @@ export default class TaskManager {
                 taskData.cropType,
                 taskData.targetLocation,
                 taskData.carrying,
-                taskData.targetSettler
+                taskData.targetSettler,
+                taskData.targetEnemy
             );
             task.deserialize(taskData);
             return task;

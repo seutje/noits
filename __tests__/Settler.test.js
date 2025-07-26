@@ -297,4 +297,20 @@ describe('Settler', () => {
         expect(settler.state).toBe('idle');
         expect(settler.hunger).toBeGreaterThan(10);
     });
+
+    test('should butcher dead enemy', () => {
+        const mockEnemy = { id: 1, name: 'Goblin', isButchered: false };
+        const task = new Task('butcher', 0, 0, 'meat', 0.2, 2, null, null, null, null, null, null, mockEnemy);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        for (let i = 0; i < 10; i++) {
+            settler.updateNeeds(1000);
+        }
+
+        expect(mockEnemy.isButchered).toBe(true);
+        expect(settler.carrying.type).toBe('meat');
+        expect(settler.currentTask).toBe(null);
+    });
 });

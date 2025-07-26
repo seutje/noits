@@ -5,7 +5,7 @@ export default class EventManager {
         this.game = game;
         this.events = [];
         this.lastEventTime = 0;
-        this.eventInterval = 60; // seconds between events
+        this.eventInterval = 1200; // seconds between events (20x less often)
 
         this.defineEvents();
     }

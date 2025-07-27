@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "live-server --port=8000",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,8 @@
     "babel-jest": "^30.0.5",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "eslint": "^8.57.1"
   },
   "jest": {
     "testEnvironment": "jsdom"

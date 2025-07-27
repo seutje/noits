@@ -67,16 +67,29 @@ export default class Building {
     }
 
     render(ctx, tileSize) {
+        const x = this.x * tileSize;
+        const y = this.y * tileSize;
+        const width = this.width * tileSize;
+        const height = this.height * tileSize;
+
         if (this.buildProgress < 100) {
-            ctx.fillStyle = `rgba(169, 169, 169, ${this.buildProgress / 100})`; // Grey, transparent based on progress
-        } else {
-            // Render based on health
-            const healthOpacity = this.health / this.maxHealth;
-            ctx.fillStyle = this.material === RESOURCE_TYPES.WOOD ? `rgba(139, 69, 19, ${healthOpacity})` : `rgba(128, 128, 128, ${healthOpacity})`;
+            ctx.fillStyle = `rgba(169, 169, 169, ${this.buildProgress / 100})`;
+            ctx.fillRect(x, y, width, height);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(x, y, width, height);
+            return;
         }
-        ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
+
+        if (this.drawBase !== false) {
+            const inset = tileSize * 0.1;
+            const healthOpacity = this.health / this.maxHealth;
+            ctx.fillStyle = this.material === RESOURCE_TYPES.WOOD ?
+                `rgba(139, 69, 19, ${healthOpacity})` :
+                `rgba(128, 128, 128, ${healthOpacity})`;
+            ctx.fillRect(x + inset, y + inset, width - inset * 2, height - inset * 2);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(x + inset, y + inset, width - inset * 2, height - inset * 2);
+        }
     }
 
     serialize() {

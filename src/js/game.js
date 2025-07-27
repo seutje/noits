@@ -500,7 +500,18 @@ export default class Game {
             // Hauling should happen before building starts if resources are needed
             if (newBuilding.resourcesRequired > 0 && newBuilding.material) {
                 this.taskManager.addTask(
-                    new Task("haul", 0, 0, newBuilding.material, newBuilding.resourcesRequired, 3, newBuilding)
+                    // Start hauling to deliver materials to the new building
+                    // Initial target is the building site; Settler will search for
+                    // a resource pile when the task is picked up
+                    new Task(
+                        "haul",
+                        newBuilding.x,
+                        newBuilding.y,
+                        newBuilding.material,
+                        newBuilding.resourcesRequired,
+                        3,
+                        newBuilding
+                    )
                 );
             }
             // Build task has lower priority so it begins once resources arrive (if any)

@@ -414,7 +414,7 @@ export default class Game {
                     craftingStation.y,
                     null,
                     0,
-                    3,
+                    2,
                     craftingStation,
                     recipe,
                 ),

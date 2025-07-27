@@ -287,6 +287,7 @@ describe('Game', () => {
         const craftTask = game.taskManager.addTask.mock.calls[1][0];
         expect(craftTask.type).toBe(TASK_TYPES.CRAFT);
         expect(craftTask.recipe).toBe(recipe);
+        expect(haulTask.difficulty).toBeGreaterThan(craftTask.difficulty);
     });
 
     test('handleClick marks dead enemy for butchering', () => {

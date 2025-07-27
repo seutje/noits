@@ -187,13 +187,13 @@ export default class Map {
             // Re-instantiate based on type if needed, otherwise use base Building
             let building;
             if (buildingData.type === 'crafting_station') {
-                building = new CraftingStation(buildingData.x, buildingData.y);
+                building = new CraftingStation(buildingData.x, buildingData.y, this.spriteManager);
             } else if (buildingData.type === 'farm_plot') {
-                building = new FarmPlot(buildingData.x, buildingData.y);
+                building = new FarmPlot(buildingData.x, buildingData.y, this.spriteManager);
             } else if (buildingData.type === 'animal_pen') {
                 building = new AnimalPen(buildingData.x, buildingData.y);
             } else if (buildingData.type === 'bed' || buildingData.type === 'table') {
-                building = new Furniture(buildingData.type, buildingData.x, buildingData.y, 1, 1, buildingData.material, buildingData.health);
+                building = new Furniture(buildingData.type, buildingData.x, buildingData.y, 1, 1, buildingData.material, buildingData.health, this.spriteManager);
             } else {
                 building = new Building(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
             }

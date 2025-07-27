@@ -1,5 +1,6 @@
 import CraftingStation from '../src/js/craftingStation.js';
 import Recipe from '../src/js/recipe.js';
+import SpriteManager from '../src/js/spriteManager.js';
 
 
 jest.mock('../src/js/recipe.js');
@@ -8,7 +9,7 @@ describe('CraftingStation', () => {
     let craftingStation;
 
     beforeEach(() => {
-        craftingStation = new CraftingStation(0, 0);
+        craftingStation = new CraftingStation(0, 0, new SpriteManager());
     });
 
     test('should initialize with correct properties', () => {

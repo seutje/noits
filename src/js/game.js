@@ -95,6 +95,8 @@ export default class Game {
             await this.spriteManager.loadImage('dirt_pile', 'src/assets/dirt_pile.png');
             await this.spriteManager.loadImage('farm_plot', 'src/assets/farmPlot.png');
             await this.spriteManager.loadImage(RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png');
+            await this.spriteManager.loadImage('crafting_station', 'src/assets/crafting_station.png');
+            await this.spriteManager.loadImage('table', 'src/assets/table.png');
             await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
             await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
@@ -622,15 +624,15 @@ export default class Game {
             // Place the selected building
             let newBuilding;
             if (this.selectedBuilding === 'crafting_station') {
-                newBuilding = new CraftingStation(tileX, tileY);
+                newBuilding = new CraftingStation(tileX, tileY, this.spriteManager);
             } else if (this.selectedBuilding === 'farm_plot') {
                 newBuilding = new FarmPlot(tileX, tileY, this.spriteManager);
             } else if (this.selectedBuilding === 'animal_pen') {
                 newBuilding = new AnimalPen(tileX, tileY);
             } else if (this.selectedBuilding === 'bed') {
-                newBuilding = new Furniture('bed', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50);
+                newBuilding = new Furniture('bed', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
             } else if (this.selectedBuilding === 'table') {
-                newBuilding = new Furniture('table', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75);
+                newBuilding = new Furniture('table', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
             } else if (this.selectedBuilding === 'barricade') {
                 newBuilding = new Building('barricade', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === 'wall') {

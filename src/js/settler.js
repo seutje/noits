@@ -273,6 +273,15 @@ export default class Settler {
         // Execute current task
         if (this.currentTask) {
             if (!this.path) {
+                if (Math.floor(this.x) === this.currentTask.targetX && Math.floor(this.y) === this.currentTask.targetY) {
+                    this.path = [];
+                } else {
+                    this.path = findPath({ x: Math.floor(this.x), y: Math.floor(this.y) }, { x: this.currentTask.targetX, y: this.currentTask.targetY }, this.map);
+                    if (!this.path) {
+                        this.path = [{ x: this.currentTask.targetX, y: this.currentTask.targetY }];
+                    }
+                }
+            } else if (this.path.length > 0 && (Math.abs(this.x - this.path[0].x) > 0.1 || Math.abs(this.y - this.path[0].y) > 0.1)) {
                 this.path = findPath({ x: Math.floor(this.x), y: Math.floor(this.y) }, { x: this.currentTask.targetX, y: this.currentTask.targetY }, this.map);
             }
 

@@ -1,6 +1,9 @@
 
 // A* pathfinding algorithm
 export function findPath(start, end, map) {
+    if (start.x === end.x && start.y === end.y) {
+        return [];
+    }
     const openSet = [start];
     const closedSet = [];
     const cameFrom = {};
@@ -20,7 +23,7 @@ export function findPath(start, end, map) {
         }
 
         if (current.x === end.x && current.y === end.y) {
-            return reconstructPath(cameFrom, current);
+            return reconstructPath(cameFrom, current).slice(1);
         }
 
         openSet.splice(openSet.indexOf(current), 1);

@@ -48,7 +48,6 @@ export default class FarmPlot extends Building {
         super.render(ctx, tileSize); // Render the base building (dirt tile or construction progress)
 
         if (this.buildProgress === 100 && this.farmPlotSprite) {
-            console.log("build progress", this.buildProgress);
             ctx.drawImage(this.farmPlotSprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
         }
 

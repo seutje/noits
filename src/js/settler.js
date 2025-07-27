@@ -433,11 +433,6 @@ export default class Settler {
 
                     if (this.currentTask.quantity <= 0) {
                         this.pickUpPile(resourceType, 1); // Settler carries the resource
-                        if (this.currentTask.type === TASK_TYPES.HUNT_ANIMAL) {
-                            // Hunting yields extra materials like bandages dropped on the ground
-                            const bandagePile = new ResourcePile(RESOURCE_TYPES.BANDAGE, 1, this.currentTask.targetX, this.currentTask.targetY, this.map.tileSize, this.spriteManager);
-                            this.map.addResourcePile(bandagePile);
-                        }
                         this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
                         console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null;

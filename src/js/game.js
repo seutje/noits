@@ -213,6 +213,20 @@ export default class Game {
                     }
                 }
             }
+            if (building.type === 'crafting_station') {
+                const station = building;
+                if (station.autoCraft && station.desiredRecipe) {
+                    const hasTask = this.taskManager.tasks.some(
+                        t => t.type === TASK_TYPES.CRAFT && t.building === station,
+                    );
+                    const inProgress = this.settlers.some(
+                        s => s.currentTask && s.currentTask.type === TASK_TYPES.CRAFT && s.currentTask.building === station,
+                    );
+                    if (!hasTask && !inProgress) {
+                        this.addCraftTask(station, station.desiredRecipe);
+                    }
+                }
+            }
 
             // Ensure a build task exists for unfinished buildings
             if (building.buildProgress < 100) {
@@ -369,6 +383,23 @@ export default class Game {
         this.taskManager.addTask(
             new Task(TASK_TYPES.HARVEST_CROP, farmPlot.x, farmPlot.y, null, 0, 3, farmPlot)
         );
+    }
+
+    addCraftTask(craftingStation, recipe, quantity = 1) {
+        for (let i = 0; i < quantity; i++) {
+            this.taskManager.addTask(
+                new Task(
+                    TASK_TYPES.CRAFT,
+                    craftingStation.x,
+                    craftingStation.y,
+                    null,
+                    0,
+                    3,
+                    craftingStation,
+                    recipe,
+                )
+            );
+        }
     }
 
     saveGame() {
@@ -580,17 +611,8 @@ export default class Game {
                 const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
                 if (clickedBuilding) {
                     if (clickedBuilding.type === 'crafting_station') {
-                        // For now, hardcode a crafting task for testing
                         const craftingStation = clickedBuilding;
-                        if (craftingStation.recipes && craftingStation.recipes.length > 0) {
-                            const recipe = craftingStation.recipes[0]; // Get the first recipe
-                            if (recipe) {
-                                this.taskManager.addTask(new Task(TASK_TYPES.CRAFT, tileX, tileY, null, 0, 3, craftingStation, recipe));
-                                console.log(`Crafting task for ${recipe.name} added at ${tileX},${tileY}`);
-                            }
-                        } else {
-                            console.warn("Crafting station has no recipes defined.");
-                        }
+                        this.ui.showCraftingStationMenu(craftingStation, event.clientX, event.clientY);
                     } else if (clickedBuilding.type === 'farm_plot') {
                         const farmPlot = clickedBuilding;
                         this.ui.showFarmPlotMenu(farmPlot, event.clientX, event.clientY);

@@ -276,6 +276,57 @@ export default class UI {
         document.addEventListener('click', () => this.hideFarmPlotMenu());
         document.body.appendChild(this.farmPlotMenu);
 
+        // Crafting station menu
+        this.craftingStationMenu = document.createElement('div');
+        this.craftingStationMenu.id = 'crafting-station-menu';
+        this.craftingStationMenu.style.display = 'none';
+
+        this.recipeSelect = document.createElement('select');
+        this.craftingStationMenu.appendChild(this.recipeSelect);
+
+        this.quantityInput = document.createElement('input');
+        this.quantityInput.type = 'number';
+        this.quantityInput.min = '1';
+        this.quantityInput.value = '1';
+        this.craftingStationMenu.appendChild(this.quantityInput);
+
+        this.autoCraftCheckbox = document.createElement('input');
+        this.autoCraftCheckbox.type = 'checkbox';
+        const autoCraftLabel = document.createElement('label');
+        autoCraftLabel.textContent = 'Auto-craft';
+        autoCraftLabel.appendChild(this.autoCraftCheckbox);
+        this.craftingStationMenu.appendChild(autoCraftLabel);
+
+        this.craftButton = document.createElement('button');
+        this.craftButton.textContent = 'Craft';
+        this.craftButton.onclick = () => {
+            if (this.gameInstance && this.selectedCraftingStation) {
+                const recipe = this.selectedCraftingStation.recipes[this.recipeSelect.selectedIndex];
+                this.selectedCraftingStation.desiredRecipe = recipe;
+                const qty = parseInt(this.quantityInput.value, 10) || 1;
+                this.gameInstance.addCraftTask(this.selectedCraftingStation, recipe, qty);
+                if (this.autoCraftCheckbox.checked) {
+                    this.selectedCraftingStation.autoCraft = true;
+                }
+            }
+            this.hideCraftingStationMenu();
+        };
+        this.craftingStationMenu.appendChild(this.craftButton);
+
+        this.autoCraftCheckbox.addEventListener('change', () => {
+            if (this.selectedCraftingStation) {
+                this.selectedCraftingStation.autoCraft = this.autoCraftCheckbox.checked;
+                if (this.autoCraftCheckbox.checked) {
+                    this.selectedCraftingStation.desiredRecipe = this.selectedCraftingStation.recipes[this.recipeSelect.selectedIndex];
+                }
+            }
+        });
+
+        this.craftingStationMenu.addEventListener('mousedown', event => event.stopPropagation());
+        this.craftingStationMenu.addEventListener('click', event => event.stopPropagation());
+        document.addEventListener('click', () => this.hideCraftingStationMenu());
+        document.body.appendChild(this.craftingStationMenu);
+
         this.tooltip = document.createElement('div');
         this.tooltip.id = 'tooltip';
         document.body.appendChild(this.tooltip);
@@ -462,5 +513,27 @@ export default class UI {
     hideFarmPlotMenu() {
         this.farmPlotMenu.style.display = 'none';
         this.selectedFarmPlot = null;
+    }
+
+    showCraftingStationMenu(station, screenX, screenY) {
+        this.selectedCraftingStation = station;
+        this.recipeSelect.innerHTML = '';
+        station.recipes.forEach((recipe, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = recipe.name;
+            this.recipeSelect.appendChild(option);
+        });
+        this.recipeSelect.selectedIndex = 0;
+        this.quantityInput.value = '1';
+        this.autoCraftCheckbox.checked = station.autoCraft;
+        this.craftingStationMenu.style.left = `${screenX}px`;
+        this.craftingStationMenu.style.top = `${screenY}px`;
+        this.craftingStationMenu.style.display = 'block';
+    }
+
+    hideCraftingStationMenu() {
+        this.craftingStationMenu.style.display = 'none';
+        this.selectedCraftingStation = null;
     }
 }

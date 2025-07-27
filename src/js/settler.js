@@ -1,7 +1,7 @@
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
-import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES } from './constants.js';
+import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE } from './constants.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
@@ -151,17 +151,17 @@ export default class Settler {
 
         // Update overall health based on body parts
         let totalHealth = 0;
-        let damagedParts = 0;
         for (const part in this.bodyParts) {
-            totalHealth += this.bodyParts[part].health;
-            if (this.bodyParts[part].health < 100) {
-                damagedParts++;
-            }
             // Simulate bleeding
             if (this.bodyParts[part].bleeding) {
                 this.bodyParts[part].health -= 0.01 * (deltaTime / 1000); // Bleeding causes health loss
                 if (this.bodyParts[part].health < 0) this.bodyParts[part].health = 0;
+            } else if (this.bodyParts[part].health < 100) {
+                // Regenerate health when not bleeding
+                this.bodyParts[part].health += (this.hunger / 100) * HEALTH_REGEN_RATE * (deltaTime / 1000);
+                if (this.bodyParts[part].health > 100) this.bodyParts[part].health = 100;
             }
+            totalHealth += this.bodyParts[part].health;
         }
         this.health = totalHealth / Object.keys(this.bodyParts).length; // Average health of all parts
 

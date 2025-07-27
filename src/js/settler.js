@@ -47,6 +47,7 @@ export default class Settler {
         this.isSleeping = false; // True when settler is sleeping
         this.sleepingInBed = false; // True when sleeping in a bed
         this.currentBed = null; // Reference to bed building when sleeping in one
+        this.currentBuilding = null; // Building this settler is currently using
     }
 
     equipWeapon(weapon) {
@@ -311,6 +312,10 @@ export default class Settler {
                             building.resourcesDelivered = building.getResourceQuantity(material);
                         } else {
                             console.log(`${this.name} needs ${material} delivered to build site.`);
+                            if (building.occupant === this) {
+                                building.occupant = null;
+                                this.currentBuilding = null;
+                            }
                             this.currentTask = null;
                             return;
                         }
@@ -322,12 +327,26 @@ export default class Settler {
                         if (building.buildProgress >= 100) {
                             building.buildProgress = 100;
                             console.log(`${this.name} completed building task for ${building.type}`);
+                            if (building.occupant === this) {
+                                building.occupant = null;
+                                this.currentBuilding = null;
+                            }
                             this.currentTask = null; // Task completed
                         }
                     }
                 } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
                     const recipe = this.currentTask.recipe;
                     const station = this.currentTask.building;
+
+                    if (station) {
+                        if (station.occupant && station.occupant !== this) {
+                            return; // Wait if another settler is using the station
+                        }
+                        if (!station.occupant) {
+                            station.occupant = this;
+                            this.currentBuilding = station;
+                        }
+                    }
 
                     if (!this.currentTask.inputsConsumed) {
                         let resourcesAvailable = true;
@@ -372,6 +391,10 @@ export default class Settler {
                             this.map.addResourcePile(pile);
                         }
                         console.log(`${this.name} completed crafting ${recipe.name}.`);
+                        if (station && station.occupant === this) {
+                            station.occupant = null;
+                            this.currentBuilding = null;
+                        }
                         this.currentTask = null;
                     }
                 } else if (

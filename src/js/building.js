@@ -19,6 +19,9 @@ export default class Building {
 
         // Inventory to hold delivered materials
         this.inventory = {};
+
+        // Settler currently using this building (e.g., crafting station)
+        this.occupant = null;
     }
 
     addToInventory(type, quantity) {

@@ -21,7 +21,7 @@ import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
 import SoundManager from './soundManager.js';
-import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES, RESOURCE_TYPES } from './constants.js';
+import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES, RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 
 
 export default class Game {
@@ -93,11 +93,11 @@ export default class Game {
                 [RESOURCE_TYPES.BERRIES, 'src/assets/berries.png'],
                 [RESOURCE_TYPES.MEAT, 'src/assets/meat.png'],
                 ['dirt_pile', 'src/assets/dirt_pile.png'],
-                ['farm_plot', 'src/assets/farmPlot.png'],
+                [BUILDING_TYPES.FARM_PLOT, 'src/assets/farmPlot.png'],
                 [RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png'],
-                ['crafting_station', 'src/assets/crafting_station.png'],
-                ['table', 'src/assets/table.png'],
-                ['bed', 'src/assets/bed.png'],
+                [BUILDING_TYPES.CRAFTING_STATION, 'src/assets/crafting_station.png'],
+                [BUILDING_TYPES.TABLE, 'src/assets/table.png'],
+                [BUILDING_TYPES.BED, 'src/assets/bed.png'],
                 ['wheat_1', 'src/assets/wheat_1.png'],
                 ['wheat_2', 'src/assets/wheat_2.png'],
                 ['wheat_3', 'src/assets/wheat_3.png'],
@@ -207,7 +207,7 @@ export default class Game {
                 building.update(deltaTime * this.gameSpeed);
             }
 
-            if (building.type === 'farm_plot') {
+            if (building.type === BUILDING_TYPES.FARM_PLOT) {
                 const farmPlot = building;
                 if (farmPlot.autoSow && farmPlot.crop === null) {
                     const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.SOW_CROP && t.building === farmPlot);
@@ -224,7 +224,7 @@ export default class Game {
                     }
                 }
             }
-            if (building.type === 'crafting_station') {
+            if (building.type === BUILDING_TYPES.CRAFTING_STATION) {
                 const station = building;
                 if (station.autoCraft && station.desiredRecipe) {
                     const hasTask = this.taskManager.tasks.some(
@@ -655,20 +655,20 @@ export default class Game {
         if (this.buildMode && this.selectedBuilding) {
             // Place the selected building
             let newBuilding;
-            if (this.selectedBuilding === 'crafting_station') {
+            if (this.selectedBuilding === BUILDING_TYPES.CRAFTING_STATION) {
                 newBuilding = new CraftingStation(tileX, tileY, this.spriteManager);
-            } else if (this.selectedBuilding === 'farm_plot') {
+            } else if (this.selectedBuilding === BUILDING_TYPES.FARM_PLOT) {
                 newBuilding = new FarmPlot(tileX, tileY, this.spriteManager);
-            } else if (this.selectedBuilding === 'animal_pen') {
+            } else if (this.selectedBuilding === BUILDING_TYPES.ANIMAL_PEN) {
                 newBuilding = new AnimalPen(tileX, tileY);
-            } else if (this.selectedBuilding === 'bed') {
-                newBuilding = new Furniture('bed', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
-            } else if (this.selectedBuilding === 'table') {
-                newBuilding = new Furniture('table', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
-            } else if (this.selectedBuilding === 'barricade') {
-                newBuilding = new Building('barricade', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
-            } else if (this.selectedBuilding === 'wall') {
-                newBuilding = new Building('wall', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, 1); // Walls require 1 wood
+            } else if (this.selectedBuilding === BUILDING_TYPES.BED) {
+                newBuilding = new Furniture(BUILDING_TYPES.BED, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.TABLE) {
+                newBuilding = new Furniture(BUILDING_TYPES.TABLE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE) {
+                newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
+            } else if (this.selectedBuilding === BUILDING_TYPES.WALL) {
+                newBuilding = new Building(BUILDING_TYPES.WALL, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, 1); // Walls require 1 wood
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Start with 0 health
             }
@@ -719,13 +719,13 @@ export default class Game {
                 // Check if a building was clicked
                 const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
                 if (clickedBuilding) {
-                    if (clickedBuilding.type === 'crafting_station') {
+                    if (clickedBuilding.type === BUILDING_TYPES.CRAFTING_STATION) {
                         const craftingStation = clickedBuilding;
                         this.ui.showCraftingStationMenu(craftingStation, event.clientX, event.clientY);
-                    } else if (clickedBuilding.type === 'farm_plot') {
+                    } else if (clickedBuilding.type === BUILDING_TYPES.FARM_PLOT) {
                         const farmPlot = clickedBuilding;
                         this.ui.showFarmPlotMenu(farmPlot, event.clientX, event.clientY);
-                    } else if (clickedBuilding.type === 'animal_pen') {
+                    } else if (clickedBuilding.type === BUILDING_TYPES.ANIMAL_PEN) {
                         const animalPen = clickedBuilding;
                         this.taskManager.addTask(new Task(TASK_TYPES.TEND_ANIMALS, tileX, tileY, null, 0, 3, animalPen));
                         console.log(`Tend animals task added at ${tileX},${tileY}`);

@@ -1,6 +1,7 @@
 import CraftingStation from '../src/js/craftingStation.js';
 import Recipe from '../src/js/recipe.js';
 import SpriteManager from '../src/js/spriteManager.js';
+import { BUILDING_TYPES } from '../src/js/constants.js';
 
 
 jest.mock('../src/js/recipe.js');
@@ -13,7 +14,7 @@ describe('CraftingStation', () => {
     });
 
     test('should initialize with correct properties', () => {
-        expect(craftingStation.type).toBe('crafting_station');
+        expect(craftingStation.type).toBe(BUILDING_TYPES.CRAFTING_STATION);
         expect(craftingStation.x).toBe(0);
         expect(craftingStation.y).toBe(0);
         expect(craftingStation.recipes).toEqual([expect.any(Recipe)]);

@@ -1,7 +1,7 @@
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
-import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE } from './constants.js';
+import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES } from './constants.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
@@ -224,7 +224,7 @@ export default class Settler {
         }
 
         if (this.state === "seeking_sleep" && !this.currentTask) {
-            const beds = (this.map.buildings || []).filter(b => b.type === 'bed' && (!b.occupant || b.occupant === this));
+            const beds = (this.map.buildings || []).filter(b => b.type === BUILDING_TYPES.BED && (!b.occupant || b.occupant === this));
             if (beds.length > 0) {
                 const bed = beds[0];
                 bed.occupant = this;

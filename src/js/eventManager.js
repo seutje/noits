@@ -1,6 +1,6 @@
 
 import ResourcePile from './resourcePile.js';
-import { RESOURCE_TYPES } from './constants.js';
+import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 export default class EventManager {
     constructor(game, EnemyClass) {
         this.EnemyClass = EnemyClass;
@@ -61,11 +61,11 @@ export default class EventManager {
             {
                 name: "Good Harvest",
                 description: "Your crops yielded an abundant harvest!",
-                condition: () => this.game.map.buildings.some(b => b.type === 'farm_plot' && b.growthStage === 3), // Only if there are mature farm plots
+                condition: () => this.game.map.buildings.some(b => b.type === BUILDING_TYPES.FARM_PLOT && b.growthStage === 3), // Only if there are mature farm plots
                 action: () => {
                     console.log("Event: Good Harvest!");
                     this.game.notificationManager.addNotification("Your crops yielded an abundant harvest!", 'success');
-                    const farmPlots = this.game.map.buildings.filter(b => b.type === 'farm_plot' && b.growthStage === 3);
+                    const farmPlots = this.game.map.buildings.filter(b => b.type === BUILDING_TYPES.FARM_PLOT && b.growthStage === 3);
                     if (farmPlots.length > 0) {
                         farmPlots.forEach(plot => {
                             const harvestedCrop = plot.harvest();

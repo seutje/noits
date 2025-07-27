@@ -156,7 +156,22 @@ export default class Map {
             pile.render(ctx);
         }
 
+        // Draw floors first so they appear beneath furniture and other buildings
+        const floors = [];
+        const nonFloors = [];
         for (const building of this.buildings) {
+            if (building.type === 'floor') {
+                floors.push(building);
+            } else {
+                nonFloors.push(building);
+            }
+        }
+
+        for (const floor of floors) {
+            floor.render(ctx, this.tileSize);
+        }
+
+        for (const building of nonFloors) {
             building.render(ctx, this.tileSize);
         }
     }

@@ -68,7 +68,7 @@ describe('Settler Health and Combat', () => {
     });
 
     test('settler stops task and targets attacker when hit', () => {
-        const enemy = new Enemy('Goblin', 1, 1, null, { getSprite: jest.fn() });
+        const enemy = new Enemy('Goblin', 1, 1, null, mockMap, { getSprite: jest.fn() });
         settler.currentTask = { type: 'move', targetX: 5, targetY: 5 };
         settler.state = 'idle';
 
@@ -85,7 +85,7 @@ describe('Settler Health and Combat', () => {
         const bob = new Settler('Bob', 1, 1, mockResourceManager, mockMap, mockRoomManager, undefined, settlers);
         settlers.push(alice, bob);
 
-        const enemy = new Enemy('Goblin', 1, 1, null, { getSprite: jest.fn() });
+        const enemy = new Enemy('Goblin', 1, 1, null, mockMap, { getSprite: jest.fn() });
 
         alice.takeDamage('torso', 5, false, enemy);
 

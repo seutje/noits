@@ -25,7 +25,17 @@ export default class EventManager {
                     // Spawn a new enemy
                     if (this.game.settlers.length > 0) {
                         const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
-                        this.game.enemies.push(new this.EnemyClass("Wild Boar", 49, 29, targetSettler, this.game.spriteManager, RESOURCE_TYPES.MEAT));
+                        this.game.enemies.push(
+                            new this.EnemyClass(
+                                "Wild Boar",
+                                49,
+                                29,
+                                targetSettler,
+                                this.game.map,
+                                this.game.spriteManager,
+                                RESOURCE_TYPES.MEAT
+                            )
+                        );
                         debugLog("A wild boar has appeared!");
                     this.game.notificationManager.addNotification("A wild boar has appeared!", 'warning');
                     }
@@ -89,7 +99,16 @@ export default class EventManager {
                     this.game.notificationManager.addNotification("A vile force of darkness has arrived!", 'warning');
                     if (this.game.settlers.length > 0) {
                         const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
-                        this.game.enemies.push(new this.EnemyClass("Goblin", 49, 29, targetSettler, this.game.spriteManager));
+                        this.game.enemies.push(
+                            new this.EnemyClass(
+                                "Goblin",
+                                49,
+                                29,
+                                targetSettler,
+                                this.game.map,
+                                this.game.spriteManager
+                            )
+                        );
                         debugLog("A goblin has appeared!");
                         this.game.notificationManager.addNotification("A goblin has appeared!", 'warning');
                     }

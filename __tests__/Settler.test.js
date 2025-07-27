@@ -484,6 +484,22 @@ describe('Settler', () => {
         expect(settler.currentTask).toBe(null);
     });
 
+    test('settler can treat themselves', () => {
+        const patient = new Settler('SelfHealer', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        patient.bodyParts.head.bleeding = true;
+        mockMap.resourcePiles.push(new ResourcePile('bandage', 1, 0, 0, 1, { getSprite: jest.fn() }));
+        const task = new Task('treatment', 0, 0, null, 0, 5, null, null, null, null, null, patient);
+        patient.currentTask = task;
+        patient.x = 0;
+        patient.y = 0;
+
+        patient.updateNeeds(1000);
+
+        expect(patient.needsTreatment()).toBe(false);
+        expect(mockMap.resourcePiles.length).toBe(0);
+        expect(patient.currentTask).toBe(null);
+    });
+
     test('seeking_sleep finds a bed and assigns sleep task', () => {
         const bed = { type: 'bed', x: 1, y: 1, occupant: null };
         mockMap.buildings = [bed];

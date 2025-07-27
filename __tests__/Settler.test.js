@@ -420,6 +420,22 @@ describe('Settler', () => {
         expect(settler.carrying).toEqual({ type: 'stone', quantity: 1 });
     });
 
+    test('should drop carried resource when hauling priority is 0', () => {
+        settler.carrying = { type: 'wood', quantity: 2 };
+        settler.taskPriorities[TASK_TYPES.HAUL] = 0;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000);
+
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const dropped = settler.map.addResourcePile.mock.calls[0][0];
+        expect(dropped.type).toBe('wood');
+        expect(dropped.quantity).toBe(2);
+        expect(settler.carrying).toBe(null);
+        expect(settler.state).toBe('idle');
+    });
+
     test('should use bandage pile for treatment', () => {
         const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager);
         patient.bodyParts.head.bleeding = true;

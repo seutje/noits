@@ -92,6 +92,20 @@ export default class Settler {
         this.carrying = { type, quantity };
     }
 
+    dropCarriedResource() {
+        if (!this.carrying) return;
+        const dropX = Math.floor(this.x);
+        const dropY = Math.floor(this.y);
+        const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.carrying.type);
+        if (existingPile) {
+            existingPile.add(this.carrying.quantity);
+        } else {
+            const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
+            this.map.addResourcePile(newPile);
+        }
+        this.carrying = null;
+    }
+
     setTargetEnemy(enemy) {
         this.targetEnemy = enemy;
         if (enemy) {
@@ -165,7 +179,12 @@ export default class Settler {
         } else if (this.sleep < 20) {
             this.state = "seeking_sleep";
         } else if (this.carrying) {
-            this.state = "hauling";
+            if (this.taskPriorities[TASK_TYPES.HAUL] > 0) {
+                this.state = "hauling";
+            } else {
+                this.dropCarriedResource();
+                this.state = "idle";
+            }
         } else {
             this.state = "idle";
         }
@@ -215,28 +234,33 @@ export default class Settler {
 
         // If hauling, deliver to construction site if possible, otherwise storage
         if (this.state === "hauling" && !this.currentTask) {
-            const targetBuilding = (this.map.buildings || []).find(b => b.buildProgress < 100 && b.material === this.carrying.type && b.resourcesDelivered < b.resourcesRequired);
-            if (targetBuilding) {
-                this.currentTask = { type: TASK_TYPES.HAUL, targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
-                console.log(`${this.name} is hauling ${this.carrying.type} to construction site.`);
+            if (this.taskPriorities[TASK_TYPES.HAUL] === 0) {
+                this.dropCarriedResource();
+                this.state = "idle";
             } else {
-                const target = this.roomManager.findStorageRoomAndTile(this.carrying.type);
-                if (target) {
-                    this.currentTask = { type: TASK_TYPES.HAUL, targetX: target.tile.x, targetY: target.tile.y, resource: this.carrying };
-                    console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
+                const targetBuilding = (this.map.buildings || []).find(b => b.buildProgress < 100 && b.material === this.carrying.type && b.resourcesDelivered < b.resourcesRequired);
+                if (targetBuilding) {
+                    this.currentTask = { type: TASK_TYPES.HAUL, targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
+                    console.log(`${this.name} is hauling ${this.carrying.type} to construction site.`);
                 } else {
-                    console.log(`${this.name} has resources to haul but no storage room found. Dropping on the ground.`);
-                    const dropX = Math.floor(this.x);
-                    const dropY = Math.floor(this.y);
-                    const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.carrying.type);
-                    if (existingPile) {
-                        existingPile.add(this.carrying.quantity);
+                    const target = this.roomManager.findStorageRoomAndTile(this.carrying.type);
+                    if (target) {
+                        this.currentTask = { type: TASK_TYPES.HAUL, targetX: target.tile.x, targetY: target.tile.y, resource: this.carrying };
+                        console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
                     } else {
-                        const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
-                        this.map.addResourcePile(newPile);
+                        console.log(`${this.name} has resources to haul but no storage room found. Dropping on the ground.`);
+                        const dropX = Math.floor(this.x);
+                        const dropY = Math.floor(this.y);
+                        const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.carrying.type);
+                        if (existingPile) {
+                            existingPile.add(this.carrying.quantity);
+                        } else {
+                            const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
+                            this.map.addResourcePile(newPile);
+                        }
+                        this.carrying = null;
+                        this.state = "idle"; // Go back to idle after dropping
                     }
-                    this.carrying = null;
-                    this.state = "idle"; // Go back to idle after dropping
                 }
             }
         }

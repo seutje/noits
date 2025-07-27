@@ -61,10 +61,31 @@ function getNeighbors(node, map) {
     const neighbors = [];
     const { x, y } = node;
 
-    if (x > 0 && map.getTile(x - 1, y) !== 8) neighbors.push({ x: x - 1, y });
-    if (x < map.width - 1 && map.getTile(x + 1, y) !== 8) neighbors.push({ x: x + 1, y });
-    if (y > 0 && map.getTile(x, y - 1) !== 8) neighbors.push({ x, y: y - 1 });
-    if (y < map.height - 1 && map.getTile(x, y + 1) !== 8) neighbors.push({ x, y: y + 1 });
+    const currentTile = map.getTile ? map.getTile(x, y) : 0;
+    const isUnpassable = currentTile === 8;
+
+    const checkAndAdd = (nx, ny) => {
+        if (
+            nx >= 0 && nx < map.width && ny >= 0 && ny < map.height &&
+            (map.getTile ? map.getTile(nx, ny) : 0) !== 8
+        ) {
+            neighbors.push({ x: nx, y: ny });
+        }
+    };
+
+    // Cardinal directions
+    checkAndAdd(x - 1, y);
+    checkAndAdd(x + 1, y);
+    checkAndAdd(x, y - 1);
+    checkAndAdd(x, y + 1);
+
+    // If current tile is un-passable, allow diagonal escape
+    if (isUnpassable) {
+        checkAndAdd(x - 1, y - 1);
+        checkAndAdd(x - 1, y + 1);
+        checkAndAdd(x + 1, y - 1);
+        checkAndAdd(x + 1, y + 1);
+    }
 
     return neighbors;
 }

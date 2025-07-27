@@ -2,6 +2,8 @@
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
 
+const SLEEP_GAIN_RATE = 0.01; // base sleep recovery per second
+
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
         this.resourceManager = resourceManager;
@@ -39,6 +41,9 @@ export default class Settler {
         this.equippedArmor = {}; // Stores Armor objects by body part (e.g., { head: ArmorObject, torso: ArmorObject })
         this.targetEnemy = null; // The enemy the settler is currently targeting
         this.isDead = false; // New property to track if the settler is dead
+        this.isSleeping = false; // True when settler is sleeping
+        this.sleepingInBed = false; // True when sleeping in a bed
+        this.currentBed = null; // Reference to bed building when sleeping in one
     }
 
     equipWeapon(weapon) {
@@ -98,10 +103,24 @@ export default class Settler {
         // Decrease hunger over time
         this.hunger -= 0.01 * (deltaTime / 1000); // Adjust rate as needed
         if (this.hunger < 0) this.hunger = 0;
-
-        // Decrease sleep over time
-        this.sleep -= 0.005 * (deltaTime / 1000); // Adjust rate as needed
-        if (this.sleep < 0) this.sleep = 0;
+        if (this.isSleeping) {
+            let gain = SLEEP_GAIN_RATE * (deltaTime / 1000);
+            if (this.sleepingInBed) gain *= 2;
+            this.sleep += gain;
+            if (this.sleep >= 100) {
+                this.sleep = 100;
+                this.isSleeping = false;
+                if (this.currentBed) {
+                    this.currentBed.occupant = null;
+                    this.currentBed = null;
+                }
+                this.state = 'idle';
+            }
+        } else {
+            // Decrease sleep over time
+            this.sleep -= 0.005 * (deltaTime / 1000); // Adjust rate as needed
+            if (this.sleep < 0) this.sleep = 0;
+        }
 
         // Adjust mood based on hunger and sleep
         if (this.hunger < 50) {
@@ -129,6 +148,10 @@ export default class Settler {
         }
         this.health = totalHealth / Object.keys(this.bodyParts).length; // Average health of all parts
 
+        if (this.isSleeping) {
+            return;
+        }
+
         // Basic AI: Change state based on needs
         if (this.targetEnemy && this.targetEnemy.health > 0) {
             this.state = "combat";
@@ -142,6 +165,14 @@ export default class Settler {
             this.state = "hauling";
         } else {
             this.state = "idle";
+        }
+
+        if (this.state === 'seeking_sleep' && this.sleep <= 0 && !this.isSleeping) {
+            this.isSleeping = true;
+            this.sleepingInBed = false;
+            this.currentTask = null;
+            this.state = 'sleeping';
+            console.log(`${this.name} collapsed from exhaustion.`);
         }
 
         // If hungry, create a task to go eat from storage
@@ -166,6 +197,16 @@ export default class Settler {
                     }
                 }
                 if (assigned) break;
+            }
+        }
+
+        if (this.state === "seeking_sleep" && !this.currentTask) {
+            const beds = (this.map.buildings || []).filter(b => b.type === 'bed' && (!b.occupant || b.occupant === this));
+            if (beds.length > 0) {
+                const bed = beds[0];
+                bed.occupant = this;
+                this.currentTask = { type: 'sleep', targetX: bed.x, targetY: bed.y, bed };
+                console.log(`${this.name} is heading to bed at ${bed.x},${bed.y}.`);
             }
         }
 
@@ -220,6 +261,12 @@ export default class Settler {
                 if (this.currentTask.type === "move") {
                     console.log(`${this.name} completed task: ${this.currentTask.type}`);
                     this.currentTask = null;
+                } else if (this.currentTask.type === 'sleep' && this.currentTask.bed) {
+                    this.isSleeping = true;
+                    this.sleepingInBed = true;
+                    this.currentBed = this.currentTask.bed;
+                    this.currentTask = null;
+                    this.state = 'sleeping';
                 } else if (this.currentTask.type === "build" && this.currentTask.building) {
                     const building = this.currentTask.building;
                     const material = building.material;
@@ -601,6 +648,15 @@ export default class Settler {
     }
 
     takeDamage(bodyPart, amount, bleeding = false, attacker = null) {
+        if (this.isSleeping && this.sleep > 20) {
+            this.isSleeping = false;
+            if (this.currentBed) {
+                this.currentBed.occupant = null;
+                this.currentBed = null;
+            }
+            this.state = 'combat';
+        }
+
         if (this.bodyParts[bodyPart]) {
             this.bodyParts[bodyPart].health -= amount;
             if (this.bodyParts[bodyPart].health < 0) this.bodyParts[bodyPart].health = 0;
@@ -710,7 +766,9 @@ export default class Settler {
             equippedWeapon: this.equippedWeapon ? this.equippedWeapon.serialize() : null,
             equippedArmor: Object.fromEntries(Object.entries(this.equippedArmor).map(([part, armor]) => [part, armor.serialize()])),
             targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null, // Only save ID, actual object will be re-linked
-            isDead: this.isDead
+            isDead: this.isDead,
+            isSleeping: this.isSleeping,
+            sleepingInBed: this.sleepingInBed
         };
     }
 
@@ -757,7 +815,9 @@ export default class Settler {
             this.currentTask = task;
         }
         // targetEnemy will need to be re-linked by the Game class after all entities are deserialized
-        this.targetEnemy = null; 
+        this.targetEnemy = null;
         this.isDead = data.isDead || false;
+        this.isSleeping = data.isSleeping || false;
+        this.sleepingInBed = data.sleepingInBed || false;
     }
 }

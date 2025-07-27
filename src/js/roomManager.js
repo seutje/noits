@@ -1,5 +1,6 @@
 import ResourcePile from './resourcePile.js';
 import Task from './task.js';
+import { TASK_TYPES } from './constants.js';
 
 export default class RoomManager {
     constructor(map, spriteManager, tileSize, taskManager = null, settlers = []) {
@@ -182,16 +183,16 @@ export default class RoomManager {
             const target = this.findStorageRoomAndTile(pile.type);
             if (!target) continue;
             const existing = this.taskManager.tasks.some(
-                t => t.type === 'haul' && t.sourceX === pile.x && t.sourceY === pile.y && t.resourceType === pile.type
+                t => t.type === TASK_TYPES.HAUL && t.sourceX === pile.x && t.sourceY === pile.y && t.resourceType === pile.type
             );
             const assigned = (settlers || []).some(
-                s => s.currentTask && s.currentTask.type === 'haul' &&
+                s => s.currentTask && s.currentTask.type === TASK_TYPES.HAUL &&
                      s.currentTask.sourceX === pile.x &&
                      s.currentTask.sourceY === pile.y &&
                      s.currentTask.resourceType === pile.type
             );
             if (!existing && !assigned) {
-                const task = new Task('haul', pile.x, pile.y, pile.type, pile.quantity, 2, null, null, null, null, null, null, null, pile.x, pile.y);
+                const task = new Task(TASK_TYPES.HAUL, pile.x, pile.y, pile.type, pile.quantity, 2, null, null, null, null, null, null, null, pile.x, pile.y);
                 // Initial target is the pile itself; destination will be chosen when picked up
                 this.taskManager.addTask(task);
             }

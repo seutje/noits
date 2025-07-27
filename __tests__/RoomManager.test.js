@@ -2,6 +2,7 @@ import Map from '../src/js/map.js';
 import RoomManager from '../src/js/roomManager.js';
 import ResourcePile from '../src/js/resourcePile.js';
 import TaskManager from '../src/js/taskManager.js';
+import { TASK_TYPES } from '../src/js/constants.js';
 
 describe('RoomManager storage rules', () => {
     test('should not allow multiple piles on the same storage tile', () => {
@@ -31,7 +32,7 @@ describe('RoomManager storage rules', () => {
         roomManager.designateRoom(3, 3, 3, 3, 'storage');
 
         expect(taskManager.tasks.length).toBe(1);
-        expect(taskManager.tasks[0].type).toBe('haul');
+        expect(taskManager.tasks[0].type).toBe(TASK_TYPES.HAUL);
         expect(taskManager.tasks[0].sourceX).toBe(2);
         expect(taskManager.tasks[0].sourceY).toBe(2);
         expect(taskManager.tasks[0].targetX).toBe(2); // initial target is pile
@@ -54,7 +55,7 @@ describe('RoomManager storage rules', () => {
         const map = new Map(5, 5, 32, { getSprite: jest.fn() });
         const taskManager = new TaskManager();
         const roomManager = new RoomManager(map, { getSprite: jest.fn() }, 32, taskManager);
-        const settlers = [{ currentTask: { type: 'haul', sourceX: 2, sourceY: 2, resourceType: 'wood' } }];
+        const settlers = [{ currentTask: { type: TASK_TYPES.HAUL, sourceX: 2, sourceY: 2, resourceType: 'wood' } }];
         roomManager.setSettlers(settlers);
 
         map.addResourcePile(new ResourcePile('wood', 5, 2, 2, 32, { getSprite: jest.fn() }));

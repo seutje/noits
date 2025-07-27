@@ -1,7 +1,7 @@
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
-import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED } from './constants.js';
+import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES } from './constants.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
@@ -204,7 +204,7 @@ export default class Settler {
             if (beds.length > 0) {
                 const bed = beds[0];
                 bed.occupant = this;
-                this.currentTask = { type: 'sleep', targetX: bed.x, targetY: bed.y, bed };
+                this.currentTask = { type: TASK_TYPES.SLEEP, targetX: bed.x, targetY: bed.y, bed };
                 console.log(`${this.name} is heading to bed at ${bed.x},${bed.y}.`);
             }
         }
@@ -213,12 +213,12 @@ export default class Settler {
         if (this.state === "hauling" && !this.currentTask) {
             const targetBuilding = (this.map.buildings || []).find(b => b.buildProgress < 100 && b.material === this.carrying.type && b.resourcesDelivered < b.resourcesRequired);
             if (targetBuilding) {
-                this.currentTask = { type: "haul", targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
+                this.currentTask = { type: TASK_TYPES.HAUL, targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
                 console.log(`${this.name} is hauling ${this.carrying.type} to construction site.`);
             } else {
                 const target = this.roomManager.findStorageRoomAndTile(this.carrying.type);
                 if (target) {
-                    this.currentTask = { type: "haul", targetX: target.tile.x, targetY: target.tile.y, resource: this.carrying };
+                    this.currentTask = { type: TASK_TYPES.HAUL, targetX: target.tile.x, targetY: target.tile.y, resource: this.carrying };
                     console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
                 } else {
                     console.log(`${this.name} has resources to haul but no storage room found. Dropping on the ground.`);
@@ -260,13 +260,13 @@ export default class Settler {
                 if (this.currentTask.type === "move") {
                     console.log(`${this.name} completed task: ${this.currentTask.type}`);
                     this.currentTask = null;
-                } else if (this.currentTask.type === 'sleep' && this.currentTask.bed) {
+                } else if (this.currentTask.type === TASK_TYPES.SLEEP && this.currentTask.bed) {
                     this.isSleeping = true;
                     this.sleepingInBed = true;
                     this.currentBed = this.currentTask.bed;
                     this.currentTask = null;
                     this.state = 'sleeping';
-                } else if (this.currentTask.type === "build" && this.currentTask.building) {
+                } else if (this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building) {
                     const building = this.currentTask.building;
                     const material = building.material;
                     const consumptionRate = 0.1; // units of material per second
@@ -297,7 +297,7 @@ export default class Settler {
                             this.currentTask = null; // Task completed
                         }
                     }
-                } else if (this.currentTask.type === "craft" && this.currentTask.recipe) {
+                } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
                     const recipe = this.currentTask.recipe;
                     // Check if resources are available for crafting
                     let resourcesAvailable = true;
@@ -329,7 +329,11 @@ export default class Settler {
                         console.log(`${this.name} stopped crafting ${recipe.name} due to lack of resources.`);
                         this.currentTask = null; // Clear the task
                     }
-                } else if (this.currentTask.type === "mine_stone" || this.currentTask.type === "mine_iron_ore" || this.currentTask.type === "dig_dirt") {
+                } else if (
+                    this.currentTask.type === TASK_TYPES.MINE_STONE ||
+                    this.currentTask.type === TASK_TYPES.MINE_IRON_ORE ||
+                    this.currentTask.type === TASK_TYPES.DIG_DIRT
+                ) {
                     const resourceType = this.currentTask.type.replace("mine_", "").replace("dig_", "");
                     const miningRate = 0.1; // e.g., 0.1 units of resource per second
                     const amountToMine = miningRate * (deltaTime / 1000);
@@ -339,7 +343,7 @@ export default class Settler {
 
                     if (this.currentTask.quantity <= 0) {
                         this.pickUpPile(resourceType, 1); // Settler carries the resource
-                        if (this.currentTask.type === "dig_dirt") {
+                        if (this.currentTask.type === TASK_TYPES.DIG_DIRT) {
                             this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change tile to dirt
                         } else {
                             this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
@@ -347,7 +351,12 @@ export default class Settler {
                         console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null; // Task completed
                     }
-                } else if (this.currentTask.type === "chop_wood" || this.currentTask.type === "gather_berries" || this.currentTask.type === "mushroom" || this.currentTask.type === "hunt_animal") {
+                } else if (
+                    this.currentTask.type === TASK_TYPES.CHOP_WOOD ||
+                    this.currentTask.type === TASK_TYPES.GATHER_BERRIES ||
+                    this.currentTask.type === TASK_TYPES.MUSHROOM ||
+                    this.currentTask.type === TASK_TYPES.HUNT_ANIMAL
+                ) {
                     const resourceType = this.currentTask.resourceType;
                     const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
                     const amountToGather = gatheringRate * (deltaTime / 1000);
@@ -356,7 +365,7 @@ export default class Settler {
 
                     if (this.currentTask.quantity <= 0) {
                         this.pickUpPile(resourceType, 1); // Settler carries the resource
-                        if (this.currentTask.type === "hunt_animal") {
+                        if (this.currentTask.type === TASK_TYPES.HUNT_ANIMAL) {
                             // Hunting yields extra materials like bandages dropped on the ground
                             const bandagePile = new ResourcePile('bandage', 1, this.currentTask.targetX, this.currentTask.targetY, this.map.tileSize, this.spriteManager);
                             this.map.addResourcePile(bandagePile);
@@ -365,7 +374,7 @@ export default class Settler {
                         console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                         this.currentTask = null;
                     }
-                } else if (this.currentTask.type === "butcher" && this.currentTask.targetEnemy) {
+                } else if (this.currentTask.type === TASK_TYPES.BUTCHER && this.currentTask.targetEnemy) {
                     if (this.currentTask.targetEnemy.decay > 50) {
                         this.currentTask.targetEnemy.isMarkedForButcher = false;
                         console.log(`${this.currentTask.targetEnemy.name} is too decayed to butcher.`);
@@ -384,7 +393,7 @@ export default class Settler {
                             this.currentTask = null;
                         }
                     }
-                } else if (this.currentTask.type === "sow_crop" && this.currentTask.building) {
+                } else if (this.currentTask.type === TASK_TYPES.SOW_CROP && this.currentTask.building) {
                     const farmPlot = this.currentTask.building;
                     if (farmPlot.plant(this.currentTask.cropType)) {
                         console.log(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
@@ -392,7 +401,7 @@ export default class Settler {
                         console.log(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
                     }
                     this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === "harvest_crop" && this.currentTask.building) {
+                } else if (this.currentTask.type === TASK_TYPES.HARVEST_CROP && this.currentTask.building) {
                     const farmPlot = this.currentTask.building;
                     const harvestedCrop = farmPlot.harvest();
                     if (harvestedCrop) {
@@ -403,7 +412,7 @@ export default class Settler {
                         console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
                     }
                     this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === "tend_animals" && this.currentTask.building) {
+                } else if (this.currentTask.type === TASK_TYPES.TEND_ANIMALS && this.currentTask.building) {
                     const animalPen = this.currentTask.building;
                     // Simulate tending animals - perhaps increases animal health/reproduction rate
                     console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
@@ -419,7 +428,7 @@ export default class Settler {
                         console.log(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
                     }
                     this.currentTask = null;
-                } else if (this.currentTask.type === "haul" && this.currentTask.building) {
+                } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.building) {
                     const building = this.currentTask.building;
                     // Stage 1: acquire resource if not already carrying
                     if (!this.currentTask.resource && !this.carrying) {
@@ -458,7 +467,7 @@ export default class Settler {
                         this.currentTask = null;
                         console.log(`${this.name} delivered ${deliveredType} to building site.`);
                     }
-                } else if (this.currentTask.type === "haul" && this.currentTask.sourceX !== undefined && !this.currentTask.building && !this.currentTask.resource) {
+                } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.sourceX !== undefined && !this.currentTask.building && !this.currentTask.resource) {
                     if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
                         const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === this.currentTask.resourceType);
                         if (pile && pile.remove(this.currentTask.quantity)) {
@@ -480,7 +489,7 @@ export default class Settler {
                             this.currentTask = null;
                         }
                     }
-                } else if (this.currentTask.type === "haul" && this.currentTask.resource) {
+                } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.resource) {
                     const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                     if (room && room.type === "storage") {
                         const success = this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
@@ -503,12 +512,12 @@ export default class Settler {
                         console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
                     }
                     this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === "explore" && this.currentTask.targetLocation) {
+                } else if (this.currentTask.type === TASK_TYPES.EXPLORE && this.currentTask.targetLocation) {
                     // Settler has arrived at the exploration target
                     this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
                     console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
                     this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === "treatment" && this.currentTask.targetSettler) {
+                } else if (this.currentTask.type === TASK_TYPES.TREATMENT && this.currentTask.targetSettler) {
                     const targetSettler = this.currentTask.targetSettler;
 
                     if (!this.currentTask.stage) {

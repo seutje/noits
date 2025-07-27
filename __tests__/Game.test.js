@@ -6,6 +6,7 @@ import Settler from '../src/js/settler.js';
 import TaskManager from '../src/js/taskManager.js';
 import Building from '../src/js/building.js';
 import Task from '../src/js/task.js';
+import { TASK_TYPES } from '../src/js/constants.js';
 
 // Mock dependencies
 jest.mock('../src/js/map.js');
@@ -133,7 +134,7 @@ describe('Game', () => {
         );
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(2);
         expect(Task).toHaveBeenCalledWith(
-            'build',
+            TASK_TYPES.BUILD,
             expectedTileX,
             expectedTileY,
             null,
@@ -142,7 +143,7 @@ describe('Game', () => {
             expect.any(Object)
         );
         const haulTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(haulTask.type).toBe('haul');
+        expect(haulTask.type).toBe(TASK_TYPES.HAUL);
         expect(haulTask.building).toEqual(expect.any(Object));
         expect(game.buildMode).toBe(false);
         expect(game.selectedBuilding).toBe(null);
@@ -170,7 +171,7 @@ describe('Game', () => {
         // Only build task should be added
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
         const buildTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(buildTask.type).toBe('build');
+        expect(buildTask.type).toBe(TASK_TYPES.BUILD);
     });
 
     test('handleClick should not place a building when not in build mode', () => {
@@ -184,7 +185,7 @@ describe('Game', () => {
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(addedTask.type).toBe("chop_wood");
+        expect(addedTask.type).toBe(TASK_TYPES.CHOP_WOOD);
         expect(addedTask.resourceType).toBe("wood");
         expect(addedTask.quantity).toBe(2.5);
     });
@@ -193,7 +194,7 @@ describe('Game', () => {
         game.map.getTile.mockReturnValue(3); // Mock a stone tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(addedTask.type).toBe("mine_stone");
+        expect(addedTask.type).toBe(TASK_TYPES.MINE_STONE);
         expect(addedTask.resourceType).toBe("stone");
         expect(addedTask.quantity).toBe(2.5);
     });
@@ -202,7 +203,7 @@ describe('Game', () => {
         game.map.getTile.mockReturnValue(4); // Mock a berries tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(addedTask.type).toBe("gather_berries");
+        expect(addedTask.type).toBe(TASK_TYPES.GATHER_BERRIES);
         expect(addedTask.resourceType).toBe("berries");
         expect(addedTask.quantity).toBe(1);
     });
@@ -211,7 +212,7 @@ describe('Game', () => {
         game.map.getTile.mockReturnValue(5); // Mock an iron_ore tile
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(addedTask.type).toBe("mine_iron_ore");
+        expect(addedTask.type).toBe(TASK_TYPES.MINE_IRON_ORE);
         expect(addedTask.resourceType).toBe("iron_ore");
         expect(addedTask.quantity).toBe(10);
     });
@@ -234,7 +235,7 @@ describe('Game', () => {
         game.startExploration();
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(addedTask.type).toBe("explore");
+        expect(addedTask.type).toBe(TASK_TYPES.EXPLORE);
         expect(addedTask.targetLocation.id).toBe('forest_outpost');
     });
 
@@ -259,7 +260,7 @@ describe('Game', () => {
         expect(enemy.isMarkedForButcher).toBe(true);
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
         const addedTask = game.taskManager.addTask.mock.calls[0][0];
-        expect(addedTask.type).toBe('butcher');
+        expect(addedTask.type).toBe(TASK_TYPES.BUTCHER);
         expect(addedTask.targetEnemy).toBe(enemy);
     });
 

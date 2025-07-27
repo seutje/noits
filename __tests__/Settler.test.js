@@ -1,5 +1,6 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
+import { TASK_TYPES } from '../src/js/constants.js';
 import ResourcePile from '../src/js/resourcePile.js';
 
 jest.mock('../src/js/resourceManager.js');
@@ -200,7 +201,7 @@ describe('Settler', () => {
     });
 
     test('should handle dig_dirt task', () => {
-        const task = new Task('dig_dirt', 1, 1, 'dirt', 50);
+        const task = new Task(TASK_TYPES.DIG_DIRT, 1, 1, 'dirt', 50);
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -219,7 +220,7 @@ describe('Settler', () => {
         const mockFarmPlot = {
             plant: jest.fn().mockReturnValue(true)
         };
-        const task = new Task('sow_crop', 1, 1, null, 0, 3, mockFarmPlot, null, 'wheat');
+        const task = new Task(TASK_TYPES.SOW_CROP, 1, 1, null, 0, 3, mockFarmPlot, null, 'wheat');
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -233,7 +234,7 @@ describe('Settler', () => {
         const mockFarmPlot = {
             harvest: jest.fn().mockReturnValue('wheat')
         };
-        const task = new Task('harvest_crop', 1, 1, null, 0, 3, mockFarmPlot);
+        const task = new Task(TASK_TYPES.HARVEST_CROP, 1, 1, null, 0, 3, mockFarmPlot);
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -249,7 +250,7 @@ describe('Settler', () => {
 
     test('should handle tend_animals task', () => {
         const mockAnimalPen = {};
-        const task = new Task('tend_animals', 1, 1, null, 0, 3, mockAnimalPen);
+        const task = new Task(TASK_TYPES.TEND_ANIMALS, 1, 1, null, 0, 3, mockAnimalPen);
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -259,7 +260,7 @@ describe('Settler', () => {
     });
 
     test('should handle hunt_animal task and drop bandage pile', () => {
-        const task = new Task('hunt_animal', 1, 1, 'meat', 0.2);
+        const task = new Task(TASK_TYPES.HUNT_ANIMAL, 1, 1, 'meat', 0.2);
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -281,7 +282,7 @@ describe('Settler', () => {
     test('should handle explore task', () => {
         const mockLocation = { id: 'forest_outpost', name: 'Forest Outpost' };
         settler.map.worldMap = { discoverLocation: jest.fn() }; // Mock worldMap
-        const task = new Task('explore', 1, 1, null, 0, 5, null, null, null, mockLocation);
+        const task = new Task(TASK_TYPES.EXPLORE, 1, 1, null, 0, 5, null, null, null, mockLocation);
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
@@ -317,7 +318,7 @@ describe('Settler', () => {
         mockRoomManager.getRoomAt.mockReturnValue({ type: 'storage', tiles: [{ x: 1, y: 1 }], storage: {} });
         mockRoomManager.addResourceToStorage.mockReturnValue(true);
 
-        const task = new Task('haul', 0, 0, 'wood', 1, 2, null, null, null, null, null, null, null, 0, 0);
+        const task = new Task(TASK_TYPES.HAUL, 0, 0, 'wood', 1, 2, null, null, null, null, null, null, null, 0, 0);
         settler.currentTask = task;
         settler.x = 0;
         settler.y = 0;
@@ -354,7 +355,7 @@ describe('Settler', () => {
 
     test('should butcher dead enemy', () => {
         const mockEnemy = { id: 1, name: 'Goblin', isButchered: false, isMarkedForButcher: true };
-        const task = new Task('butcher', 0, 0, 'meat', 0.2, 2, null, null, null, null, null, null, mockEnemy);
+        const task = new Task(TASK_TYPES.BUTCHER, 0, 0, 'meat', 0.2, 2, null, null, null, null, null, null, mockEnemy);
         settler.currentTask = task;
         settler.x = 0;
         settler.y = 0;

@@ -1,6 +1,7 @@
 import Game from '../src/js/game.js';
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
+import { TASK_TYPES } from '../src/js/constants.js';
 
 // This test uses the real modules to verify that settlers do not
 // pick up haul tasks when they are already carrying a resource.
@@ -16,7 +17,7 @@ describe('Game hauling behavior', () => {
         game.settlers.push(settler);
         game.roomManager.setSettlers(game.settlers);
 
-        const haulTask = new Task('haul', 0, 0, 'wood', 1, 2, null, null, null, null, null, null, null, 0, 0);
+        const haulTask = new Task(TASK_TYPES.HAUL, 0, 0, 'wood', 1, 2, null, null, null, null, null, null, null, 0, 0);
         game.taskManager.addTask(haulTask);
 
         game.update(16);

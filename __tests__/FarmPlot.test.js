@@ -7,6 +7,12 @@ describe('FarmPlot', () => {
         farm = new FarmPlot(0, 0, new SpriteManager());
     });
 
+    test('default settings', () => {
+        expect(farm.autoSow).toBe(false);
+        expect(farm.autoHarvest).toBe(false);
+        expect(farm.desiredCrop).toBe('wheat');
+    });
+
     test('plant sets crop and stage', () => {
         expect(farm.plant('wheat')).toBe(true);
         expect(farm.crop).toBe('wheat');

@@ -37,16 +37,17 @@ describe('UI tooltips', () => {
         expect(ui.priorityButton.parentElement).toBe(ui.buildMenu);
     });
 
-    test('farm plot menu shows with correct button states', () => {
+    test('farm plot menu shows with correct controls', () => {
         const ui = new UI({});
         const mockGame = { addSowCropTask: jest.fn(), addHarvestCropTask: jest.fn() };
         ui.setGameInstance(mockGame);
-        const farmPlot = { crop: null, growthStage: 0, x: 1, y: 2 };
+        const farmPlot = { crop: null, growthStage: 0, desiredCrop: 'wheat', autoSow: false, autoHarvest: false, x: 1, y: 2 };
         ui.showFarmPlotMenu(farmPlot, 10, 20);
         expect(ui.farmPlotMenu.style.display).toBe('block');
-        expect(ui.plantWheatButton.disabled).toBe(false);
-        expect(ui.plantCottonButton.disabled).toBe(false);
+        expect(ui.sowButton.disabled).toBe(false);
         expect(ui.harvestButton.disabled).toBe(true);
+        expect(ui.wheatRadio.checked).toBe(true);
+        expect(ui.autoSowCheckbox.checked).toBe(false);
         ui.hideFarmPlotMenu();
         expect(ui.farmPlotMenu.style.display).toBe('none');
     });

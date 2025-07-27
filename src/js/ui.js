@@ -192,22 +192,74 @@ export default class UI {
         this.farmPlotMenu = document.createElement('div');
         this.farmPlotMenu.id = 'farm-plot-menu';
         this.farmPlotMenu.style.display = 'none';
-        this.plantWheatButton = document.createElement('button');
-        this.plantWheatButton.textContent = 'Plant wheat';
-        this.plantWheatButton.onclick = () => {
+
+        const cropTypeContainer = document.createElement('div');
+        this.wheatRadio = document.createElement('input');
+        this.wheatRadio.type = 'radio';
+        this.wheatRadio.name = 'crop-type';
+        this.wheatRadio.value = RESOURCE_TYPES.WHEAT;
+        const wheatLabel = document.createElement('label');
+        wheatLabel.textContent = 'Wheat';
+        wheatLabel.appendChild(this.wheatRadio);
+
+        this.cottonRadio = document.createElement('input');
+        this.cottonRadio.type = 'radio';
+        this.cottonRadio.name = 'crop-type';
+        this.cottonRadio.value = RESOURCE_TYPES.COTTON;
+        const cottonLabel = document.createElement('label');
+        cottonLabel.textContent = 'Cotton';
+        cottonLabel.appendChild(this.cottonRadio);
+
+        cropTypeContainer.appendChild(wheatLabel);
+        cropTypeContainer.appendChild(cottonLabel);
+        this.farmPlotMenu.appendChild(cropTypeContainer);
+
+        this.autoSowCheckbox = document.createElement('input');
+        this.autoSowCheckbox.type = 'checkbox';
+        const autoSowLabel = document.createElement('label');
+        autoSowLabel.textContent = 'Auto-sow';
+        autoSowLabel.appendChild(this.autoSowCheckbox);
+        this.farmPlotMenu.appendChild(autoSowLabel);
+        this.autoSowCheckbox.addEventListener('change', () => {
+            if (this.selectedFarmPlot) {
+                this.selectedFarmPlot.autoSow = this.autoSowCheckbox.checked;
+            }
+        });
+
+        this.autoHarvestCheckbox = document.createElement('input');
+        this.autoHarvestCheckbox.type = 'checkbox';
+        const autoHarvestLabel = document.createElement('label');
+        autoHarvestLabel.textContent = 'Auto-harvest';
+        autoHarvestLabel.appendChild(this.autoHarvestCheckbox);
+        this.farmPlotMenu.appendChild(autoHarvestLabel);
+        this.autoHarvestCheckbox.addEventListener('change', () => {
+            if (this.selectedFarmPlot) {
+                this.selectedFarmPlot.autoHarvest = this.autoHarvestCheckbox.checked;
+            }
+        });
+
+        this.wheatRadio.addEventListener('change', () => {
+            if (this.selectedFarmPlot && this.wheatRadio.checked) {
+                this.selectedFarmPlot.desiredCrop = RESOURCE_TYPES.WHEAT;
+            }
+        });
+        this.cottonRadio.addEventListener('change', () => {
+            if (this.selectedFarmPlot && this.cottonRadio.checked) {
+                this.selectedFarmPlot.desiredCrop = RESOURCE_TYPES.COTTON;
+            }
+        });
+
+        this.sowButton = document.createElement('button');
+        this.sowButton.textContent = 'Sow';
+        this.sowButton.onclick = () => {
             if (this.gameInstance && this.selectedFarmPlot) {
-                this.gameInstance.addSowCropTask(this.selectedFarmPlot, RESOURCE_TYPES.WHEAT);
+                const cropType = this.wheatRadio.checked ? RESOURCE_TYPES.WHEAT : RESOURCE_TYPES.COTTON;
+                this.selectedFarmPlot.desiredCrop = cropType;
+                this.gameInstance.addSowCropTask(this.selectedFarmPlot, cropType);
             }
             this.hideFarmPlotMenu();
         };
-        this.plantCottonButton = document.createElement('button');
-        this.plantCottonButton.textContent = 'Plant cotton';
-        this.plantCottonButton.onclick = () => {
-            if (this.gameInstance && this.selectedFarmPlot) {
-                this.gameInstance.addSowCropTask(this.selectedFarmPlot, RESOURCE_TYPES.COTTON);
-            }
-            this.hideFarmPlotMenu();
-        };
+
         this.harvestButton = document.createElement('button');
         this.harvestButton.textContent = 'Harvest';
         this.harvestButton.onclick = () => {
@@ -216,8 +268,8 @@ export default class UI {
             }
             this.hideFarmPlotMenu();
         };
-        this.farmPlotMenu.appendChild(this.plantWheatButton);
-        this.farmPlotMenu.appendChild(this.plantCottonButton);
+
+        this.farmPlotMenu.appendChild(this.sowButton);
         this.farmPlotMenu.appendChild(this.harvestButton);
         this.farmPlotMenu.addEventListener('mousedown', event => event.stopPropagation());
         this.farmPlotMenu.addEventListener('click', event => event.stopPropagation());
@@ -398,8 +450,11 @@ export default class UI {
         this.selectedFarmPlot = farmPlot;
         this.farmPlotMenu.style.left = `${screenX}px`;
         this.farmPlotMenu.style.top = `${screenY}px`;
-        this.plantWheatButton.disabled = farmPlot.crop !== null;
-        this.plantCottonButton.disabled = farmPlot.crop !== null;
+        this.wheatRadio.checked = farmPlot.desiredCrop === RESOURCE_TYPES.WHEAT;
+        this.cottonRadio.checked = farmPlot.desiredCrop === RESOURCE_TYPES.COTTON;
+        this.autoSowCheckbox.checked = farmPlot.autoSow;
+        this.autoHarvestCheckbox.checked = farmPlot.autoHarvest;
+        this.sowButton.disabled = farmPlot.crop !== null;
         this.harvestButton.disabled = farmPlot.growthStage !== 3;
         this.farmPlotMenu.style.display = 'block';
     }

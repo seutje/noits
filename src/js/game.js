@@ -196,6 +196,24 @@ export default class Game {
                 building.update(deltaTime * this.gameSpeed);
             }
 
+            if (building.type === 'farm_plot') {
+                const farmPlot = building;
+                if (farmPlot.autoSow && farmPlot.crop === null) {
+                    const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.SOW_CROP && t.building === farmPlot);
+                    const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.SOW_CROP && s.currentTask.building === farmPlot);
+                    if (!hasTask && !inProgress) {
+                        this.addSowCropTask(farmPlot, farmPlot.desiredCrop);
+                    }
+                }
+                if (farmPlot.autoHarvest && farmPlot.growthStage === 3) {
+                    const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.HARVEST_CROP && t.building === farmPlot);
+                    const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.HARVEST_CROP && s.currentTask.building === farmPlot);
+                    if (!hasTask && !inProgress) {
+                        this.addHarvestCropTask(farmPlot);
+                    }
+                }
+            }
+
             // Ensure a build task exists for unfinished buildings
             if (building.buildProgress < 100) {
                 const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.BUILD && t.building === building);

@@ -11,6 +11,9 @@ export default class FarmPlot extends Building {
         this.growthRate = 0.01; // How fast it grows per game tick
         this.spriteManager = spriteManager;
         this.farmPlotSprite = spriteManager.getSprite('farm_plot');
+        this.autoSow = false;
+        this.autoHarvest = false;
+        this.desiredCrop = RESOURCE_TYPES.WHEAT;
     }
 
     plant(cropType) {

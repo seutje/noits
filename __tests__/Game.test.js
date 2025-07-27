@@ -261,6 +261,20 @@ describe('Game', () => {
         expect(game.tradeManager.initiateTrade).toHaveBeenCalledWith('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     });
 
+    test('auto sow and harvest create tasks', () => {
+        const farmPlot = { type: 'farm_plot', x: 1, y: 2, crop: null, growthStage: 0, autoSow: true, autoHarvest: true, desiredCrop: 'wheat' };
+        game.map.getAllBuildings.mockReturnValue([farmPlot]);
+        game.taskManager.tasks = [];
+        game.update(16);
+        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.objectContaining({ type: TASK_TYPES.SOW_CROP }));
+
+        game.taskManager.addTask.mockClear();
+        farmPlot.crop = 'wheat';
+        farmPlot.growthStage = 3;
+        game.update(16);
+        expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.objectContaining({ type: TASK_TYPES.HARVEST_CROP }));
+    });
+
     test('handleClick marks dead enemy for butchering', () => {
         game.map.tileSize = 32;
         const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);

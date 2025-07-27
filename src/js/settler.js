@@ -289,7 +289,7 @@ export default class Settler {
                     const angle = Math.atan2(dy, dx);
                     const nx = this.x + Math.cos(angle) * speed;
                     const ny = this.y + Math.sin(angle) * speed;
-                    if (this.map.isTileWalkable(Math.floor(nx), Math.floor(ny))) {
+                    if (this.map.isTileWalkable(Math.floor(nx), Math.floor(ny), Math.floor(this.x), Math.floor(this.y))) {
                         this.x = nx;
                         this.y = ny;
                     } else {

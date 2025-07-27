@@ -101,18 +101,29 @@ export default class Map {
         this.buildings.push(building);
     }
 
-    isTileWalkable(x, y) {
+    isTileWalkable(x, y, fromX = null, fromY = null) {
         if (x < 0 || x >= this.width || y < 0 || y >= this.height) return false;
         if (this.getTile(x, y) === 8) return false; // water
         for (const building of this.buildings) {
-            if (
+            const inside =
                 x >= building.x &&
                 x < building.x + building.width &&
                 y >= building.y &&
                 y < building.y + building.height &&
                 !building.passable &&
-                building.buildProgress >= 100
-            ) {
+                building.buildProgress >= 100;
+            if (inside) {
+                if (fromX !== null && fromY !== null) {
+                    const fromInside =
+                        fromX >= building.x &&
+                        fromX < building.x + building.width &&
+                        fromY >= building.y &&
+                        fromY < building.y + building.height;
+                    if (fromInside) {
+                        // Allow movement if unit is already inside this building
+                        return true;
+                    }
+                }
                 return false;
             }
         }
@@ -219,7 +230,7 @@ export default class Map {
                 const nx = x + dx;
                 const ny = y + dy;
                 const key = `${nx},${ny}`;
-                if (!visited.has(key) && this.isTileWalkable(nx, ny)) {
+                if (!visited.has(key) && this.isTileWalkable(nx, ny, x, y)) {
                     visited.add(key);
                     queue.push({ x: nx, y: ny });
                     prev.set(key, { x, y });

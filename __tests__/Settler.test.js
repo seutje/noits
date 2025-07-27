@@ -27,7 +27,7 @@ describe('Settler', () => {
             addResourcePile: jest.fn(function(pile) { this.resourcePiles.push(pile); }),
             tileSize: 1,
             buildings: [],
-            isTileWalkable: function(x, y) {
+            isTileWalkable: function(x, y, fromX = null, fromY = null) {
                 const blocking = this.buildings.find(
                     b =>
                         x >= b.x &&
@@ -37,7 +37,18 @@ describe('Settler', () => {
                         !b.passable &&
                         b.buildProgress >= 100
                 );
-                return !blocking;
+                if (blocking) {
+                    if (fromX !== null && fromY !== null) {
+                        const fromInside =
+                            fromX >= blocking.x &&
+                            fromX < blocking.x + blocking.width &&
+                            fromY >= blocking.y &&
+                            fromY < blocking.y + blocking.height;
+                        if (fromInside) return true;
+                    }
+                    return false;
+                }
+                return true;
             },
             findPath: function(sx, sy, ex, ey) {
                 const queue = [{ x: sx, y: sy }];
@@ -67,7 +78,7 @@ describe('Settler', () => {
                         const nx = x + dx;
                         const ny = y + dy;
                         const key = `${nx},${ny}`;
-                        if (!visited.has(key) && this.isTileWalkable(nx, ny)) {
+                        if (!visited.has(key) && this.isTileWalkable(nx, ny, x, y)) {
                             visited.add(key);
                             queue.push({ x: nx, y: ny });
                             prev.set(key, { x, y });
@@ -225,6 +236,20 @@ describe('Settler', () => {
             settler.updateNeeds(1000);
         }
         expect(Math.round(settler.x)).toBe(1);
+        expect(Math.round(settler.y)).toBe(0);
+    });
+
+    test('settler can move out of completed wall tile', () => {
+        const wall = new Building(BUILDING_TYPES.WALL, 1, 0, 1, 1, 'wood', 100, 1, false);
+        mockMap.buildings = [wall];
+        const task = new Task('move', 2, 0);
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 0;
+        for (let i = 0; i < 40; i++) {
+            settler.updateNeeds(1000);
+        }
+        expect(Math.round(settler.x)).toBe(2);
         expect(Math.round(settler.y)).toBe(0);
     });
 

@@ -70,4 +70,17 @@ describe('TaskManager', () => {
         expect(taskManager.tasks).toContain(buildTask);
         expect(taskManager.tasks).not.toContain(haulTask);
     });
+
+    test('assignTasks chooses idle settler with highest priority', () => {
+        const settlerA = { name: 'A', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 2 } };
+        const settlerB = { name: 'B', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 5 } };
+        const buildTask = new Task(TASK_TYPES.BUILD, 1, 1);
+        taskManager.addTask(buildTask);
+
+        taskManager.assignTasks([settlerA, settlerB]);
+
+        expect(settlerB.currentTask).toBe(buildTask);
+        expect(settlerA.currentTask).toBeNull();
+        expect(taskManager.tasks.length).toBe(0);
+    });
 });

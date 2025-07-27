@@ -157,18 +157,17 @@ export default class Game {
                     console.log(`Treatment task created for ${settler.name}`);
                 }
             }
-            if (settler.state === "idle" && !settler.currentTask) {
-                const task = this.taskManager.getTaskForSettler(settler, t => !(
-                    settler.carrying &&
-                    (t.type === TASK_TYPES.HAUL || GATHER_TASK_TYPES.has(t.type))
-                ));
-                if (task) {
-                    settler.currentTask = task;
-                    console.log(`${settler.name} picked up task: ${task.type}`);
-                }
-            }
-            
+
         });
+        // Task assignment handled after all settlers update
+        this.taskManager.assignTasks(
+            this.settlers,
+            (task, settler) => !(
+                settler.carrying &&
+                (task.type === TASK_TYPES.HAUL || GATHER_TASK_TYPES.has(task.type))
+            )
+        );
+
 
         // Update enemies
         this.enemies.forEach(enemy => {

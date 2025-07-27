@@ -228,12 +228,57 @@ export default class Game {
                 }
             }
 
-            // Ensure a build task exists for unfinished buildings
+            // Queue hauling tasks for unfinished buildings and only start build
+            // tasks once materials are delivered
             if (building.buildProgress < 100) {
-                const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.BUILD && t.building === building);
-                const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.BUILD && s.currentTask.building === building);
-                if (!hasTask && !inProgress) {
-                    this.taskManager.addTask(new Task(TASK_TYPES.BUILD, building.x, building.y, null, 100, 2, building));
+                if (building.resourcesDelivered < building.resourcesRequired) {
+                    const hasHaul = this.taskManager.tasks.some(
+                        t => t.type === TASK_TYPES.HAUL && t.building === building,
+                    );
+                    const hauling = this.settlers.some(
+                        s =>
+                            s.currentTask &&
+                            s.currentTask.type === TASK_TYPES.HAUL &&
+                            s.currentTask.building === building,
+                    );
+                    if (!hasHaul && !hauling) {
+                        this.taskManager.addTask(
+                            new Task(
+                                TASK_TYPES.HAUL,
+                                building.x,
+                                building.y,
+                                building.material,
+                                building.resourcesRequired - building.resourcesDelivered,
+                                3,
+                                building,
+                            ),
+                        );
+                    }
+                }
+
+                if (building.resourcesDelivered >= building.resourcesRequired) {
+                    const hasTask = this.taskManager.tasks.some(
+                        t => t.type === TASK_TYPES.BUILD && t.building === building,
+                    );
+                    const inProgress = this.settlers.some(
+                        s =>
+                            s.currentTask &&
+                            s.currentTask.type === TASK_TYPES.BUILD &&
+                            s.currentTask.building === building,
+                    );
+                    if (!hasTask && !inProgress) {
+                        this.taskManager.addTask(
+                            new Task(
+                                TASK_TYPES.BUILD,
+                                building.x,
+                                building.y,
+                                null,
+                                100,
+                                2,
+                                building,
+                            ),
+                        );
+                    }
                 }
             }
         });

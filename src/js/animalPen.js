@@ -1,8 +1,9 @@
 import Building from './building.js';
+import { RESOURCE_TYPES } from './constants.js';
 
 export default class AnimalPen extends Building {
     constructor(x, y) {
-        super('animal_pen', x, y, 2, 2, 'wood', 100); // Animal pens are 2x2, built with wood, 100 health
+        super('animal_pen', x, y, 2, 2, RESOURCE_TYPES.WOOD, 100); // Animal pens are 2x2, built with wood, 100 health
         this.animals = []; // Array to hold animals
         this.maxAnimals = 5; // Max animals the pen can hold
     }

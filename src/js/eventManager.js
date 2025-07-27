@@ -1,5 +1,6 @@
 
 import ResourcePile from './resourcePile.js';
+import { RESOURCE_TYPES } from './constants.js';
 export default class EventManager {
     constructor(game, EnemyClass) {
         this.EnemyClass = EnemyClass;
@@ -23,7 +24,7 @@ export default class EventManager {
                     // Spawn a new enemy
                     if (this.game.settlers.length > 0) {
                         const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
-                        this.game.enemies.push(new this.EnemyClass("Wild Boar", 49, 29, targetSettler, this.game.spriteManager, 'meat'));
+                        this.game.enemies.push(new this.EnemyClass("Wild Boar", 49, 29, targetSettler, this.game.spriteManager, RESOURCE_TYPES.MEAT));
                         console.log("A wild boar has appeared!");
                     this.game.notificationManager.addNotification("A wild boar has appeared!", 'warning');
                     }
@@ -36,7 +37,7 @@ export default class EventManager {
                 action: () => {
                     console.log("Event: Resource Discovery!");
                     this.game.notificationManager.addNotification("You discovered a new resource node!", 'info');
-                    const resourceTypes = ["wood", "stone", "iron_ore"];
+                    const resourceTypes = [RESOURCE_TYPES.WOOD, RESOURCE_TYPES.STONE, RESOURCE_TYPES.IRON_ORE];
                     const randomResource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
                     const quantity = Math.floor(Math.random() * 50) + 20; // 20-70 units
                     this.game.resourceManager.addResource(randomResource, quantity);

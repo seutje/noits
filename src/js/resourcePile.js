@@ -1,5 +1,6 @@
 
 import Resource from './resource.js';
+import { RESOURCE_TYPES } from './constants.js';
 
 export default class ResourcePile extends Resource {
     static MAX_QUANTITY = 999;
@@ -17,32 +18,32 @@ export default class ResourcePile extends Resource {
     }
 
     render(ctx) {
-        const woodSprite = this.spriteManager.getSprite('wood');
+        const woodSprite = this.spriteManager.getSprite(RESOURCE_TYPES.WOOD);
         const stonePileSprite = this.spriteManager.getSprite('stone_pile');
-        const berriesSprite = this.spriteManager.getSprite('berries');
-        const meatSprite = this.spriteManager.getSprite('meat');
-        const mushroomsSprite = this.spriteManager.getSprite('mushrooms');
-        const bandageSprite = this.spriteManager.getSprite('bandage');
+        const berriesSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BERRIES);
+        const meatSprite = this.spriteManager.getSprite(RESOURCE_TYPES.MEAT);
+        const mushroomsSprite = this.spriteManager.getSprite(RESOURCE_TYPES.MUSHROOMS);
+        const bandageSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BANDAGE);
         const dirtPileSprite = this.spriteManager.getSprite('dirt_pile');
         const wheatPileSprite = this.spriteManager.getSprite('wheat_pile');
         const ironOrePileSprite = this.spriteManager.getSprite('iron_ore_pile');
-        if (this.type === 'wood' && woodSprite) {
+        if (this.type === RESOURCE_TYPES.WOOD && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'stone' && stonePileSprite) {
+        } else if (this.type === RESOURCE_TYPES.STONE && stonePileSprite) {
             ctx.drawImage(stonePileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'berries' && berriesSprite) {
+        } else if (this.type === RESOURCE_TYPES.BERRIES && berriesSprite) {
             ctx.drawImage(berriesSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'meat' && meatSprite) {
+        } else if (this.type === RESOURCE_TYPES.MEAT && meatSprite) {
             ctx.drawImage(meatSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'mushrooms' && mushroomsSprite) {
+        } else if (this.type === RESOURCE_TYPES.MUSHROOMS && mushroomsSprite) {
             ctx.drawImage(mushroomsSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'bandage' && bandageSprite) {
+        } else if (this.type === RESOURCE_TYPES.BANDAGE && bandageSprite) {
             ctx.drawImage(bandageSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'dirt' && dirtPileSprite) {
+        } else if (this.type === RESOURCE_TYPES.DIRT && dirtPileSprite) {
             ctx.drawImage(dirtPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'wheat' && wheatPileSprite) {
+        } else if (this.type === RESOURCE_TYPES.WHEAT && wheatPileSprite) {
             ctx.drawImage(wheatPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
-        } else if (this.type === 'iron_ore' && ironOrePileSprite) {
+        } else if (this.type === RESOURCE_TYPES.IRON_ORE && ironOrePileSprite) {
             ctx.drawImage(ironOrePileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
         else {

@@ -1,4 +1,5 @@
 import ResourcePile from './resourcePile.js';
+import { RESOURCE_TYPES } from './constants.js';
 
 export default class Building {
     constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1) {
@@ -68,7 +69,7 @@ export default class Building {
         } else {
             // Render based on health
             const healthOpacity = this.health / this.maxHealth;
-            ctx.fillStyle = this.material === "wood" ? `rgba(139, 69, 19, ${healthOpacity})` : `rgba(128, 128, 128, ${healthOpacity})`;
+            ctx.fillStyle = this.material === RESOURCE_TYPES.WOOD ? `rgba(139, 69, 19, ${healthOpacity})` : `rgba(128, 128, 128, ${healthOpacity})`;
         }
         ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
         ctx.strokeStyle = "black";

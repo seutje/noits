@@ -176,7 +176,7 @@ export default class UI {
         this.priorityButton = document.createElement('button');
         this.priorityButton.textContent = 'Task Priorities';
         this.priorityButton.onclick = () => this.togglePriorityManager();
-        this.uiContainer.appendChild(this.priorityButton);
+        this.buildMenu.appendChild(this.priorityButton);
 
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';

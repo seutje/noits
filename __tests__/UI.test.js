@@ -31,4 +31,9 @@ describe('UI tooltips', () => {
         ui.hideHelp();
         expect(ui.helpOverlay.style.display).toBe('none');
     });
+
+    test('priority button is placed in build menu', () => {
+        const ui = new UI({});
+        expect(ui.priorityButton.parentElement).toBe(ui.buildMenu);
+    });
 });

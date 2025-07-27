@@ -110,7 +110,8 @@ export default class Map {
                 x < building.x + building.width &&
                 y >= building.y &&
                 y < building.y + building.height &&
-                !building.passable
+                !building.passable &&
+                building.buildProgress >= 100
             ) {
                 return false;
             }

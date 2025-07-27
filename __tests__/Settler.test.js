@@ -28,7 +28,15 @@ describe('Settler', () => {
             tileSize: 1,
             buildings: [],
             isTileWalkable: function(x, y) {
-                const blocking = this.buildings.find(b => x >= b.x && x < b.x + b.width && y >= b.y && y < b.y + b.height && !b.passable);
+                const blocking = this.buildings.find(
+                    b =>
+                        x >= b.x &&
+                        x < b.x + b.width &&
+                        y >= b.y &&
+                        y < b.y + b.height &&
+                        !b.passable &&
+                        b.buildProgress >= 100
+                );
                 return !blocking;
             },
             findPath: function(sx, sy, ex, ey) {
@@ -203,6 +211,20 @@ describe('Settler', () => {
             settler.updateNeeds(1000);
         }
         expect(Math.round(settler.x)).toBe(2);
+        expect(Math.round(settler.y)).toBe(0);
+    });
+
+    test('settler can move onto incomplete wall tile', () => {
+        const wall = new Building(BUILDING_TYPES.WALL, 1, 0, 1, 1, 'wood', 50, 1, false);
+        mockMap.buildings = [wall];
+        const task = new Task('move', 1, 0);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+        for (let i = 0; i < 20; i++) {
+            settler.updateNeeds(1000);
+        }
+        expect(Math.round(settler.x)).toBe(1);
         expect(Math.round(settler.y)).toBe(0);
     });
 

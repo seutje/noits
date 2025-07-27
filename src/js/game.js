@@ -99,6 +99,10 @@ export default class Game {
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
             await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
             await this.spriteManager.loadImage('wheat_pile', 'src/assets/wheat_pile.png');
+            await this.spriteManager.loadImage('cotton_1', 'src/assets/cotton_1.png');
+            await this.spriteManager.loadImage('cotton_2', 'src/assets/cotton_2.png');
+            await this.spriteManager.loadImage('cotton_3', 'src/assets/cotton_3.png');
+            await this.spriteManager.loadImage('cotton_pile', 'src/assets/cotton_pile.png');
             await this.spriteManager.loadImage('iron_ore_pile', 'src/assets/iron_ore_pile.png');
         } catch (error) {
             console.error("Failed to load sprite:", error);
@@ -327,7 +331,7 @@ export default class Game {
         this.tradeManager.initiateTrade('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     }
 
-    addSowCropTask(farmPlot) {
+    addSowCropTask(farmPlot, cropType = RESOURCE_TYPES.WHEAT) {
         this.taskManager.addTask(
             new Task(
                 TASK_TYPES.SOW_CROP,
@@ -338,7 +342,7 @@ export default class Game {
                 3,
                 farmPlot,
                 null,
-                RESOURCE_TYPES.WHEAT
+                cropType
             )
         );
     }

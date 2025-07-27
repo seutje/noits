@@ -45,6 +45,7 @@ describe('UI tooltips', () => {
         ui.showFarmPlotMenu(farmPlot, 10, 20);
         expect(ui.farmPlotMenu.style.display).toBe('block');
         expect(ui.plantWheatButton.disabled).toBe(false);
+        expect(ui.plantCottonButton.disabled).toBe(false);
         expect(ui.harvestButton.disabled).toBe(true);
         ui.hideFarmPlotMenu();
         expect(ui.farmPlotMenu.style.display).toBe('none');

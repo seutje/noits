@@ -53,9 +53,9 @@ export default class FarmPlot extends Building {
 
         // Render crop based on growth stage
         if (this.crop) {
+            let spriteName;
+            const currentGrowthStage = Math.floor(this.growthStage);
             if (this.crop === RESOURCE_TYPES.WHEAT) {
-                let spriteName;
-                const currentGrowthStage = Math.floor(this.growthStage);
                 if (currentGrowthStage === 1) {
                     spriteName = 'wheat_1';
                 } else if (currentGrowthStage === 2) {
@@ -63,12 +63,20 @@ export default class FarmPlot extends Building {
                 } else if (currentGrowthStage >= 3) {
                     spriteName = 'wheat_3';
                 }
+            } else if (this.crop === RESOURCE_TYPES.COTTON) {
+                if (currentGrowthStage === 1) {
+                    spriteName = 'cotton_1';
+                } else if (currentGrowthStage === 2) {
+                    spriteName = 'cotton_2';
+                } else if (currentGrowthStage >= 3) {
+                    spriteName = 'cotton_3';
+                }
+            }
 
-                if (spriteName) {
-                    const sprite = this.spriteManager.getSprite(spriteName);
-                    if (sprite) {
-                        ctx.drawImage(sprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
-                    }
+            if (spriteName) {
+                const sprite = this.spriteManager.getSprite(spriteName);
+                if (sprite) {
+                    ctx.drawImage(sprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
                 }
             }
         }

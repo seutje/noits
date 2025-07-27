@@ -233,6 +233,20 @@ describe('Settler', () => {
         expect(settler.currentTask).toBe(null);
     });
 
+    test('should handle sow_crop task with cotton', () => {
+        const mockFarmPlot = {
+            plant: jest.fn().mockReturnValue(true)
+        };
+        const task = new Task(TASK_TYPES.SOW_CROP, 1, 1, null, 0, 3, mockFarmPlot, null, 'cotton');
+        settler.currentTask = task;
+        settler.x = 1;
+        settler.y = 1;
+
+        settler.updateNeeds(1000);
+        expect(mockFarmPlot.plant).toHaveBeenCalledWith('cotton');
+        expect(settler.currentTask).toBe(null);
+    });
+
     test('should handle harvest_crop task', () => {
         const mockFarmPlot = {
             harvest: jest.fn().mockReturnValue('wheat')

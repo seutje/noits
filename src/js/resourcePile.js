@@ -26,6 +26,7 @@ export default class ResourcePile extends Resource {
         const bandageSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BANDAGE);
         const dirtPileSprite = this.spriteManager.getSprite('dirt_pile');
         const wheatPileSprite = this.spriteManager.getSprite('wheat_pile');
+        const cottonPileSprite = this.spriteManager.getSprite('cotton_pile');
         const ironOrePileSprite = this.spriteManager.getSprite('iron_ore_pile');
         if (this.type === RESOURCE_TYPES.WOOD && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
@@ -43,6 +44,8 @@ export default class ResourcePile extends Resource {
             ctx.drawImage(dirtPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.WHEAT && wheatPileSprite) {
             ctx.drawImage(wheatPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else if (this.type === RESOURCE_TYPES.COTTON && cottonPileSprite) {
+            ctx.drawImage(cottonPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.IRON_ORE && ironOrePileSprite) {
             ctx.drawImage(ironOrePileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }

@@ -77,6 +77,7 @@ export default class Game {
             await this.spriteManager.loadImage('settler', 'src/assets/settler.png');
             await this.spriteManager.loadImage('tree', 'src/assets/tree.png');
             await this.spriteManager.loadImage('grass', 'src/assets/grass.png');
+            await this.spriteManager.loadImage('water', 'src/assets/water.png');
             await this.spriteManager.loadImage('berry_bush', 'src/assets/berry_bush.png');
             await this.spriteManager.loadImage('goblin', 'src/assets/goblin.png');
             await this.spriteManager.loadImage(RESOURCE_TYPES.STONE, 'src/assets/stone.png');

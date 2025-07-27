@@ -29,4 +29,30 @@ describe('Map resource piles', () => {
         pile.remove(5);
         expect(map.resourcePiles.length).toBe(0);
     });
+
+    test('should create clusters of water tiles', () => {
+        const map = new Map(50, 30, 32, { getSprite: jest.fn() });
+        const waterTiles = [];
+        for (let y = 0; y < map.height; y++) {
+            for (let x = 0; x < map.width; x++) {
+                if (map.tiles[y][x] === 8) {
+                    waterTiles.push({ x, y });
+                }
+            }
+        }
+        expect(waterTiles.length).toBeGreaterThan(0);
+        const hasCluster = waterTiles.some(tile => {
+            const { x, y } = tile;
+            const neighbors = [
+                [x + 1, y],
+                [x - 1, y],
+                [x, y + 1],
+                [x, y - 1],
+            ];
+            return neighbors.some(([nx, ny]) =>
+                nx >= 0 && nx < map.width && ny >= 0 && ny < map.height && map.tiles[ny][nx] === 8
+            );
+        });
+        expect(hasCluster).toBe(true);
+    });
 });

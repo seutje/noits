@@ -22,7 +22,8 @@ export default class Map {
             4: '#FF0000', // berries
             5: '#A9A9A9', // iron ore
             6: '#8B4513', // wild food
-            7: '#800000'  // animal
+            7: '#800000', // animal
+            8: '#0000FF'  // water
         };
     }
 
@@ -51,6 +52,26 @@ export default class Map {
                 }
             }
         }
+
+        const puddleChance = 0.01;
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                if (Math.random() < puddleChance) {
+                    const patchWidth = Math.floor(Math.random() * 2) + 2; // 2-3
+                    const patchHeight = Math.floor(Math.random() * 2) + 2; // 2-3
+                    for (let py = 0; py < patchHeight; py++) {
+                        for (let px = 0; px < patchWidth; px++) {
+                            const nx = x + px;
+                            const ny = y + py;
+                            if (nx < this.width && ny < this.height) {
+                                tiles[ny][nx] = 8; // water tile
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return tiles;
     }
 
@@ -119,6 +140,7 @@ export default class Map {
         const deerSprite = this.spriteManager.getSprite('deer');
         const dirtSprite = this.spriteManager.getSprite('dirt');
         const forageFoodSprite = this.spriteManager.getSprite('mushroom');
+        const waterSprite = this.spriteManager.getSprite('water');
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
@@ -145,6 +167,8 @@ export default class Map {
                     ctx.drawImage(dirtSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile === 6 && forageFoodSprite) {
                     ctx.drawImage(forageFoodSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
+                } else if (tile === 8 && waterSprite) {
+                    ctx.drawImage(waterSprite, x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 } else if (tile !== 0) {
                     ctx.fillStyle = this.tileColors[tile] || '#000000';
                     ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);

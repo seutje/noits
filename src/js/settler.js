@@ -417,7 +417,6 @@ export default class Settler {
                             const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, building.x, building.y, this.map.tileSize, this.spriteManager);
                             this.map.addResourcePile(newPile);
                         }
-                        building.resourcesDelivered += this.carrying.quantity;
                         const deliveredType = this.currentTask.resourceType;
                         this.carrying = null;
                         this.currentTask = null;

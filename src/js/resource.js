@@ -1,9 +1,13 @@
 
+import { RESOURCE_CATEGORIES } from './constants.js';
+
 export default class Resource {
-    constructor(type, quantity, quality = 1) {
+    constructor(type, quantity, quality = 1, categories = null) {
         this.type = type; // e.g., "wood", "stone", "food"
         this.quantity = quantity;
         this.quality = quality; // 1-100 scale, affects efficiency/value
+        // Use provided categories or fall back to defaults for the resource type
+        this.categories = categories ?? (RESOURCE_CATEGORIES[type] || []);
     }
 
     add(amount) {
@@ -22,7 +26,8 @@ export default class Resource {
         return {
             type: this.type,
             quantity: this.quantity,
-            quality: this.quality
+            quality: this.quality,
+            categories: this.categories
         };
     }
 
@@ -30,5 +35,6 @@ export default class Resource {
         this.type = data.type;
         this.quantity = data.quantity;
         this.quality = data.quality;
+        this.categories = data.categories ?? (RESOURCE_CATEGORIES[this.type] || []);
     }
 }

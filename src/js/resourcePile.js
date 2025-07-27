@@ -56,9 +56,7 @@ export default class ResourcePile extends Resource {
 
     serialize() {
         return {
-            type: this.type,
-            quantity: this.quantity,
-            quality: this.quality,
+            ...super.serialize(),
             x: this.x,
             y: this.y,
             tileSize: this.tileSize
@@ -66,9 +64,8 @@ export default class ResourcePile extends Resource {
     }
 
     deserialize(data) {
-        this.type = data.type;
-        this.quantity = Math.min(data.quantity, ResourcePile.MAX_QUANTITY);
-        this.quality = data.quality;
+        super.deserialize(data);
+        this.quantity = Math.min(this.quantity, ResourcePile.MAX_QUANTITY);
         this.x = data.x;
         this.y = data.y;
         this.tileSize = data.tileSize;

@@ -29,6 +29,10 @@ export default class ResourceManager {
         return this.resources;
     }
 
+    getResourcesByCategory(category) {
+        return Object.values(this.resources).filter(r => r.categories.includes(category));
+    }
+
     serialize() {
         const serializedResources = {};
         for (const type in this.resources) {
@@ -41,7 +45,12 @@ export default class ResourceManager {
         this.resources = {};
         for (const type in data) {
             const resourceData = data[type];
-            const resource = new Resource(resourceData.type, resourceData.quantity, resourceData.quality);
+            const resource = new Resource(
+                resourceData.type,
+                resourceData.quantity,
+                resourceData.quality,
+                resourceData.categories
+            );
             this.resources[type] = resource;
         }
     }

@@ -51,4 +51,12 @@ describe('ResourceManager', () => {
         expect(allResources.wood.quantity).toBe(100);
         expect(allResources.stone.quantity).toBe(50);
     });
+
+    test('should filter resources by category', () => {
+        resourceManager.addResource('berries', 10);
+        resourceManager.addResource('wood', 5);
+        const foods = resourceManager.getResourcesByCategory('food');
+        expect(foods.some(r => r.type === 'berries')).toBe(true);
+        expect(foods.some(r => r.type === 'wood')).toBe(false);
+    });
 });

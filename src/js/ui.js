@@ -1,5 +1,5 @@
 
-import { TASK_TYPES, RESOURCE_TYPES } from './constants.js';
+import { TASK_TYPES, RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 
 export default class UI {
     constructor(ctx) {
@@ -399,16 +399,16 @@ export default class UI {
 
         switch (categoryId) {
             case 'buildings':
-                createButton('Build Wall', 'wall', false, 'Builds a defensive wall.');
-                createButton('Build Floor', 'floor', false, 'Lays down a floor tile.');
-                createButton('Build Crafting Station', 'crafting_station', false, 'Allows settlers to craft items.');
-                createButton('Build Farm Plot', 'farm_plot', false, 'Used for growing crops.');
-                createButton('Build Animal Pen', 'animal_pen', false, 'Houses livestock.');
-                createButton('Build Barricade', 'barricade', false, 'A simple defensive barrier.');
+                createButton('Build Wall', BUILDING_TYPES.WALL, false, 'Builds a defensive wall.');
+                createButton('Build Floor', BUILDING_TYPES.FLOOR, false, 'Lays down a floor tile.');
+                createButton('Build Crafting Station', BUILDING_TYPES.CRAFTING_STATION, false, 'Allows settlers to craft items.');
+                createButton('Build Farm Plot', BUILDING_TYPES.FARM_PLOT, false, 'Used for growing crops.');
+                createButton('Build Animal Pen', BUILDING_TYPES.ANIMAL_PEN, false, 'Houses livestock.');
+                createButton('Build Barricade', BUILDING_TYPES.BARRICADE, false, 'A simple defensive barrier.');
                 break;
             case 'furniture':
-                createButton('Place Bed', 'bed', false, 'Provides a place for settlers to sleep.');
-                createButton('Place Table', 'table', false, 'A surface for various activities.');
+                createButton('Place Bed', BUILDING_TYPES.BED, false, 'Provides a place for settlers to sleep.');
+                createButton('Place Table', BUILDING_TYPES.TABLE, false, 'A surface for various activities.');
                 break;
             case 'zones':
                 createButton('Designate Bedroom', 'bedroom', true, 'Designates an area as a bedroom.');

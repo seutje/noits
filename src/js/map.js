@@ -4,6 +4,7 @@ import CraftingStation from './craftingStation.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import Furniture from './furniture.js';
+import { BUILDING_TYPES } from './constants.js';
 
 export default class Map {
     constructor(width, height, tileSize, spriteManager) {
@@ -222,7 +223,7 @@ export default class Map {
         const floors = [];
         const nonFloors = [];
         for (const building of this.buildings) {
-            if (building.type === 'floor') {
+            if (building.type === BUILDING_TYPES.FLOOR) {
                 floors.push(building);
             } else {
                 nonFloors.push(building);
@@ -263,19 +264,19 @@ export default class Map {
         this.buildings = data.buildings.map(buildingData => {
             // Re-instantiate based on type if needed, otherwise use base Building
             let building;
-            if (buildingData.type === 'crafting_station') {
+            if (buildingData.type === BUILDING_TYPES.CRAFTING_STATION) {
                 building = new CraftingStation(buildingData.x, buildingData.y, this.spriteManager);
-            } else if (buildingData.type === 'farm_plot') {
+            } else if (buildingData.type === BUILDING_TYPES.FARM_PLOT) {
                 building = new FarmPlot(buildingData.x, buildingData.y, this.spriteManager);
-            } else if (buildingData.type === 'animal_pen') {
+            } else if (buildingData.type === BUILDING_TYPES.ANIMAL_PEN) {
                 building = new AnimalPen(buildingData.x, buildingData.y);
-            } else if (buildingData.type === 'bed' || buildingData.type === 'table') {
+            } else if (buildingData.type === BUILDING_TYPES.BED || buildingData.type === BUILDING_TYPES.TABLE) {
                 building = new Furniture(buildingData.type, buildingData.x, buildingData.y, 1, 1, buildingData.material, buildingData.health, this.spriteManager);
             } else {
                 building = new Building(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
             }
             building.deserialize(buildingData);
-            if (building.type === 'bed' || building.type === 'table') {
+            if (building.type === BUILDING_TYPES.BED || building.type === BUILDING_TYPES.TABLE) {
                 building.width = 1;
                 building.height = 1;
             }

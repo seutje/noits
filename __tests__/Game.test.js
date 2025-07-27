@@ -1,4 +1,5 @@
 import Game from '../src/js/game.js';
+import { BUILDING_TYPES } from '../src/js/constants.js';
 import Map from '../src/js/map.js';
 import UI from '../src/js/ui.js';
 import ResourceManager from '../src/js/resourceManager.js';
@@ -101,17 +102,17 @@ describe('Game', () => {
     });
 
     test('toggleBuildMode should set buildMode and selectedBuilding', () => {
-        game.toggleBuildMode('wall');
+        game.toggleBuildMode(BUILDING_TYPES.WALL);
         expect(game.buildMode).toBe(true);
-        expect(game.selectedBuilding).toBe('wall');
+        expect(game.selectedBuilding).toBe(BUILDING_TYPES.WALL);
 
-        game.toggleBuildMode('wall'); // Toggle off
+        game.toggleBuildMode(BUILDING_TYPES.WALL); // Toggle off
         expect(game.buildMode).toBe(false);
         expect(game.selectedBuilding).toBe(null);
 
-        game.toggleBuildMode('floor'); // Toggle on with new type
+        game.toggleBuildMode(BUILDING_TYPES.FLOOR); // Toggle on with new type
         expect(game.buildMode).toBe(true);
-        expect(game.selectedBuilding).toBe('floor');
+        expect(game.selectedBuilding).toBe(BUILDING_TYPES.FLOOR);
     });
 
     test('handleClick should place a building when in build mode', () => {
@@ -119,14 +120,14 @@ describe('Game', () => {
         const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
         game.map.findAdjacentFreeTile = jest.fn().mockReturnValue({ x: expectedTileX + 1, y: expectedTileY });
-        game.toggleBuildMode('wall');
+        game.toggleBuildMode(BUILDING_TYPES.WALL);
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
 
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
         expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
         // Verify the Building constructor was called with correct arguments
         expect(Building).toHaveBeenCalledWith(
-            'wall',
+            BUILDING_TYPES.WALL,
             expectedTileX,
             expectedTileY,
             1,
@@ -156,13 +157,13 @@ describe('Game', () => {
         const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
         game.map.findAdjacentFreeTile = jest.fn().mockReturnValue({ x: expectedTileX + 1, y: expectedTileY });
-        game.toggleBuildMode('farm_plot');
+        game.toggleBuildMode(BUILDING_TYPES.FARM_PLOT);
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
 
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
         expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
         expect(Building).toHaveBeenCalledWith(
-            'farm_plot',
+            BUILDING_TYPES.FARM_PLOT,
             expectedTileX,
             expectedTileY,
             1,
@@ -188,7 +189,7 @@ describe('Game', () => {
     test('handleClick on farm plot shows menu', () => {
         const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const tileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
-        const farmPlot = { type: 'farm_plot', x: tileX, y: tileY, growthStage: 0 };
+        const farmPlot = { type: BUILDING_TYPES.FARM_PLOT, x: tileX, y: tileY, growthStage: 0 };
         game.map.getBuildingAt.mockReturnValue(farmPlot);
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         expect(game.ui.showFarmPlotMenu).toHaveBeenCalledWith(farmPlot, 100, 100);
@@ -264,7 +265,7 @@ describe('Game', () => {
     });
 
     test('auto sow and harvest create tasks', () => {
-        const farmPlot = { type: 'farm_plot', x: 1, y: 2, crop: null, growthStage: 0, autoSow: true, autoHarvest: true, desiredCrop: 'wheat' };
+        const farmPlot = { type: BUILDING_TYPES.FARM_PLOT, x: 1, y: 2, crop: null, growthStage: 0, autoSow: true, autoHarvest: true, desiredCrop: 'wheat' };
         game.map.getAllBuildings.mockReturnValue([farmPlot]);
         game.taskManager.tasks = [];
         game.update(16);

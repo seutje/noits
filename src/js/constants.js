@@ -5,6 +5,18 @@ export const ACTION_BEEP_URL = "data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAA
 export const SLEEP_GAIN_RATE = 0.01; // base sleep recovery per second
 export const HEALTH_REGEN_RATE = 0.005; // base health regen per second at full hunger
 
+// Building types used across the game
+export const BUILDING_TYPES = {
+  WALL: 'wall',
+  FLOOR: 'floor',
+  CRAFTING_STATION: 'crafting_station',
+  FARM_PLOT: 'farm_plot',
+  ANIMAL_PEN: 'animal_pen',
+  BARRICADE: 'barricade',
+  BED: 'bed',
+  TABLE: 'table'
+};
+
 // Resource types used throughout the game
 export const RESOURCE_TYPES = {
   WOOD: 'wood',

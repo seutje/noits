@@ -1,6 +1,6 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
-import { TASK_TYPES, HEALTH_REGEN_RATE } from '../src/js/constants.js';
+import { TASK_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES } from '../src/js/constants.js';
 import ResourcePile from '../src/js/resourcePile.js';
 
 jest.mock('../src/js/resourceManager.js');
@@ -520,7 +520,7 @@ describe('Settler', () => {
     });
 
     test('seeking_sleep finds a bed and assigns sleep task', () => {
-        const bed = { type: 'bed', x: 1, y: 1, occupant: null };
+        const bed = { type: BUILDING_TYPES.BED, x: 1, y: 1, occupant: null };
         mockMap.buildings = [bed];
         settler.sleep = 10;
 

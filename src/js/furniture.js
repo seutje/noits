@@ -1,4 +1,5 @@
 import Building from './building.js';
+import { BUILDING_TYPES } from './constants.js';
 
 export default class Furniture extends Building {
     constructor(type, x, y, width, height, material, health, spriteManager = null) {
@@ -7,7 +8,7 @@ export default class Furniture extends Building {
         this.spriteManager = spriteManager;
         this.sprite = spriteManager ? spriteManager.getSprite(type) : null;
         this.isFurniture = true;
-        if (type === 'bed') {
+        if (type === BUILDING_TYPES.BED) {
             this.occupant = null; // Settler currently using the bed
         }
     }

@@ -554,12 +554,13 @@ export default class Game {
                     this.taskManager.addTask(new Task(TASK_TYPES.TEND_ANIMALS, tileX, tileY, null, 0, 3, animalPen));
                     console.log(`Tend animals task added at ${tileX},${tileY}`);
                 } else if (typeof clickedBuilding.takeDamage === 'function') {
-                    clickedBuilding.takeDamage(25); // Example: 25 damage per click
-                    if (clickedBuilding.health <= 0) {
-                        clickedBuilding.spillInventory(this.map);
-                        this.map.removeBuilding(clickedBuilding);
-                        console.log(`Building at ${tileX},${tileY} destroyed.`);
-                    }
+                    // Temporarily disabled direct damage on mouse clicks
+                    // clickedBuilding.takeDamage(25); // Example: 25 damage per click
+                    // if (clickedBuilding.health <= 0) {
+                    //     clickedBuilding.spillInventory(this.map);
+                    //     this.map.removeBuilding(clickedBuilding);
+                    //     console.log(`Building at ${tileX},${tileY} destroyed.`);
+                    // }
                 } else {
                     console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
                 }

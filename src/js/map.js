@@ -187,11 +187,15 @@ export default class Map {
             } else if (buildingData.type === 'animal_pen') {
                 building = new AnimalPen(buildingData.x, buildingData.y);
             } else if (buildingData.type === 'bed' || buildingData.type === 'table') {
-                building = new Furniture(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
+                building = new Furniture(buildingData.type, buildingData.x, buildingData.y, 1, 1, buildingData.material, buildingData.health);
             } else {
                 building = new Building(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
             }
             building.deserialize(buildingData);
+            if (building.type === 'bed' || building.type === 'table') {
+                building.width = 1;
+                building.height = 1;
+            }
             return building;
         });
     }

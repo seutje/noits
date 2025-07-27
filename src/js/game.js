@@ -148,7 +148,10 @@ export default class Game {
         this.settlers.forEach(settler => {
             settler.updateNeeds(deltaTime * this.gameSpeed);
             if (settler.needsTreatment() && this.map.resourcePiles.some(p => p.type === RESOURCE_TYPES.BANDAGE && p.quantity > 0)) {
-                const availableSettler = this.settlers.find(s => s.state === 'idle' && s !== settler);
+                const availableSettler = this.settlers.find(s =>
+                    !s.currentTask &&
+                    (s.state === 'idle' || (s === settler && s.state === 'seeking_treatment'))
+                );
                 const existingTreatmentTask = this.taskManager.hasTaskForTargetSettler(settler) ||
                                              this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.TREATMENT && s.currentTask.targetSettler === settler);
 

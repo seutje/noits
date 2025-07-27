@@ -55,7 +55,9 @@ export default class TaskManager {
             let bestSettler = null;
             let bestPriority = -1;
             settlers.forEach(settler => {
-                if (settler.state !== 'idle' || settler.currentTask) return;
+                if (settler.currentTask) return;
+                const isSelfTreatment = task.type === TASK_TYPES.TREATMENT && task.targetSettler === settler;
+                if (settler.state !== 'idle' && !(isSelfTreatment && settler.state === 'seeking_treatment')) return;
                 const priority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
                 if (priority > 0 && (!filterFn || filterFn(task, settler))) {
                     if (priority > bestPriority) {

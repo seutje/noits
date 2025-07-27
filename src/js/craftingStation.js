@@ -3,8 +3,10 @@ import Recipe from './recipe.js';
 import { RESOURCE_TYPES } from './constants.js';
 
 export default class CraftingStation extends Building {
-    constructor(x, y) {
+    constructor(x, y, spriteManager = null) {
         super("crafting_station", x, y, 1, 1, RESOURCE_TYPES.WOOD, 0);
+        this.spriteManager = spriteManager;
+        this.stationSprite = spriteManager ? spriteManager.getSprite('crafting_station') : null;
         this.recipes = []; // List of recipes this station can craft
         this.autoCraft = false;
         this.desiredRecipe = null;
@@ -38,9 +40,14 @@ export default class CraftingStation extends Building {
 
     render(ctx, tileSize) {
         super.render(ctx, tileSize);
-        ctx.fillStyle = "purple"; // Example color for crafting station
-        ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
+
+        if (this.buildProgress === 100 && this.stationSprite) {
+            ctx.drawImage(this.stationSprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+        } else {
+            ctx.fillStyle = "purple"; // Example color for crafting station
+            ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);
+        }
     }
 }

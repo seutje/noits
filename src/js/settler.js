@@ -1,8 +1,7 @@
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
-
-const SLEEP_GAIN_RATE = 0.01; // base sleep recovery per second
+import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED } from './constants.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
@@ -241,7 +240,7 @@ export default class Settler {
         // Execute current task
         if (this.currentTask) {
             // Move towards the target
-            const speed = 0.5; // tiles per second
+            const speed = SETTLER_RUN_SPEED; // tiles per second
             if (this.x < this.currentTask.targetX) {
                 this.x += speed * (deltaTime / 1000);
             } else if (this.x > this.currentTask.targetX) {
@@ -570,7 +569,7 @@ export default class Settler {
             }
         } else if (this.state === "combat" && this.targetEnemy) {
             // Move towards the enemy
-            const speed = 0.5; // tiles per second
+            const speed = SETTLER_RUN_SPEED; // tiles per second
             const distance = Math.sqrt(Math.pow(this.x - this.targetEnemy.x, 2) + Math.pow(this.y - this.targetEnemy.y, 2));
             const attackRange = 1.5; // Settler needs to be within this range to attack
 

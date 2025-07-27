@@ -1,5 +1,6 @@
 
 import Settler from './settler.js';
+import { ENEMY_RUN_SPEED } from './constants.js';
 
 let enemyIdCounter = 0;
 
@@ -38,7 +39,7 @@ export default class Enemy {
                 this.targetSettler = null;
             } else {
                 // Move towards the target settler
-                const speed = 0.3; // tiles per second
+                const speed = ENEMY_RUN_SPEED; // tiles per second
                 if (this.x < this.targetSettler.x) {
                     this.x += speed * (deltaTime / 1000);
                 } else if (this.x > this.targetSettler.x) {

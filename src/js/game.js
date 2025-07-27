@@ -480,9 +480,9 @@ export default class Game {
             } else if (this.selectedBuilding === 'animal_pen') {
                 newBuilding = new AnimalPen(tileX, tileY);
             } else if (this.selectedBuilding === 'bed') {
-                newBuilding = new Furniture('bed', tileX, tileY, 1, 2, RESOURCE_TYPES.WOOD, 50);
+                newBuilding = new Furniture('bed', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50);
             } else if (this.selectedBuilding === 'table') {
-                newBuilding = new Furniture('table', tileX, tileY, 2, 1, RESOURCE_TYPES.WOOD, 75);
+                newBuilding = new Furniture('table', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75);
             } else if (this.selectedBuilding === 'barricade') {
                 newBuilding = new Building('barricade', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === 'wall') {

@@ -189,6 +189,32 @@ export default class UI {
         });
         document.body.appendChild(this.priorityOverlay);
 
+        this.farmPlotMenu = document.createElement('div');
+        this.farmPlotMenu.id = 'farm-plot-menu';
+        this.farmPlotMenu.style.display = 'none';
+        this.plantWheatButton = document.createElement('button');
+        this.plantWheatButton.textContent = 'Plant wheat';
+        this.plantWheatButton.onclick = () => {
+            if (this.gameInstance && this.selectedFarmPlot) {
+                this.gameInstance.addSowCropTask(this.selectedFarmPlot);
+            }
+            this.hideFarmPlotMenu();
+        };
+        this.harvestButton = document.createElement('button');
+        this.harvestButton.textContent = 'Harvest';
+        this.harvestButton.onclick = () => {
+            if (this.gameInstance && this.selectedFarmPlot) {
+                this.gameInstance.addHarvestCropTask(this.selectedFarmPlot);
+            }
+            this.hideFarmPlotMenu();
+        };
+        this.farmPlotMenu.appendChild(this.plantWheatButton);
+        this.farmPlotMenu.appendChild(this.harvestButton);
+        this.farmPlotMenu.addEventListener('mousedown', event => event.stopPropagation());
+        this.farmPlotMenu.addEventListener('click', event => event.stopPropagation());
+        document.addEventListener('click', () => this.hideFarmPlotMenu());
+        document.body.appendChild(this.farmPlotMenu);
+
         this.tooltip = document.createElement('div');
         this.tooltip.id = 'tooltip';
         document.body.appendChild(this.tooltip);
@@ -357,5 +383,19 @@ export default class UI {
         } else {
             this.hidePriorityManager();
         }
+    }
+
+    showFarmPlotMenu(farmPlot, screenX, screenY) {
+        this.selectedFarmPlot = farmPlot;
+        this.farmPlotMenu.style.left = `${screenX}px`;
+        this.farmPlotMenu.style.top = `${screenY}px`;
+        this.plantWheatButton.disabled = farmPlot.crop !== null;
+        this.harvestButton.disabled = farmPlot.growthStage !== 3;
+        this.farmPlotMenu.style.display = 'block';
+    }
+
+    hideFarmPlotMenu() {
+        this.farmPlotMenu.style.display = 'none';
+        this.selectedFarmPlot = null;
     }
 }

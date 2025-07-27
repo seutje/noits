@@ -93,6 +93,15 @@ canvas {
     display: none;
 }
 
+#farm-plot-menu {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+}
+
 .priority-label {
     margin-right: 10px;
 }

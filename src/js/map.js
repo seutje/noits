@@ -53,7 +53,7 @@ export default class Map {
             }
         }
 
-        const puddleChance = 0.01;
+        const puddleChance = 0.005;
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 if (Math.random() < puddleChance) {

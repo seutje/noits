@@ -301,7 +301,7 @@ export default class Game {
         this.map.render(this.ctx);
         this.roomManager.render(this.ctx, this.map.tileSize);
 
-        
+
 
         // Render settlers
         this.settlers.forEach(settler => {
@@ -314,6 +314,24 @@ export default class Game {
         });
 
         this.camera.resetTransform();
+
+        if (this.isPaused) {
+            this.drawPauseOverlay();
+        }
+    }
+
+    drawPauseOverlay() {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = 'bold 48px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        const centerX = this.ctx.canvas.width / 2;
+        const centerY = this.ctx.canvas.height / 2;
+        this.ctx.fillText('Paused', centerX, centerY - 20);
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText('press p to unpause', centerX, centerY + 20);
     }
 
     gameLoop(timestamp) {
@@ -322,8 +340,8 @@ export default class Game {
 
         if (!this.isPaused) {
             this.update(deltaTime);
-            this.render();
         }
+        this.render();
 
         requestAnimationFrame(this.gameLoop);
     }

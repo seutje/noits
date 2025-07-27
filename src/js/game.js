@@ -156,7 +156,7 @@ export default class Game {
                 }
             }
             if (settler.state === "idle" && !settler.currentTask) {
-                const task = this.taskManager.getTask();
+                const task = this.taskManager.getTask(t => !(settler.carrying && t.type === 'haul'));
                 if (task) {
                     settler.currentTask = task;
                     console.log(`${settler.name} picked up task: ${task.type}`);

@@ -42,4 +42,17 @@ describe('TaskManager', () => {
         expect(taskManager.tasks[1]).toBe(taskMedium);
         expect(taskManager.tasks[2]).toBe(taskLow);
     });
+
+    test('getTask can use a filter function', () => {
+        const haulTask = new Task('haul', 1, 1);
+        const buildTask = new Task('build', 2, 2);
+        taskManager.addTask(haulTask);
+        taskManager.addTask(buildTask);
+
+        const task = taskManager.getTask(t => t.type === 'build');
+
+        expect(task).toBe(buildTask);
+        expect(taskManager.tasks).toContain(haulTask);
+        expect(taskManager.tasks).not.toContain(buildTask);
+    });
 });

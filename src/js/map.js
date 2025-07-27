@@ -56,6 +56,7 @@ export default class Map {
 
     addResourcePile(resourcePile) {
         resourcePile.spriteManager = this.spriteManager; // Assign spriteManager to the resource pile
+        resourcePile.map = this;
         const existing = this.resourcePiles.find(p => p.x === resourcePile.x && p.y === resourcePile.y);
         if (existing) {
             if (existing.type === resourcePile.type) {
@@ -68,6 +69,10 @@ export default class Map {
             this.resourcePiles.push(resourcePile);
         }
         return true;
+    }
+
+    removeResourcePile(pile) {
+        this.resourcePiles = this.resourcePiles.filter(p => p !== pile);
     }
 
     addBuilding(building) {
@@ -175,6 +180,7 @@ export default class Map {
         this.resourcePiles = data.resourcePiles.map(pileData => {
             const pile = new ResourcePile(pileData.type, pileData.quantity, pileData.x, pileData.y, this.tileSize, this.spriteManager);
             pile.deserialize(pileData);
+            pile.map = this;
             return pile;
         });
         this.buildings = data.buildings.map(buildingData => {

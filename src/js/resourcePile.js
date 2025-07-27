@@ -11,10 +11,19 @@ export default class ResourcePile extends Resource {
         this.y = y;
         this.tileSize = tileSize;
         this.spriteManager = spriteManager;
+        this.map = null;
     }
 
     add(amount) {
         this.quantity = Math.min(this.quantity + amount, ResourcePile.MAX_QUANTITY);
+    }
+
+    remove(amount) {
+        const success = super.remove(amount);
+        if (success && this.quantity <= 0 && this.map) {
+            this.map.removeResourcePile(this);
+        }
+        return success;
     }
 
     render(ctx) {

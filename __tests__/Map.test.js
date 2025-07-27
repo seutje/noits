@@ -20,4 +20,13 @@ describe('Map resource piles', () => {
         expect(map.resourcePiles.length).toBe(1);
         expect(map.resourcePiles[0].quantity).toBe(15);
     });
+
+    test('should remove pile when quantity reaches zero', () => {
+        const map = new Map(10, 10, 32, { getSprite: jest.fn() });
+        const pile = new ResourcePile('wood', 5, 3, 3, 32, {});
+        map.addResourcePile(pile);
+        expect(map.resourcePiles.length).toBe(1);
+        pile.remove(5);
+        expect(map.resourcePiles.length).toBe(0);
+    });
 });

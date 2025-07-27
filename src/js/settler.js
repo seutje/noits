@@ -47,6 +47,7 @@ export default class Settler {
         this.isSleeping = false; // True when settler is sleeping
         this.sleepingInBed = false; // True when sleeping in a bed
         this.currentBed = null; // Reference to bed building when sleeping in one
+        this.currentBuilding = null; // Building this settler is currently using
     }
 
     equipWeapon(weapon) {
@@ -329,6 +330,16 @@ export default class Settler {
                     const recipe = this.currentTask.recipe;
                     const station = this.currentTask.building;
 
+                    if (station) {
+                        if (station.occupant && station.occupant !== this) {
+                            return; // Wait if another settler is using the station
+                        }
+                        if (!station.occupant) {
+                            station.occupant = this;
+                            this.currentBuilding = station;
+                        }
+                    }
+
                     if (!this.currentTask.inputsConsumed) {
                         let resourcesAvailable = true;
                         for (const input of recipe.inputs) {
@@ -372,6 +383,10 @@ export default class Settler {
                             this.map.addResourcePile(pile);
                         }
                         console.log(`${this.name} completed crafting ${recipe.name}.`);
+                        if (station && station.occupant === this) {
+                            station.occupant = null;
+                            this.currentBuilding = null;
+                        }
                         this.currentTask = null;
                     }
                 } else if (

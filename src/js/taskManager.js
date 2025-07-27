@@ -52,10 +52,17 @@ export default class TaskManager {
     assignTasks(settlers, filterFn = null) {
         for (let i = 0; i < this.tasks.length; ) {
             const task = this.tasks[i];
+            let eligibleSettlers = settlers.filter(s => !s.currentTask);
+            if (task.building) {
+                if (task.building.occupant) {
+                    eligibleSettlers = eligibleSettlers.filter(s => s === task.building.occupant);
+                } else {
+                    eligibleSettlers = eligibleSettlers.filter(s => s.x === task.building.x && s.y === task.building.y);
+                }
+            }
             let bestSettler = null;
             let bestPriority = -1;
-            settlers.forEach(settler => {
-                if (settler.currentTask) return;
+            eligibleSettlers.forEach(settler => {
                 const isSelfTreatment = task.type === TASK_TYPES.TREATMENT && task.targetSettler === settler;
                 if (settler.state !== 'idle' && !(isSelfTreatment && settler.state === 'seeking_treatment')) return;
                 const priority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
@@ -67,7 +74,15 @@ export default class TaskManager {
                 }
             });
             if (bestSettler) {
+                if (bestSettler.currentBuilding && bestSettler.currentBuilding !== task.building) {
+                    bestSettler.currentBuilding.occupant = null;
+                    bestSettler.currentBuilding = null;
+                }
                 bestSettler.currentTask = task;
+                if (task.building) {
+                    task.building.occupant = bestSettler;
+                    bestSettler.currentBuilding = task.building;
+                }
                 this.tasks.splice(i, 1);
                 console.log(`${bestSettler.name} picked up task: ${task.type}`);
             } else {

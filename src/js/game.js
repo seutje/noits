@@ -97,6 +97,7 @@ export default class Game {
             await this.spriteManager.loadImage(RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png');
             await this.spriteManager.loadImage('crafting_station', 'src/assets/crafting_station.png');
             await this.spriteManager.loadImage('table', 'src/assets/table.png');
+            await this.spriteManager.loadImage('bed', 'src/assets/bed.png');
             await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
             await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');

@@ -131,13 +131,16 @@ export default class Map {
         return this.buildings;
     }
 
-    findAdjacentFreeTile(x, y) {
+    findAdjacentFreeTile(x, y, fromX = null, fromY = null) {
         const directions = [
             { dx: 1, dy: 0 },
             { dx: -1, dy: 0 },
             { dx: 0, dy: 1 },
             { dx: 0, dy: -1 },
         ];
+
+        let best = null;
+        let bestDist = Infinity;
 
         for (const { dx, dy } of directions) {
             const nx = x + dx;
@@ -150,10 +153,19 @@ export default class Map {
                 this.getTile(nx, ny) !== 8 &&
                 !this.getBuildingAt(nx, ny)
             ) {
-                return { x: nx, y: ny };
+                if (fromX !== null && fromY !== null) {
+                    const dist = (fromX - nx) ** 2 + (fromY - ny) ** 2;
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        best = { x: nx, y: ny };
+                    }
+                } else {
+                    return { x: nx, y: ny };
+                }
             }
         }
 
+        if (best) return best;
         return { x, y };
     }
 

@@ -1,6 +1,7 @@
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
+import { findPath } from './pathfinding.js';
 import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES } from './constants.js';
 
 export default class Settler {
@@ -13,6 +14,7 @@ export default class Settler {
         this.name = name;
         this.x = x;
         this.y = y;
+        this.path = null;
         this.health = 100; // 0-100
         this.bodyParts = {
             head: { health: 100, bleeding: false },
@@ -27,6 +29,7 @@ export default class Settler {
         this.mood = 100; // 0-100, 0 means very unhappy
         this.state = "idle"; // e.g., "idle", "seeking_food", "seeking_sleep"
         this.currentTask = null;
+        this.path = null;
         this.carrying = null; // { type: "wood", quantity: 1 }
         this.skills = {
             farming: 1,
@@ -194,6 +197,7 @@ export default class Settler {
             this.isSleeping = true;
             this.sleepingInBed = false;
             this.currentTask = null;
+            this.path = null;
             this.state = 'sleeping';
             console.log(`${this.name} collapsed from exhaustion.`);
         }
@@ -268,246 +272,297 @@ export default class Settler {
 
         // Execute current task
         if (this.currentTask) {
-            // Move towards the target
-            const speed = SETTLER_RUN_SPEED; // tiles per second
-            if (this.x < this.currentTask.targetX) {
-                this.x += speed * (deltaTime / 1000);
-            } else if (this.x > this.currentTask.targetX) {
-                this.x -= speed * (deltaTime / 1000);
-            }
-            if (this.y < this.currentTask.targetY) {
-                this.y += speed * (deltaTime / 1000);
-            } else if (this.y > this.currentTask.targetY) {
-                this.y -= speed * (deltaTime / 1000);
+            if (!this.path) {
+                this.path = findPath({ x: Math.floor(this.x), y: Math.floor(this.y) }, { x: this.currentTask.targetX, y: this.currentTask.targetY }, this.map);
             }
 
-            // Check if arrived at target
-            if (Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed) {
-                this.x = this.currentTask.targetX; // Snap to tile
-                this.y = this.currentTask.targetY; // Snap to tile
+            if (this.path && this.path.length > 0) {
+                const targetNode = this.path[0];
+                const speed = SETTLER_RUN_SPEED; // tiles per second
+                if (this.x < targetNode.x) {
+                    this.x += speed * (deltaTime / 1000);
+                } else if (this.x > targetNode.x) {
+                    this.x -= speed * (deltaTime / 1000);
+                }
+                if (this.y < targetNode.y) {
+                    this.y += speed * (deltaTime / 1000);
+                } else if (this.y > targetNode.y) {
+                    this.y -= speed * (deltaTime / 1000);
+                }
 
-                if (this.currentTask.type === "move") {
-                    console.log(`${this.name} completed task: ${this.currentTask.type}`);
-                    this.currentTask = null;
-                } else if (this.currentTask.type === TASK_TYPES.SLEEP && this.currentTask.bed) {
-                    this.isSleeping = true;
-                    this.sleepingInBed = true;
-                    this.currentBed = this.currentTask.bed;
-                    this.currentTask = null;
-                    this.state = 'sleeping';
-                } else if (this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building) {
-                    const building = this.currentTask.building;
-                    const material = building.material;
-                    const consumptionRate = 0.1; // units of material per second
-                    const amountToConsume = consumptionRate * (deltaTime / 1000);
+                if (Math.abs(this.x - targetNode.x) < 0.1 && Math.abs(this.y - targetNode.y) < 0.1) {
+                    this.x = targetNode.x;
+                    this.y = targetNode.y;
+                    this.path.shift();
+                }
+            } else {
+                // Check if arrived at target
+                if (Math.abs(this.x - this.currentTask.targetX) < 0.1 && Math.abs(this.y - this.currentTask.targetY) < 0.1) {
+                    this.x = this.currentTask.targetX; // Snap to tile
+                    this.y = this.currentTask.targetY; // Snap to tile
+                    this.path = null;
 
-                    if (building.resourcesDelivered < building.resourcesRequired) {
-                        if (this.carrying && this.carrying.type === material) {
-                            const needed = building.resourcesRequired - building.resourcesDelivered;
-                            const amountToDrop = Math.min(needed, this.carrying.quantity);
-                            building.addToInventory(material, amountToDrop);
-                            this.carrying.quantity -= amountToDrop;
-                            if (this.carrying.quantity <= 0) this.carrying = null;
-                        } else if (building.getResourceQuantity(material) >= amountToConsume) {
-                            building.resourcesDelivered = building.getResourceQuantity(material);
-                        } else {
-                            console.log(`${this.name} needs ${material} delivered to build site.`);
-                            if (building.occupant === this) {
-                                building.occupant = null;
-                                this.currentBuilding = null;
-                            }
-                            this.currentTask = null;
-                            return;
-                        }
-                    }
-
-                    if (building.resourcesDelivered >= building.resourcesRequired) {
-                        const workAmount = 1 * (deltaTime / 1000); // Amount of work done
-                        building.buildProgress += workAmount; // Increase build progress
-                        if (building.buildProgress >= 100) {
-                            building.buildProgress = 100;
-                            console.log(`${this.name} completed building task for ${building.type}`);
-                            if (building.occupant === this) {
-                                building.occupant = null;
-                                this.currentBuilding = null;
-                            }
-                            this.currentTask = null; // Task completed
-                        }
-                    }
-                } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
-                    const recipe = this.currentTask.recipe;
-                    const station = this.currentTask.building;
-
-                    if (station) {
-                        if (station.occupant && station.occupant !== this) {
-                            return; // Wait if another settler is using the station
-                        }
-                        if (!station.occupant) {
-                            station.occupant = this;
-                            this.currentBuilding = station;
-                        }
-                    }
-
-                    if (!this.currentTask.inputsConsumed) {
-                        let resourcesAvailable = true;
-                        for (const input of recipe.inputs) {
-                            const available = station
-                                ? station.getResourceQuantity(input.resourceType)
-                                : this.resourceManager.getResourceQuantity(input.resourceType);
-                            if (available < input.quantity) {
-                                resourcesAvailable = false;
-                                break;
-                            }
-                        }
-
-                        if (resourcesAvailable) {
-                            for (const input of recipe.inputs) {
-                                if (station) {
-                                    station.removeFromInventory(input.resourceType, input.quantity);
-                                } else {
-                                    this.resourceManager.removeResource(input.resourceType, input.quantity);
-                                }
-                            }
-                            this.currentTask.inputsConsumed = true;
-                        } else {
-                            console.log(`${this.name} is waiting for resources to craft ${recipe.name}.`);
-                            return;
-                        }
-                    }
-
-                    this.currentTask.craftingProgress += (deltaTime / 1000);
-                    if (this.currentTask.craftingProgress >= recipe.time) {
-                        for (const output of recipe.outputs) {
-                            const outputQuality = this.calculateOutputQuality(output.quality);
-                            const pile = new ResourcePile(
-                                output.resourceType,
-                                output.quantity,
-                                station ? station.x : Math.floor(this.x),
-                                station ? station.y : Math.floor(this.y),
-                                this.map.tileSize,
-                                this.spriteManager,
-                                outputQuality,
-                            );
-                            this.map.addResourcePile(pile);
-                        }
-                        console.log(`${this.name} completed crafting ${recipe.name}.`);
-                        if (station && station.occupant === this) {
-                            station.occupant = null;
-                            this.currentBuilding = null;
-                        }
+                    if (this.currentTask.type === "move") {
+                        console.log(`${this.name} completed task: ${this.currentTask.type}`);
                         this.currentTask = null;
-                    }
-                } else if (
-                    this.currentTask.type === TASK_TYPES.MINE_STONE ||
-                    this.currentTask.type === TASK_TYPES.MINE_IRON_ORE ||
-                    this.currentTask.type === TASK_TYPES.DIG_DIRT
-                ) {
-                    const resourceType = this.currentTask.type.replace("mine_", "").replace("dig_", "");
-                    const miningRate = 0.1; // e.g., 0.1 units of resource per second
-                    const amountToMine = miningRate * (deltaTime / 1000);
-
-                    // Simulate mining progress
-                    this.currentTask.quantity -= amountToMine; // Decrease task workload
-
-                    if (this.currentTask.quantity <= 0) {
-                        this.pickUpPile(resourceType, 1); // Settler carries the resource
-                        if (this.currentTask.type === TASK_TYPES.DIG_DIRT) {
-                            this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change tile to dirt
-                        } else {
-                            this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
-                        }
-                        console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
-                        this.currentTask = null; // Task completed
-                    }
-                } else if (
-                    this.currentTask.type === TASK_TYPES.CHOP_WOOD ||
-                    this.currentTask.type === TASK_TYPES.GATHER_BERRIES ||
-                    this.currentTask.type === TASK_TYPES.MUSHROOM ||
-                    this.currentTask.type === TASK_TYPES.HUNT_ANIMAL
-                ) {
-                    const resourceType = this.currentTask.resourceType;
-                    const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
-                    const amountToGather = gatheringRate * (deltaTime / 1000);
-
-                    this.currentTask.quantity -= amountToGather;
-
-                    if (this.currentTask.quantity <= 0) {
-                        this.pickUpPile(resourceType, 1); // Settler carries the resource
-                        this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
-                        console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
+                        this.path = null;
+                    } else if (this.currentTask.type === TASK_TYPES.SLEEP && this.currentTask.bed) {
+                        this.isSleeping = true;
+                        this.sleepingInBed = true;
+                        this.currentBed = this.currentTask.bed;
                         this.currentTask = null;
-                    }
-                } else if (this.currentTask.type === TASK_TYPES.BUTCHER && this.currentTask.targetEnemy) {
-                    if (this.currentTask.targetEnemy.decay > 50) {
-                        this.currentTask.targetEnemy.isMarkedForButcher = false;
-                        console.log(`${this.currentTask.targetEnemy.name} is too decayed to butcher.`);
-                        this.currentTask = null;
-                    } else {
-                        const butcheringRate = 0.1;
-                        const amountToButcher = butcheringRate * (deltaTime / 1000);
-                        this.currentTask.quantity -= amountToButcher;
-
-                        if (this.currentTask.quantity <= 0) {
-                            const lootType = this.currentTask.targetEnemy.lootType || RESOURCE_TYPES.MEAT;
-                            this.pickUpPile(lootType, 1);
-                            this.currentTask.targetEnemy.isButchered = true;
-                            this.currentTask.targetEnemy.isMarkedForButcher = false;
-                            console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
-                            this.currentTask = null;
-                        }
-                    }
-                } else if (this.currentTask.type === TASK_TYPES.SOW_CROP && this.currentTask.building) {
-                    const farmPlot = this.currentTask.building;
-                    if (farmPlot.plant(this.currentTask.cropType)) {
-                        console.log(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
-                    } else {
-                        console.log(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
-                    }
-                    this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === TASK_TYPES.HARVEST_CROP && this.currentTask.building) {
-                    const farmPlot = this.currentTask.building;
-                    const harvestedCrop = farmPlot.harvest();
-                    if (harvestedCrop) {
-                        const pile = new ResourcePile(harvestedCrop, 1, farmPlot.x, farmPlot.y, this.map.tileSize, this.spriteManager);
-                        this.map.addResourcePile(pile);
-                        console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y} and created a pile.`);
-                    } else {
-                        console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
-                    }
-                    this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === TASK_TYPES.TEND_ANIMALS && this.currentTask.building) {
-                    const animalPen = this.currentTask.building;
-                    // Simulate tending animals - perhaps increases animal health/reproduction rate
-                    console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
-                    this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
-                    const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
-                    if (room && room.type === "storage" && this.roomManager.removeResourceFromStorage(room, this.currentTask.foodType, 1)) {
-                        this.hunger += 30;
-                        if (this.hunger > 100) this.hunger = 100;
-                        this.state = "idle";
-                        console.log(`${this.name} ate ${this.currentTask.foodType} from storage.`);
-                    } else {
-                        console.log(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
-                    }
-                    this.currentTask = null;
-                } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.building) {
-                    const building = this.currentTask.building;
-                    // Stage 1: acquire resource if not already carrying
-                    if (!this.currentTask.resource && !this.carrying) {
-                        if (!this.currentTask.sourceX) {
-                            const pile = this.map.resourcePiles.find(p => p.type === this.currentTask.resourceType && p.quantity > 0);
-                            if (pile) {
-                                this.currentTask.sourceX = pile.x;
-                                this.currentTask.sourceY = pile.y;
-                                this.currentTask.targetX = pile.x;
-                                this.currentTask.targetY = pile.y;
+                        this.path = null;
+                        this.state = 'sleeping';
+                    } else if (this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building) {
+                        const building = this.currentTask.building;
+                        const material = building.material;
+                        const consumptionRate = 0.1; // units of material per second
+                        const amountToConsume = consumptionRate * (deltaTime / 1000);
+    
+                        if (building.resourcesDelivered < building.resourcesRequired) {
+                            if (this.carrying && this.carrying.type === material) {
+                                const needed = building.resourcesRequired - building.resourcesDelivered;
+                                const amountToDrop = Math.min(needed, this.carrying.quantity);
+                                building.addToInventory(material, amountToDrop);
+                                this.carrying.quantity -= amountToDrop;
+                                if (this.carrying.quantity <= 0) this.carrying = null;
+                            } else if (building.getResourceQuantity(material) >= amountToConsume) {
+                                building.resourcesDelivered = building.getResourceQuantity(material);
                             } else {
-                                console.log(`${this.name} couldn't find ${this.currentTask.resourceType} to haul.`);
+                                console.log(`${this.name} needs ${material} delivered to build site.`);
+                                if (building.occupant === this) {
+                                    building.occupant = null;
+                                    this.currentBuilding = null;
+                                }
                                 this.currentTask = null;
+                                this.path = null;
                                 return;
                             }
                         }
+    
+                        if (building.resourcesDelivered >= building.resourcesRequired) {
+                            const workAmount = 1 * (deltaTime / 1000); // Amount of work done
+                            building.buildProgress += workAmount; // Increase build progress
+                            if (building.buildProgress >= 100) {
+                                building.buildProgress = 100;
+                                console.log(`${this.name} completed building task for ${building.type}`);
+                                if (building.occupant === this) {
+                                    building.occupant = null;
+                                    this.currentBuilding = null;
+                                }
+                                this.currentTask = null;
+                                this.path = null; // Task completed
+                            }
+                        }
+                    } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
+                        const recipe = this.currentTask.recipe;
+                        const station = this.currentTask.building;
+    
+                        if (station) {
+                            if (station.occupant && station.occupant !== this) {
+                                return; // Wait if another settler is using the station
+                            }
+                            if (!station.occupant) {
+                                station.occupant = this;
+                                this.currentBuilding = station;
+                            }
+                        }
+    
+                        if (!this.currentTask.inputsConsumed) {
+                            let resourcesAvailable = true;
+                            for (const input of recipe.inputs) {
+                                const available = station
+                                    ? station.getResourceQuantity(input.resourceType)
+                                    : this.resourceManager.getResourceQuantity(input.resourceType);
+                                if (available < input.quantity) {
+                                    resourcesAvailable = false;
+                                    break;
+                                }
+                            }
+    
+                            if (resourcesAvailable) {
+                                for (const input of recipe.inputs) {
+                                    if (station) {
+                                        station.removeFromInventory(input.resourceType, input.quantity);
+                                    } else {
+                                        this.resourceManager.removeResource(input.resourceType, input.quantity);
+                                    }
+                                }
+                                this.currentTask.inputsConsumed = true;
+                            } else {
+                                console.log(`${this.name} is waiting for resources to craft ${recipe.name}.`);
+                                return;
+                            }
+                        }
+    
+                        this.currentTask.craftingProgress += (deltaTime / 1000);
+                        if (this.currentTask.craftingProgress >= recipe.time) {
+                            for (const output of recipe.outputs) {
+                                const outputQuality = this.calculateOutputQuality(output.quality);
+                                const pile = new ResourcePile(
+                                    output.resourceType,
+                                    output.quantity,
+                                    station ? station.x : Math.floor(this.x),
+                                    station ? station.y : Math.floor(this.y),
+                                    this.map.tileSize,
+                                    this.spriteManager,
+                                    outputQuality,
+                                );
+                                this.map.addResourcePile(pile);
+                            }
+                            console.log(`${this.name} completed crafting ${recipe.name}.`);
+                            if (station && station.occupant === this) {
+                                station.occupant = null;
+                                this.currentBuilding = null;
+                            }
+                            this.currentTask = null;
+                            this.path = null;
+                        }
+                    } else if (
+                        this.currentTask.type === TASK_TYPES.MINE_STONE ||
+                        this.currentTask.type === TASK_TYPES.MINE_IRON_ORE ||
+                        this.currentTask.type === TASK_TYPES.DIG_DIRT
+                    ) {
+                        const resourceType = this.currentTask.type.replace("mine_", "").replace("dig_", "");
+                        const miningRate = 0.1; // e.g., 0.1 units of resource per second
+                        const amountToMine = miningRate * (deltaTime / 1000);
+    
+                        // Simulate mining progress
+                        this.currentTask.quantity -= amountToMine; // Decrease task workload
+    
+                        if (this.currentTask.quantity <= 0) {
+                            this.pickUpPile(resourceType, 1); // Settler carries the resource
+                            if (this.currentTask.type === TASK_TYPES.DIG_DIRT) {
+                                this.map.tiles[this.currentTask.targetY][this.currentTask.targetX] = 1; // Change tile to dirt
+                            } else {
+                                this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
+                            }
+                            console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
+                            this.currentTask = null;
+                            this.path = null; // Task completed
+                        }
+                    } else if (
+                        this.currentTask.type === TASK_TYPES.CHOP_WOOD ||
+                        this.currentTask.type === TASK_TYPES.GATHER_BERRIES ||
+                        this.currentTask.type === TASK_TYPES.MUSHROOM ||
+                        this.currentTask.type === TASK_TYPES.HUNT_ANIMAL
+                    ) {
+                        const resourceType = this.currentTask.resourceType;
+                        const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
+                        const amountToGather = gatheringRate * (deltaTime / 1000);
+    
+                        this.currentTask.quantity -= amountToGather;
+    
+                        if (this.currentTask.quantity <= 0) {
+                            this.pickUpPile(resourceType, 1); // Settler carries the resource
+                            this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
+                            console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
+                            this.currentTask = null;
+                            this.path = null;
+                        }
+                    } else if (this.currentTask.type === TASK_TYPES.BUTCHER && this.currentTask.targetEnemy) {
+                        if (this.currentTask.targetEnemy.decay > 50) {
+                            this.currentTask.targetEnemy.isMarkedForButcher = false;
+                            console.log(`${this.currentTask.targetEnemy.name} is too decayed to butcher.`);
+                            this.currentTask = null;
+                            this.path = null;
+                        } else {
+                            const butcheringRate = 0.1;
+                            const amountToButcher = butcheringRate * (deltaTime / 1000);
+                            this.currentTask.quantity -= amountToButcher;
+    
+                            if (this.currentTask.quantity <= 0) {
+                                const lootType = this.currentTask.targetEnemy.lootType || RESOURCE_TYPES.MEAT;
+                                this.pickUpPile(lootType, 1);
+                                this.currentTask.targetEnemy.isButchered = true;
+                                this.currentTask.targetEnemy.isMarkedForButcher = false;
+                                console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
+                                this.currentTask = null;
+                                this.path = null;
+                            }
+                        }
+                    } else if (this.currentTask.type === TASK_TYPES.SOW_CROP && this.currentTask.building) {
+                        const farmPlot = this.currentTask.building;
+                        if (farmPlot.plant(this.currentTask.cropType)) {
+                            console.log(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
+                        } else {
+                            console.log(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
+                        }
+                        this.currentTask = null;
+                        this.path = null; // Task completed immediately after action
+                    } else if (this.currentTask.type === TASK_TYPES.HARVEST_CROP && this.currentTask.building) {
+                        const farmPlot = this.currentTask.building;
+                        const harvestedCrop = farmPlot.harvest();
+                        if (harvestedCrop) {
+                            const pile = new ResourcePile(harvestedCrop, 1, farmPlot.x, farmPlot.y, this.map.tileSize, this.spriteManager);
+                            this.map.addResourcePile(pile);
+                            console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y} and created a pile.`);
+                        } else {
+                            console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
+                        }
+                        this.currentTask = null;
+                        this.path = null; // Task completed immediately after action
+                    } else if (this.currentTask.type === TASK_TYPES.TEND_ANIMALS && this.currentTask.building) {
+                        const animalPen = this.currentTask.building;
+                        // Simulate tending animals - perhaps increases animal health/reproduction rate
+                        console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
+                        this.currentTask = null;
+                        this.path = null; // Task completed immediately after action
+                    } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
+                        const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                        if (room && room.type === "storage" && this.roomManager.removeResourceFromStorage(room, this.currentTask.foodType, 1)) {
+                            this.hunger += 30;
+                            if (this.hunger > 100) this.hunger = 100;
+                            this.state = "idle";
+                            console.log(`${this.name} ate ${this.currentTask.foodType} from storage.`);
+                        } else {
+                            console.log(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
+                        }
+                        this.currentTask = null;
+                        this.path = null;
+                    } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.building) {
+                        const building = this.currentTask.building;
+                        // Stage 1: acquire resource if not already carrying
+                        if (!this.currentTask.resource && !this.carrying) {
+                            if (!this.currentTask.sourceX) {
+                                const pile = this.map.resourcePiles.find(p => p.type === this.currentTask.resourceType && p.quantity > 0);
+                                if (pile) {
+                                    this.currentTask.sourceX = pile.x;
+                                    this.currentTask.sourceY = pile.y;
+                                    this.currentTask.targetX = pile.x;
+                                    this.currentTask.targetY = pile.y;
+                                } else {
+                                    console.log(`${this.name} couldn't find ${this.currentTask.resourceType} to haul.`);
+                                    this.currentTask = null;
+                                    this.path = null;
+                                    return;
+                                }
+                            }
+                            if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
+                                const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === this.currentTask.resourceType);
+                                if (pile && pile.remove(this.currentTask.quantity)) {
+                                    if (pile.quantity <= 0) {
+                                        this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                                    }
+                                    this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
+                                    this.currentTask.resource = this.carrying;
+                                    this.currentTask.targetX = building.x;
+                                    this.currentTask.targetY = building.y;
+                                } else {
+                                    console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
+                                    this.currentTask = null;
+                                    this.path = null;
+                                }
+                            }
+                        } else if (this.carrying && this.x === building.x && this.y === building.y) {
+                            building.addToInventory(this.carrying.type, this.carrying.quantity);
+                            const deliveredType = this.currentTask.resourceType;
+                            this.carrying = null;
+                            this.currentTask = null;
+                            this.path = null;
+                            console.log(`${this.name} delivered ${deliveredType} to building site.`);
+                        }
+                    } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.sourceX !== undefined && !this.currentTask.building && !this.currentTask.resource) {
                         if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
                             const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === this.currentTask.resourceType);
                             if (pile && pile.remove(this.currentTask.quantity)) {
@@ -516,125 +571,111 @@ export default class Settler {
                                 }
                                 this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
                                 this.currentTask.resource = this.carrying;
-                                this.currentTask.targetX = building.x;
-                                this.currentTask.targetY = building.y;
+                                const target = this.roomManager.findStorageRoomAndTile(this.currentTask.resourceType);
+                                if (target) {
+                                    this.currentTask.targetX = target.tile.x;
+                                    this.currentTask.targetY = target.tile.y;
+                                } else {
+                                    console.log(`${this.name} couldn't find storage for ${this.currentTask.resourceType}.`);
+                                    this.currentTask = null;
+                                    this.path = null;
+                                }
                             } else {
                                 console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
                                 this.currentTask = null;
+                                this.path = null;
                             }
                         }
-                    } else if (this.carrying && this.x === building.x && this.y === building.y) {
-                        building.addToInventory(this.carrying.type, this.carrying.quantity);
-                        const deliveredType = this.currentTask.resourceType;
-                        this.carrying = null;
+                    } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.resource) {
+                        const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
+                        if (room && room.type === "storage") {
+                            const success = this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
+                            if (success) {
+                                console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
+                            } else {
+                                const dropX = Math.floor(this.x);
+                                const dropY = Math.floor(this.y);
+                                const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.currentTask.resource.type);
+                                if (existingPile) {
+                                    existingPile.add(this.currentTask.resource.quantity);
+                                } else {
+                                    const newPile = new ResourcePile(this.currentTask.resource.type, this.currentTask.resource.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
+                                    this.map.addResourcePile(newPile);
+                                }
+                                console.log(`${this.name} dropped ${this.currentTask.resource.type} on the ground.`);
+                            }
+                            this.carrying = null; // Clear carried resource
+                        } else {
+                            console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
+                        }
                         this.currentTask = null;
-                        console.log(`${this.name} delivered ${deliveredType} to building site.`);
-                    }
-                } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.sourceX !== undefined && !this.currentTask.building && !this.currentTask.resource) {
-                    if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
-                        const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === this.currentTask.resourceType);
-                        if (pile && pile.remove(this.currentTask.quantity)) {
-                            if (pile.quantity <= 0) {
-                                this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
-                            }
-                            this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
-                            this.currentTask.resource = this.carrying;
-                            const target = this.roomManager.findStorageRoomAndTile(this.currentTask.resourceType);
-                            if (target) {
-                                this.currentTask.targetX = target.tile.x;
-                                this.currentTask.targetY = target.tile.y;
+                        this.path = null; // Task completed immediately after action
+                    } else if (this.currentTask.type === TASK_TYPES.EXPLORE && this.currentTask.targetLocation) {
+                        // Settler has arrived at the exploration target
+                        this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
+                        console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
+                        this.currentTask = null;
+                        this.path = null; // Task completed immediately after action
+                    } else if (this.currentTask.type === TASK_TYPES.TREATMENT && this.currentTask.targetSettler) {
+                        const targetSettler = this.currentTask.targetSettler;
+    
+                        if (!this.currentTask.stage) {
+                            this.currentTask.stage = 'pickup';
+                            const pile = this.map.resourcePiles.find(p => p.type === RESOURCE_TYPES.BANDAGE && p.quantity > 0);
+                            if (pile) {
+                                this.currentTask.sourceX = pile.x;
+                                this.currentTask.sourceY = pile.y;
+                                this.currentTask.targetX = pile.x;
+                                this.currentTask.targetY = pile.y;
                             } else {
-                                console.log(`${this.name} couldn't find storage for ${this.currentTask.resourceType}.`);
+                                console.log(`${this.name} could not find bandages for treatment.`);
                                 this.currentTask = null;
+                                this.path = null;
+                                return;
                             }
-                        } else {
-                            console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
-                            this.currentTask = null;
                         }
-                    }
-                } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.resource) {
-                    const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
-                    if (room && room.type === "storage") {
-                        const success = this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
-                        if (success) {
-                            console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
-                        } else {
-                            const dropX = Math.floor(this.x);
-                            const dropY = Math.floor(this.y);
-                            const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.currentTask.resource.type);
-                            if (existingPile) {
-                                existingPile.add(this.currentTask.resource.quantity);
-                            } else {
-                                const newPile = new ResourcePile(this.currentTask.resource.type, this.currentTask.resource.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
-                                this.map.addResourcePile(newPile);
-                            }
-                            console.log(`${this.name} dropped ${this.currentTask.resource.type} on the ground.`);
-                        }
-                        this.carrying = null; // Clear carried resource
-                    } else {
-                        console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
-                    }
-                    this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === TASK_TYPES.EXPLORE && this.currentTask.targetLocation) {
-                    // Settler has arrived at the exploration target
-                    this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
-                    console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
-                    this.currentTask = null; // Task completed immediately after action
-                } else if (this.currentTask.type === TASK_TYPES.TREATMENT && this.currentTask.targetSettler) {
-                    const targetSettler = this.currentTask.targetSettler;
-
-                    if (!this.currentTask.stage) {
-                        this.currentTask.stage = 'pickup';
-                        const pile = this.map.resourcePiles.find(p => p.type === RESOURCE_TYPES.BANDAGE && p.quantity > 0);
-                        if (pile) {
-                            this.currentTask.sourceX = pile.x;
-                            this.currentTask.sourceY = pile.y;
-                            this.currentTask.targetX = pile.x;
-                            this.currentTask.targetY = pile.y;
-                        } else {
-                            console.log(`${this.name} could not find bandages for treatment.`);
-                            this.currentTask = null;
-                            return;
-                        }
-                    }
-
-                    if (this.currentTask.stage === 'pickup') {
-                        if (this.x === this.currentTask.targetX && this.y === this.currentTask.targetY) {
-                            const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === RESOURCE_TYPES.BANDAGE);
-                            if (pile && pile.remove(1)) {
-                                if (pile.quantity <= 0) {
-                                    this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
-                                }
-                                this.pickUpPile(RESOURCE_TYPES.BANDAGE, 1);
-                                if (this.x === targetSettler.x && this.y === targetSettler.y) {
-                                    if (this.carrying && this.carrying.type === RESOURCE_TYPES.BANDAGE) {
-                                        this.carrying.quantity -= 1;
-                                        if (this.carrying.quantity <= 0) this.carrying = null;
-                                        targetSettler.stopBleeding();
-                                        console.log(`${this.name} treated ${targetSettler.name}.`);
-                                        this.currentTask = null;
-                                        return;
+    
+                        if (this.currentTask.stage === 'pickup') {
+                            if (this.x === this.currentTask.targetX && this.y === this.currentTask.targetY) {
+                                const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === RESOURCE_TYPES.BANDAGE);
+                                if (pile && pile.remove(1)) {
+                                    if (pile.quantity <= 0) {
+                                        this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                                     }
+                                    this.pickUpPile(RESOURCE_TYPES.BANDAGE, 1);
+                                    if (this.x === targetSettler.x && this.y === targetSettler.y) {
+                                        if (this.carrying && this.carrying.type === RESOURCE_TYPES.BANDAGE) {
+                                            this.carrying.quantity -= 1;
+                                            if (this.carrying.quantity <= 0) this.carrying = null;
+                                            targetSettler.stopBleeding();
+                                            console.log(`${this.name} treated ${targetSettler.name}.`);
+                                            this.currentTask = null;
+                                            this.path = null;
+                                            return;
+                                        }
+                                    }
+                                    this.currentTask.stage = 'treat';
+                                    this.currentTask.targetX = targetSettler.x;
+                                    this.currentTask.targetY = targetSettler.y;
+                                } else {
+                                    console.log(`${this.name} failed to pick up bandage.`);
+                                    this.currentTask = null;
+                                    this.path = null;
                                 }
-                                this.currentTask.stage = 'treat';
-                                this.currentTask.targetX = targetSettler.x;
-                                this.currentTask.targetY = targetSettler.y;
-                            } else {
-                                console.log(`${this.name} failed to pick up bandage.`);
+                            }
+                        } else if (this.currentTask.stage === 'treat') {
+                            if (this.x === targetSettler.x && this.y === targetSettler.y) {
+                                if (this.carrying && this.carrying.type === RESOURCE_TYPES.BANDAGE) {
+                                    this.carrying.quantity -= 1;
+                                    if (this.carrying.quantity <= 0) this.carrying = null;
+                                    targetSettler.stopBleeding();
+                                    console.log(`${this.name} treated ${targetSettler.name}.`);
+                                } else {
+                                    console.log(`${this.name} lost the bandage before treating ${targetSettler.name}.`);
+                                }
                                 this.currentTask = null;
+                                this.path = null;
                             }
-                        }
-                    } else if (this.currentTask.stage === 'treat') {
-                        if (this.x === targetSettler.x && this.y === targetSettler.y) {
-                            if (this.carrying && this.carrying.type === RESOURCE_TYPES.BANDAGE) {
-                                this.carrying.quantity -= 1;
-                                if (this.carrying.quantity <= 0) this.carrying = null;
-                                targetSettler.stopBleeding();
-                                console.log(`${this.name} treated ${targetSettler.name}.`);
-                            } else {
-                                console.log(`${this.name} lost the bandage before treating ${targetSettler.name}.`);
-                            }
-                            this.currentTask = null;
                         }
                     }
                 }
@@ -726,6 +767,7 @@ export default class Settler {
                 this.setTargetEnemy(attacker);
                 if (this.currentTask) {
                     this.currentTask = null;
+                    this.path = null;
                 }
                 this.state = "combat";
                 if (this.allSettlers) {
@@ -743,7 +785,8 @@ export default class Settler {
             if (this.health <= 0) {
                 this.isDead = true;
                 this.state = "dead";
-                this.currentTask = null; // Clear any current task
+                this.currentTask = null;
+                this.path = null; // Clear any current task
                 this.targetEnemy = null; // Clear target enemy
                 console.log(`${this.name} has died.`);
             }

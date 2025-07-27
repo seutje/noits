@@ -1,4 +1,6 @@
 
+import { TASK_TYPES } from './constants.js';
+
 export default class UI {
     constructor(ctx) {
         this.ctx = ctx;
@@ -283,7 +285,7 @@ export default class UI {
             case 'zones':
                 createButton('Designate Bedroom', 'bedroom', true, 'Designates an area as a bedroom.');
                 createButton('Designate Storage', 'storage', true, 'Designates an area for resource storage.');
-                createButton('Dig Dirt', 'dig_dirt', true, 'Designates a tile to be dug.');
+                createButton('Dig Dirt', TASK_TYPES.DIG_DIRT, true, 'Designates a tile to be dug.');
                 break;
         }
     }

@@ -1,5 +1,6 @@
 import TaskManager from '../src/js/taskManager.js';
 import Task from '../src/js/task.js';
+import { TASK_TYPES } from '../src/js/constants.js';
 
 describe('TaskManager', () => {
     let taskManager;
@@ -9,15 +10,15 @@ describe('TaskManager', () => {
     });
 
     test('should add a task to the queue', () => {
-        const task = new Task('chop_wood', 1, 1);
+        const task = new Task(TASK_TYPES.CHOP_WOOD, 1, 1);
         taskManager.addTask(task);
         expect(taskManager.tasks.length).toBe(1);
         expect(taskManager.tasks[0]).toBe(task);
     });
 
     test('should retrieve the first task in the queue', () => {
-        const task1 = new Task('chop_wood', 1, 1);
-        const task2 = new Task('mine_stone', 2, 2);
+        const task1 = new Task(TASK_TYPES.CHOP_WOOD, 1, 1);
+        const task2 = new Task(TASK_TYPES.MINE_STONE, 2, 2);
         taskManager.addTask(task1);
         taskManager.addTask(task2);
         expect(taskManager.getTask()).toBe(task1);
@@ -44,12 +45,12 @@ describe('TaskManager', () => {
     });
 
     test('getTask can use a filter function', () => {
-        const haulTask = new Task('haul', 1, 1);
-        const buildTask = new Task('build', 2, 2);
+        const haulTask = new Task(TASK_TYPES.HAUL, 1, 1);
+        const buildTask = new Task(TASK_TYPES.BUILD, 2, 2);
         taskManager.addTask(haulTask);
         taskManager.addTask(buildTask);
 
-        const task = taskManager.getTask(t => t.type === 'build');
+        const task = taskManager.getTask(t => t.type === TASK_TYPES.BUILD);
 
         expect(task).toBe(buildTask);
         expect(taskManager.tasks).toContain(haulTask);

@@ -1,6 +1,7 @@
 import Game from '../src/js/game.js';
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
+import { TASK_TYPES } from '../src/js/constants.js';
 
 describe('Game gathering behavior', () => {
     test('settler carrying resource ignores new gather tasks', () => {
@@ -13,7 +14,7 @@ describe('Game gathering behavior', () => {
         game.settlers.push(settler);
         game.roomManager.setSettlers(game.settlers);
 
-        const gatherTask = new Task('chop_wood', 0, 0, 'wood', 1, 2);
+        const gatherTask = new Task(TASK_TYPES.CHOP_WOOD, 0, 0, 'wood', 1, 2);
         game.taskManager.addTask(gatherTask);
 
         game.update(16);

@@ -1,4 +1,5 @@
 import Task from './task.js';
+import { TASK_TYPES } from './constants.js';
 
 export default class TaskManager {
     constructor() {
@@ -41,7 +42,7 @@ export default class TaskManager {
     // getTasksByType(type) { ... }
 
     hasTaskForTargetSettler(targetSettler) {
-        return this.tasks.some(task => task.type === 'treatment' && task.targetSettler === targetSettler);
+        return this.tasks.some(task => task.type === TASK_TYPES.TREATMENT && task.targetSettler === targetSettler);
     }
 
     serialize() {

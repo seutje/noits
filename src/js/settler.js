@@ -327,10 +327,14 @@ export default class Settler {
                     }
                 } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
                     const recipe = this.currentTask.recipe;
-                    // Check if resources are available for crafting
+                    const station = this.currentTask.building;
+                    // Check if resources are available at the station (or globally)
                     let resourcesAvailable = true;
                     for (const input of recipe.inputs) {
-                        if (this.resourceManager.getResourceQuantity(input.resourceType) < input.quantity) {
+                        const available = station
+                            ? station.getResourceQuantity(input.resourceType)
+                            : this.resourceManager.getResourceQuantity(input.resourceType);
+                        if (available < input.quantity) {
                             resourcesAvailable = false;
                             break;
                         }
@@ -339,7 +343,11 @@ export default class Settler {
                     if (resourcesAvailable) {
                         // Consume input resources
                         for (const input of recipe.inputs) {
-                            this.resourceManager.removeResource(input.resourceType, input.quantity);
+                            if (station) {
+                                station.removeFromInventory(input.resourceType, input.quantity);
+                            } else {
+                                this.resourceManager.removeResource(input.resourceType, input.quantity);
+                            }
                         }
 
                         // Simulate crafting time
@@ -348,7 +356,11 @@ export default class Settler {
                             // Produce output resources
                             for (const output of recipe.outputs) {
                                 const outputQuality = this.calculateOutputQuality(output.quality);
-                                this.resourceManager.addResource(output.resourceType, output.quantity, outputQuality);
+                                this.resourceManager.addResource(
+                                    output.resourceType,
+                                    output.quantity,
+                                    outputQuality,
+                                );
                             }
                             console.log(`${this.name} completed crafting ${recipe.name}.`);
                             this.currentTask = null; // Task completed

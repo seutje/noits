@@ -386,6 +386,26 @@ export default class Game {
     }
 
     addCraftTask(craftingStation, recipe, quantity = 1) {
+        // Ensure required resources get delivered to the station
+        recipe.inputs.forEach(input => {
+            const existing = craftingStation.getResourceQuantity(input.resourceType);
+            const required = input.quantity * quantity;
+            const missing = required - existing;
+            if (missing > 0) {
+                this.taskManager.addTask(
+                    new Task(
+                        TASK_TYPES.HAUL,
+                        craftingStation.x,
+                        craftingStation.y,
+                        input.resourceType,
+                        missing,
+                        3,
+                        craftingStation,
+                    ),
+                );
+            }
+        });
+
         for (let i = 0; i < quantity; i++) {
             this.taskManager.addTask(
                 new Task(
@@ -397,7 +417,7 @@ export default class Game {
                     3,
                     craftingStation,
                     recipe,
-                )
+                ),
             );
         }
     }

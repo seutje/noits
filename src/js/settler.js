@@ -366,8 +366,7 @@ export default class Settler {
                             this.currentTask = null; // Task completed
                         }
                     } else {
-                        console.log(`${this.name} stopped crafting ${recipe.name} due to lack of resources.`);
-                        this.currentTask = null; // Clear the task
+                        console.log(`${this.name} is waiting for resources to craft ${recipe.name}.`);
                     }
                 } else if (
                     this.currentTask.type === TASK_TYPES.MINE_STONE ||

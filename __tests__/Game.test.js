@@ -20,14 +20,14 @@ jest.mock('../src/js/building.js', () => {
     });
 });
 jest.mock('../src/js/task.js', () => {
-    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
+    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, priority, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
         return {
             type,
             targetX,
             targetY,
             resourceType,
             quantity,
-            difficulty,
+            priority,
             building,
             recipe,
             cropType,
@@ -287,7 +287,7 @@ describe('Game', () => {
         const craftTask = game.taskManager.addTask.mock.calls[1][0];
         expect(craftTask.type).toBe(TASK_TYPES.CRAFT);
         expect(craftTask.recipe).toBe(recipe);
-        expect(haulTask.difficulty).toBeGreaterThan(craftTask.difficulty);
+        expect(haulTask.priority).toBeGreaterThan(craftTask.priority);
     });
 
     test('handleClick marks dead enemy for butchering', () => {

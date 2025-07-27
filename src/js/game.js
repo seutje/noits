@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 
 import Map from './map.js';
 import Camera from './camera.js';
@@ -177,7 +178,7 @@ export default class Game {
 
                 if (availableSettler && !existingTreatmentTask) {
                     this.taskManager.addTask(new Task(TASK_TYPES.TREATMENT, settler.x, settler.y, null, 0, 5, null, null, null, null, null, settler));
-                    console.log(`Treatment task created for ${settler.name}`);
+                    debugLog(`Treatment task created for ${settler.name}`);
                 }
             }
 
@@ -399,7 +400,7 @@ export default class Game {
             this.roomDesignationStart = null;
             this.selectedRoomType = null;
         }
-        console.log(`Build mode: ${this.buildMode}, Selected: ${this.selectedBuilding}`);
+        debugLog(`Build mode: ${this.buildMode}, Selected: ${this.selectedBuilding}`);
     }
 
     startRoomDesignation(roomType) {
@@ -407,7 +408,7 @@ export default class Game {
         this.selectedBuilding = null;
         this.roomDesignationStart = { x: null, y: null };
         this.selectedRoomType = roomType;
-        console.log(`Room designation mode: ${roomType}. Click to select start tile.`);
+        debugLog(`Room designation mode: ${roomType}. Click to select start tile.`);
     }
 
     startDiggingDirt() {
@@ -416,25 +417,25 @@ export default class Game {
         this.roomDesignationStart = null; // Exit room designation mode if active
         this.selectedRoomType = null;
         this.diggingDirtMode = true;
-        console.log("Digging dirt mode: Click on a grass tile to dig dirt.");
+        debugLog("Digging dirt mode: Click on a grass tile to dig dirt.");
     }
 
     startExploration() {
         // For now, just log the locations. In the future, this will open a world map view.
-        console.log("World Map Locations:", this.worldMap.getLocations());
+        debugLog("World Map Locations:", this.worldMap.getLocations());
         // Example: send a settler to explore a specific location
         if (this.settlers.length > 0) {
             const settler = this.settlers[0]; // Get the first settler
             const targetLocation = this.worldMap.getLocation('forest_outpost'); // Example target
             if (targetLocation) {
                 this.taskManager.addTask(new Task(TASK_TYPES.EXPLORE, targetLocation.x, targetLocation.y, null, 0, 5, null, null, null, targetLocation, null, null, null));
-                console.log(`${settler.name} is sent to explore ${targetLocation.name}.`);
+                debugLog(`${settler.name} is sent to explore ${targetLocation.name}.`);
             }
         }
     }
 
     spawnTravelingMerchant() {
-        console.log("A traveling merchant has arrived!");
+        debugLog("A traveling merchant has arrived!");
         // Example trade: buy 10 wood for 5 gold
         this.tradeManager.initiateTrade('traders', [{ type: 'buy', resource: RESOURCE_TYPES.WOOD, quantity: 10, price: 5 }]);
         // Example trade: sell 5 food for 10 gold
@@ -512,7 +513,7 @@ export default class Game {
             tasks: this.taskManager.serialize(),
         };
         localStorage.setItem('noitsGameState', JSON.stringify(gameState));
-        console.log("Game saved!");
+        debugLog("Game saved!");
     }
 
     loadGame() {
@@ -589,9 +590,9 @@ export default class Game {
                 // If recipes become complex objects, they would need their own serialization/deserialization
             });
 
-            console.log("Game loaded!");
+            debugLog("Game loaded!");
         } else {
-            console.log("No saved game found.");
+            debugLog("No saved game found.");
         }
     }
 
@@ -632,7 +633,7 @@ export default class Game {
                 // First click: set start point
                 this.roomDesignationStart.x = tileX;
                 this.roomDesignationStart.y = tileY;
-                console.log(`Room designation started at ${tileX},${tileY}. Click again to select end tile.`);
+                debugLog(`Room designation started at ${tileX},${tileY}. Click again to select end tile.`);
             } else {
                 // Second click: set end point and create room
                 const startX = this.roomDesignationStart.x;
@@ -640,7 +641,7 @@ export default class Game {
                 this.roomManager.designateRoom(startX, startY, tileX, tileY, this.selectedRoomType);
                 if (this.selectedRoomType === TASK_TYPES.DIG_DIRT) {
                     this.taskManager.addTask(new Task(TASK_TYPES.DIG_DIRT, tileX, tileY, "dirt", 50, 2));
-                    console.log(`Dig dirt task added at ${tileX},${tileY}`);
+                    debugLog(`Dig dirt task added at ${tileX},${tileY}`);
                 } else {
                     const startX = this.roomDesignationStart.x;
                     const startY = this.roomDesignationStart.y;
@@ -714,7 +715,7 @@ export default class Game {
             if (clickedEnemy && clickedEnemy.isDead && clickedEnemy.decay <= 50 && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
                 this.taskManager.addTask(new Task(TASK_TYPES.BUTCHER, tileX, tileY, RESOURCE_TYPES.MEAT, 1, 2, null, null, null, null, null, null, clickedEnemy));
                 clickedEnemy.isMarkedForButcher = true;
-                console.log(`Butcher task added at ${tileX},${tileY}`);
+                debugLog(`Butcher task added at ${tileX},${tileY}`);
             } else {
                 // Check if a building was clicked
                 const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
@@ -728,36 +729,36 @@ export default class Game {
                     } else if (clickedBuilding.type === BUILDING_TYPES.ANIMAL_PEN) {
                         const animalPen = clickedBuilding;
                         this.taskManager.addTask(new Task(TASK_TYPES.TEND_ANIMALS, tileX, tileY, null, 0, 3, animalPen));
-                        console.log(`Tend animals task added at ${tileX},${tileY}`);
+                        debugLog(`Tend animals task added at ${tileX},${tileY}`);
                     } else if (typeof clickedBuilding.takeDamage === 'function') {
                         // Temporarily disabled direct damage on mouse clicks
                         // clickedBuilding.takeDamage(25); // Example: 25 damage per click
                         // if (clickedBuilding.health <= 0) {
                         //     clickedBuilding.spillInventory(this.map);
                         //     this.map.removeBuilding(clickedBuilding);
-                        //     console.log(`Building at ${tileX},${tileY} destroyed.`);
+                        //     debugLog(`Building at ${tileX},${tileY} destroyed.`);
                         // }
                     } else {
                         console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
                     }
                 } else if (clickedTile === 2) { // If a tree is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.CHOP_WOOD, tileX, tileY, RESOURCE_TYPES.WOOD, 2.5, 2));
-                    console.log(`Chop wood task added at ${tileX},${tileY}`);
+                    debugLog(`Chop wood task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 3) { // If a stone is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.MINE_STONE, tileX, tileY, RESOURCE_TYPES.STONE, 2.5, 2));
-                    console.log(`Mine stone task added at ${tileX},${tileY}`);
+                    debugLog(`Mine stone task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 4) { // If berries are clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.GATHER_BERRIES, tileX, tileY, RESOURCE_TYPES.BERRIES, 1, 2));
-                    console.log(`Gather berries task added at ${tileX},${tileY}`);
+                    debugLog(`Gather berries task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 5) { // If iron_ore is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.MINE_IRON_ORE, tileX, tileY, RESOURCE_TYPES.IRON_ORE, 10, 2));
-                    console.log(`Mine iron ore task added at ${tileX},${tileY}`);
+                    debugLog(`Mine iron ore task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 6) { // If wild food is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.MUSHROOM, tileX, tileY, RESOURCE_TYPES.MUSHROOMS, 1, 2));
-                    console.log(`Forage food task added at ${tileX},${tileY}`);
+                    debugLog(`Forage food task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 7) { // If animal is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.HUNT_ANIMAL, tileX, tileY, RESOURCE_TYPES.MEAT, 2.5, 2));
-                    console.log(`Hunt animal task added at ${tileX},${tileY}`);
+                    debugLog(`Hunt animal task added at ${tileX},${tileY}`);
                 }
             }
         }

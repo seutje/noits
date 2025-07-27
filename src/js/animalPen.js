@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 import Building from './building.js';
 import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 
@@ -11,10 +12,10 @@ export default class AnimalPen extends Building {
     addAnimal(animalType) {
         if (this.animals.length < this.maxAnimals) {
             this.animals.push(animalType);
-            console.log(`Added ${animalType} to pen at ${this.x},${this.y}`);
+            debugLog(`Added ${animalType} to pen at ${this.x},${this.y}`);
             return true;
         }
-        console.log(`Animal pen at ${this.x},${this.y} is full.`);
+        debugLog(`Animal pen at ${this.x},${this.y} is full.`);
         return false;
     }
 
@@ -22,7 +23,7 @@ export default class AnimalPen extends Building {
         const index = this.animals.indexOf(animalType);
         if (index > -1) {
             this.animals.splice(index, 1);
-            console.log(`Removed ${animalType} from pen at ${this.x},${this.y}`);
+            debugLog(`Removed ${animalType} from pen at ${this.x},${this.y}`);
             return true;
         }
         return false;

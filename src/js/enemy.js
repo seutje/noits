@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 
 import Settler from './settler.js';
 import { ENEMY_RUN_SPEED, RESOURCE_TYPES } from './constants.js';
@@ -92,7 +93,7 @@ export default class Enemy {
         }
 
         targetSettler.takeDamage(randomBodyPart, finalDamage, true, this); // Pass enemy as attacker
-        console.log(`${this.name} attacked ${targetSettler.name} dealing ${finalDamage.toFixed(1)} damage to ${randomBodyPart}.`);
+        debugLog(`${this.name} attacked ${targetSettler.name} dealing ${finalDamage.toFixed(1)} damage to ${randomBodyPart}.`);
     }
 
     render(ctx) {

@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 import Building from './building.js';
 import SpriteManager from './spriteManager.js';
 import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
@@ -21,7 +22,7 @@ export default class FarmPlot extends Building {
         if (this.crop === null) {
             this.crop = cropType;
             this.growthStage = 1; // Planted
-            console.log(`Farm plot at ${this.x},${this.y} planted with ${cropType}`);
+            debugLog(`Farm plot at ${this.x},${this.y} planted with ${cropType}`);
             return true;
         }
         return false; // Already planted
@@ -32,7 +33,7 @@ export default class FarmPlot extends Building {
             this.growthStage += this.growthRate * (deltaTime / 1000);
             if (this.growthStage >= 3) {
                 this.growthStage = 3; // Mature
-                console.log(`Farm plot at ${this.x},${this.y} has mature ${this.crop}`);
+                debugLog(`Farm plot at ${this.x},${this.y} has mature ${this.crop}`);
             }
         }
     }
@@ -42,7 +43,7 @@ export default class FarmPlot extends Building {
             const harvestedCrop = this.crop;
             this.crop = null;
             this.growthStage = 0;
-            console.log(`Farm plot at ${this.x},${this.y} harvested ${harvestedCrop}`);
+            debugLog(`Farm plot at ${this.x},${this.y} harvested ${harvestedCrop}`);
             return harvestedCrop; // Return the harvested crop type
         }
         return null; // Not ready to harvest

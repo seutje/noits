@@ -274,18 +274,14 @@ export default class Settler {
                     const amountToConsume = consumptionRate * (deltaTime / 1000);
 
                     if (building.resourcesDelivered < building.resourcesRequired) {
-                        const pile = this.map.resourcePiles.find(p => p.x === building.x && p.y === building.y && p.type === material);
-                        if (pile && pile.remove(amountToConsume)) {
-                            building.resourcesDelivered += amountToConsume;
-                            if (pile.quantity <= 0) {
-                                this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
-                            }
-                        } else if (this.carrying && this.carrying.type === material) {
+                        if (this.carrying && this.carrying.type === material) {
                             const needed = building.resourcesRequired - building.resourcesDelivered;
                             const amountToDrop = Math.min(needed, this.carrying.quantity);
-                            building.resourcesDelivered += amountToDrop;
+                            building.addToInventory(material, amountToDrop);
                             this.carrying.quantity -= amountToDrop;
                             if (this.carrying.quantity <= 0) this.carrying = null;
+                        } else if (building.getResourceQuantity(material) >= amountToConsume) {
+                            building.resourcesDelivered = building.getResourceQuantity(material);
                         } else {
                             console.log(`${this.name} needs ${material} delivered to build site.`);
                             this.currentTask = null;
@@ -457,14 +453,7 @@ export default class Settler {
                             }
                         }
                     } else if (this.carrying && this.x === building.x && this.y === building.y) {
-                        const existingPile = this.map.resourcePiles.find(p => p.x === building.x && p.y === building.y && p.type === this.carrying.type);
-                        if (existingPile) {
-                            existingPile.add(this.carrying.quantity);
-                        } else {
-                            const newPile = new ResourcePile(this.carrying.type, this.carrying.quantity, building.x, building.y, this.map.tileSize, this.spriteManager);
-                            this.map.addResourcePile(newPile);
-                        }
-                        building.resourcesDelivered += this.carrying.quantity;
+                        building.addToInventory(this.carrying.type, this.carrying.quantity);
                         const deliveredType = this.currentTask.resourceType;
                         this.carrying = null;
                         this.currentTask = null;

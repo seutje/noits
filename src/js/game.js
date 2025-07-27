@@ -542,6 +542,7 @@ export default class Game {
                 } else if (typeof clickedBuilding.takeDamage === 'function') {
                     clickedBuilding.takeDamage(25); // Example: 25 damage per click
                     if (clickedBuilding.health <= 0) {
+                        clickedBuilding.spillInventory(this.map);
                         this.map.removeBuilding(clickedBuilding);
                         console.log(`Building at ${tileX},${tileY} destroyed.`);
                     }

@@ -1,3 +1,5 @@
+import ResourcePile from './resourcePile.js';
+
 export default class Building {
     constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1) {
         this.type = type; // e.g., "wall", "floor", "house"
@@ -12,6 +14,46 @@ export default class Building {
 
         // New properties for resource delivery
         this.resourcesRequired = resourcesRequired;
+        this.resourcesDelivered = 0;
+
+        // Inventory to hold delivered materials
+        this.inventory = {};
+    }
+
+    addToInventory(type, quantity) {
+        if (!this.inventory[type]) {
+            this.inventory[type] = 0;
+        }
+        this.inventory[type] += quantity;
+        if (type === this.material) {
+            this.resourcesDelivered = this.inventory[type];
+        }
+    }
+
+    removeFromInventory(type, quantity) {
+        if (this.inventory[type] && this.inventory[type] >= quantity) {
+            this.inventory[type] -= quantity;
+            if (type === this.material) {
+                this.resourcesDelivered = this.inventory[type];
+            }
+            return true;
+        }
+        return false;
+    }
+
+    getResourceQuantity(type) {
+        return this.inventory[type] || 0;
+    }
+
+    spillInventory(map) {
+        for (const type in this.inventory) {
+            const quantity = this.inventory[type];
+            if (quantity > 0) {
+                const pile = new ResourcePile(type, quantity, this.x, this.y, map.tileSize, map.spriteManager);
+                map.addResourcePile(pile);
+            }
+        }
+        this.inventory = {};
         this.resourcesDelivered = 0;
     }
 
@@ -45,7 +87,8 @@ export default class Building {
             resourcesRequired: this.resourcesRequired,
             resourcesDelivered: this.resourcesDelivered,
             maxHealth: this.maxHealth,
-            health: this.health
+            health: this.health,
+            inventory: this.inventory
         };
     }
 
@@ -61,5 +104,6 @@ export default class Building {
         this.resourcesDelivered = data.resourcesDelivered ?? 0;
         this.maxHealth = data.maxHealth;
         this.health = data.health;
+        this.inventory = data.inventory || {};
     }
 }

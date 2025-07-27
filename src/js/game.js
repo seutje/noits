@@ -20,17 +20,9 @@ import Furniture from './furniture.js';
 import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
-import SoundManager, { ACTION_BEEP_URL } from './soundManager.js';
+import SoundManager from './soundManager.js';
+import { ACTION_BEEP_URL, GATHER_TASK_TYPES } from './constants.js';
 
-const GATHER_TASK_TYPES = new Set([
-    'chop_wood',
-    'gather_berries',
-    'mushroom',
-    'hunt_animal',
-    'mine_stone',
-    'mine_iron_ore',
-    'dig_dirt'
-]);
 
 export default class Game {
     constructor(ctx) {

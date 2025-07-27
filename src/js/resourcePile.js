@@ -63,6 +63,7 @@ export default class ResourcePile extends Resource {
             ctx.fillRect(this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
         ctx.fillStyle = 'white';
+        ctx.font = '10px Arial';
         ctx.fillText(this.quantity, this.x * this.tileSize + 5, this.y * this.tileSize + this.tileSize / 2);
     }
 

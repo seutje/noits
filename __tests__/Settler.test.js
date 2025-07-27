@@ -62,6 +62,9 @@ describe('Settler', () => {
             combat: 1,
             medical: 1
         });
+        Object.values(TASK_TYPES).forEach(type => {
+            expect(settler.taskPriorities[type]).toBe(5);
+        });
     });
 
     test('updateNeeds should decrease hunger and sleep over time', () => {
@@ -415,6 +418,22 @@ describe('Settler', () => {
         expect(dropped.type).toBe('wood');
         expect(dropped.quantity).toBe(1);
         expect(settler.carrying).toEqual({ type: 'stone', quantity: 1 });
+    });
+
+    test('should drop carried resource when hauling priority is 0', () => {
+        settler.carrying = { type: 'wood', quantity: 2 };
+        settler.taskPriorities[TASK_TYPES.HAUL] = 0;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000);
+
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const dropped = settler.map.addResourcePile.mock.calls[0][0];
+        expect(dropped.type).toBe('wood');
+        expect(dropped.quantity).toBe(2);
+        expect(settler.carrying).toBe(null);
+        expect(settler.state).toBe('idle');
     });
 
     test('should use bandage pile for treatment', () => {

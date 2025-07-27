@@ -36,6 +36,44 @@ export default class TaskManager {
         return null;
     }
 
+    getTaskForSettler(settler, filterFn = null) {
+        for (let i = 0; i < this.tasks.length; i++) {
+            const task = this.tasks[i];
+            if (settler.taskPriorities && settler.taskPriorities[task.type] > 0) {
+                if (!filterFn || filterFn(task)) {
+                    this.tasks.splice(i, 1);
+                    return task;
+                }
+            }
+        }
+        return null;
+    }
+
+    assignTasks(settlers, filterFn = null) {
+        for (let i = 0; i < this.tasks.length; ) {
+            const task = this.tasks[i];
+            let bestSettler = null;
+            let bestPriority = -1;
+            settlers.forEach(settler => {
+                if (settler.state !== 'idle' || settler.currentTask) return;
+                const priority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
+                if (priority > 0 && (!filterFn || filterFn(task, settler))) {
+                    if (priority > bestPriority) {
+                        bestPriority = priority;
+                        bestSettler = settler;
+                    }
+                }
+            });
+            if (bestSettler) {
+                bestSettler.currentTask = task;
+                this.tasks.splice(i, 1);
+                console.log(`${bestSettler.name} picked up task: ${task.type}`);
+            } else {
+                i++;
+            }
+        }
+    }
+
     // You might want more sophisticated methods later, like:
     // assignTask(settler) { ... }
     // removeTask(task) { ... }

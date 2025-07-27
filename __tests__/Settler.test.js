@@ -2,6 +2,7 @@ import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
 import { TASK_TYPES, HEALTH_REGEN_RATE } from '../src/js/constants.js';
 import ResourcePile from '../src/js/resourcePile.js';
+import Building from '../src/js/building.js';
 
 jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/map.js');
@@ -540,6 +541,22 @@ describe('Settler', () => {
 
         expect(settler.isSleeping).toBe(false);
         expect(settler.state).toBe('combat');
+    });
+
+    test('settler can build from diagonal tile', () => {
+        const building = new Building('wall', 1, 1, 1, 1, 'wood', 0, 1);
+        mockMap.buildings = [building];
+        settler.x = 0;
+        settler.y = 0;
+        settler.carrying = { type: 'wood', quantity: 1 };
+        settler.currentTask = new Task(TASK_TYPES.BUILD, building.x, building.y, null, 100, 2, building);
+
+        settler.updateNeeds(3000);
+
+        expect(building.resourcesDelivered).toBe(1);
+        expect(building.buildProgress).toBeGreaterThan(0);
+        expect(Math.floor(settler.x)).not.toBe(building.x);
+        expect(Math.floor(settler.y)).not.toBe(building.y);
     });
 
     test('health regenerates based on hunger level', () => {

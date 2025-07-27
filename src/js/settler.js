@@ -116,6 +116,17 @@ export default class Settler {
         }
     }
 
+    isAdjacentToBuilding(building) {
+        const sx = Math.floor(this.x);
+        const sy = Math.floor(this.y);
+        return (
+            sx >= building.x - 1 &&
+            sx <= building.x + building.width &&
+            sy >= building.y - 1 &&
+            sy <= building.y + building.height
+        );
+    }
+
     updateNeeds(deltaTime) {
         if (this.isDead) return; // Do nothing if dead
         // Decrease hunger over time
@@ -282,9 +293,19 @@ export default class Settler {
             }
 
             // Check if arrived at target
-            if (Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed) {
-                this.x = this.currentTask.targetX; // Snap to tile
-                this.y = this.currentTask.targetY; // Snap to tile
+            const arrived = this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building
+                ? this.isAdjacentToBuilding(this.currentTask.building)
+                : Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed;
+            if (arrived) {
+                if (this.currentTask.type !== TASK_TYPES.BUILD) {
+                    this.x = this.currentTask.targetX; // Snap to tile
+                    this.y = this.currentTask.targetY; // Snap to tile
+                } else {
+                    this.x = Math.round(this.x);
+                    this.y = Math.round(this.y);
+                    this.currentTask.targetX = this.x;
+                    this.currentTask.targetY = this.y;
+                }
 
                 if (this.currentTask.type === "move") {
                     console.log(`${this.name} completed task: ${this.currentTask.type}`);

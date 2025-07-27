@@ -40,15 +40,29 @@ export default class Enemy {
             } else {
                 // Move towards the target settler
                 const speed = ENEMY_RUN_SPEED; // tiles per second
+                const step = speed * (deltaTime / 1000);
+
                 if (this.x < this.targetSettler.x) {
-                    this.x += speed * (deltaTime / 1000);
+                    const nextX = this.x + step;
+                    if (!this.targetSettler.map.isTileBlocked(Math.floor(nextX), Math.floor(this.y))) {
+                        this.x = nextX;
+                    }
                 } else if (this.x > this.targetSettler.x) {
-                    this.x -= speed * (deltaTime / 1000);
+                    const nextX = this.x - step;
+                    if (!this.targetSettler.map.isTileBlocked(Math.floor(nextX), Math.floor(this.y))) {
+                        this.x = nextX;
+                    }
                 }
                 if (this.y < this.targetSettler.y) {
-                    this.y += speed * (deltaTime / 1000);
+                    const nextY = this.y + step;
+                    if (!this.targetSettler.map.isTileBlocked(Math.floor(this.x), Math.floor(nextY))) {
+                        this.y = nextY;
+                    }
                 } else if (this.y > this.targetSettler.y) {
-                    this.y -= speed * (deltaTime / 1000);
+                    const nextY = this.y - step;
+                    if (!this.targetSettler.map.isTileBlocked(Math.floor(this.x), Math.floor(nextY))) {
+                        this.y = nextY;
+                    }
                 }
 
                 // Check if within attack range (simple distance check)

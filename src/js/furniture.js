@@ -1,8 +1,10 @@
 import Building from './building.js';
+import { BUILDING_TYPES } from './constants.js';
 
 export default class Furniture extends Building {
     constructor(type, x, y, width, height, material, health, spriteManager = null) {
-        super(type, x, y, width, height, material, health);
+        const typeConst = typeof type === 'string' ? { id: type, blocking: false } : type;
+        super(typeConst, x, y, width, height, material, health);
         this.drawBase = false;
         this.spriteManager = spriteManager;
         this.sprite = spriteManager ? spriteManager.getSprite(type) : null;

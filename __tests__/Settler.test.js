@@ -25,7 +25,8 @@ describe('Settler', () => {
             resourcePiles: [],
             addResourcePile: jest.fn(function(pile) { this.resourcePiles.push(pile); }),
             tileSize: 1,
-            buildings: []
+            buildings: [],
+            isTileBlocked: jest.fn(() => false)
         };
         mockRoomManager = {
             rooms: [],

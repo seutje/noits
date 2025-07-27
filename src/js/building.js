@@ -3,7 +3,13 @@ import { RESOURCE_TYPES } from './constants.js';
 
 export default class Building {
     constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1) {
-        this.type = type; // e.g., "wall", "floor", "house"
+        if (typeof type === 'object') {
+            this.type = type.id;
+            this.blocking = !!type.blocking;
+        } else {
+            this.type = type; // fallback for string usage
+            this.blocking = false;
+        }
         this.x = x;
         this.y = y;
         this.width = width;
@@ -105,7 +111,8 @@ export default class Building {
             resourcesDelivered: this.resourcesDelivered,
             maxHealth: this.maxHealth,
             health: this.health,
-            inventory: this.inventory
+            inventory: this.inventory,
+            blocking: this.blocking
         };
     }
 
@@ -122,5 +129,6 @@ export default class Building {
         this.maxHealth = data.maxHealth;
         this.health = data.health;
         this.inventory = data.inventory || {};
+        this.blocking = data.blocking || false;
     }
 }

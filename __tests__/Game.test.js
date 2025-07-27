@@ -5,6 +5,7 @@ import ResourceManager from '../src/js/resourceManager.js';
 import Settler from '../src/js/settler.js';
 import TaskManager from '../src/js/taskManager.js';
 import Building from '../src/js/building.js';
+import { BUILDING_TYPES } from '../src/js/constants.js';
 import Task from '../src/js/task.js';
 import { TASK_TYPES } from '../src/js/constants.js';
 
@@ -126,7 +127,7 @@ describe('Game', () => {
         expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
         // Verify the Building constructor was called with correct arguments
         expect(Building).toHaveBeenCalledWith(
-            'wall',
+            BUILDING_TYPES.WALL,
             expectedTileX,
             expectedTileY,
             1,
@@ -162,7 +163,7 @@ describe('Game', () => {
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
         expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
         expect(Building).toHaveBeenCalledWith(
-            'farm_plot',
+            BUILDING_TYPES.FARM_PLOT,
             expectedTileX,
             expectedTileY,
             1,

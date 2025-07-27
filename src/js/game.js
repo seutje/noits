@@ -21,7 +21,7 @@ import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
 import SoundManager from './soundManager.js';
-import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES, RESOURCE_TYPES } from './constants.js';
+import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES, RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 
 
 export default class Game {
@@ -647,22 +647,22 @@ export default class Game {
         if (this.buildMode && this.selectedBuilding) {
             // Place the selected building
             let newBuilding;
-            if (this.selectedBuilding === 'crafting_station') {
+            if (this.selectedBuilding === BUILDING_TYPES.CRAFTING_STATION.id) {
                 newBuilding = new CraftingStation(tileX, tileY, this.spriteManager);
-            } else if (this.selectedBuilding === 'farm_plot') {
+            } else if (this.selectedBuilding === BUILDING_TYPES.FARM_PLOT.id) {
                 newBuilding = new FarmPlot(tileX, tileY, this.spriteManager);
-            } else if (this.selectedBuilding === 'animal_pen') {
+            } else if (this.selectedBuilding === BUILDING_TYPES.ANIMAL_PEN.id) {
                 newBuilding = new AnimalPen(tileX, tileY);
-            } else if (this.selectedBuilding === 'bed') {
-                newBuilding = new Furniture('bed', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
-            } else if (this.selectedBuilding === 'table') {
-                newBuilding = new Furniture('table', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
-            } else if (this.selectedBuilding === 'barricade') {
-                newBuilding = new Building('barricade', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
-            } else if (this.selectedBuilding === 'wall') {
-                newBuilding = new Building('wall', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, 1); // Walls require 1 wood
+            } else if (this.selectedBuilding === BUILDING_TYPES.BED.id) {
+                newBuilding = new Furniture(BUILDING_TYPES.BED, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.TABLE.id) {
+                newBuilding = new Furniture(BUILDING_TYPES.TABLE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE.id) {
+                newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0);
+            } else if (this.selectedBuilding === BUILDING_TYPES.WALL.id) {
+                newBuilding = new Building(BUILDING_TYPES.WALL, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, 1);
             } else {
-                newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Start with 0 health
+                newBuilding = new Building({ id: this.selectedBuilding, blocking: false }, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0);
             }
             this.map.addBuilding(newBuilding);
             // Hauling should happen before building starts if resources are needed

@@ -123,6 +123,12 @@ export default class Map {
         return this.buildings.find(building => building.x === x && building.y === y);
     }
 
+    isTileBlocked(x, y) {
+        if (this.getTile(x, y) === 8) return true;
+        const building = this.getBuildingAt(x, y);
+        return !!(building && building.blocking);
+    }
+
     removeBuilding(buildingToRemove) {
         this.buildings = this.buildings.filter(building => building !== buildingToRemove);
     }
@@ -150,8 +156,7 @@ export default class Map {
                 nx < this.width &&
                 ny >= 0 &&
                 ny < this.height &&
-                this.getTile(nx, ny) !== 8 &&
-                !this.getBuildingAt(nx, ny)
+                !this.isTileBlocked(nx, ny)
             ) {
                 if (fromX !== null && fromY !== null) {
                     const dist = (fromX - nx) ** 2 + (fromY - ny) ** 2;

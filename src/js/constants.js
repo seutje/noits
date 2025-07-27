@@ -73,3 +73,18 @@ export const GATHER_TASK_TYPES = new Set([
 // Movement speeds
 export const SETTLER_RUN_SPEED = 0.5; // tiles per second
 export const ENEMY_RUN_SPEED = 0.3; // tiles per second
+
+// Building type definitions. Each has an id string used throughout the game
+// and a `blocking` property determining if it prevents movement through its
+// tile. Only walls block movement by default.
+export const BUILDING_TYPES = {
+  WALL: { id: 'wall', blocking: true },
+  FLOOR: { id: 'floor', blocking: false },
+  CRAFTING_STATION: { id: 'crafting_station', blocking: false },
+  FARM_PLOT: { id: 'farm_plot', blocking: false },
+  ANIMAL_PEN: { id: 'animal_pen', blocking: false },
+  BED: { id: 'bed', blocking: false },
+  TABLE: { id: 'table', blocking: false },
+  BARRICADE: { id: 'barricade', blocking: false }
+};
+

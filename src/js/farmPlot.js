@@ -1,11 +1,11 @@
 import Building from './building.js';
 import SpriteManager from './spriteManager.js';
-import { RESOURCE_TYPES } from './constants.js';
+import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 
 export default class FarmPlot extends Building {
     constructor(x, y, spriteManager) {
         // Farm plots require no construction materials
-        super('farm_plot', x, y, 1, 1, null, 0, 0);
+        super(BUILDING_TYPES.FARM_PLOT, x, y, 1, 1, null, 0, 0);
         this.drawBase = false;
         this.crop = null; // What is planted (e.g., 'wheat')
         this.growthStage = 0; // 0: empty, 1: planted, 2: growing, 3: mature

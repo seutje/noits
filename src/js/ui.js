@@ -196,7 +196,15 @@ export default class UI {
         this.plantWheatButton.textContent = 'Plant wheat';
         this.plantWheatButton.onclick = () => {
             if (this.gameInstance && this.selectedFarmPlot) {
-                this.gameInstance.addSowCropTask(this.selectedFarmPlot);
+                this.gameInstance.addSowCropTask(this.selectedFarmPlot, RESOURCE_TYPES.WHEAT);
+            }
+            this.hideFarmPlotMenu();
+        };
+        this.plantCottonButton = document.createElement('button');
+        this.plantCottonButton.textContent = 'Plant cotton';
+        this.plantCottonButton.onclick = () => {
+            if (this.gameInstance && this.selectedFarmPlot) {
+                this.gameInstance.addSowCropTask(this.selectedFarmPlot, RESOURCE_TYPES.COTTON);
             }
             this.hideFarmPlotMenu();
         };
@@ -209,6 +217,7 @@ export default class UI {
             this.hideFarmPlotMenu();
         };
         this.farmPlotMenu.appendChild(this.plantWheatButton);
+        this.farmPlotMenu.appendChild(this.plantCottonButton);
         this.farmPlotMenu.appendChild(this.harvestButton);
         this.farmPlotMenu.addEventListener('mousedown', event => event.stopPropagation());
         this.farmPlotMenu.addEventListener('click', event => event.stopPropagation());
@@ -390,6 +399,7 @@ export default class UI {
         this.farmPlotMenu.style.left = `${screenX}px`;
         this.farmPlotMenu.style.top = `${screenY}px`;
         this.plantWheatButton.disabled = farmPlot.crop !== null;
+        this.plantCottonButton.disabled = farmPlot.crop !== null;
         this.harvestButton.disabled = farmPlot.growthStage !== 3;
         this.farmPlotMenu.style.display = 'block';
     }

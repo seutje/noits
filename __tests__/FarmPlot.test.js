@@ -14,6 +14,13 @@ describe('FarmPlot', () => {
         expect(farm.plant('wheat')).toBe(false);
     });
 
+    test('plant cotton sets crop and stage', () => {
+        farm = new FarmPlot(0, 0, new SpriteManager());
+        expect(farm.plant('cotton')).toBe(true);
+        expect(farm.crop).toBe('cotton');
+        expect(farm.growthStage).toBe(1);
+    });
+
     test('update advances growth and matures', () => {
         farm.plant('wheat');
         farm.update(1000); // 1 second -> growthRate 0.01

@@ -223,6 +223,13 @@ export default class UI {
         this.priorityOverlay.style.display = 'none';
         this.priorityOverlay.style.overflow = 'auto';
         this.priorityOverlay.style.zIndex = '1001';
+        // Prevent clicks inside the overlay from reaching the game canvas
+        this.priorityOverlay.addEventListener('mousedown', (event) => {
+            event.stopPropagation();
+        });
+        this.priorityOverlay.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
         document.body.appendChild(this.priorityOverlay);
 
         this.tooltip = document.createElement('div');

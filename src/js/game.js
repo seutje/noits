@@ -119,9 +119,8 @@ export default class Game {
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.pause();
-            } else {
-                this.resume();
             }
+            // Do not automatically resume when focus returns; player must unpause manually
         });
         this.gameLoop(0);
     }

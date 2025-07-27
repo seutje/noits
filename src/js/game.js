@@ -21,7 +21,7 @@ import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
 import SoundManager from './soundManager.js';
-import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES } from './constants.js';
+import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES, RESOURCE_TYPES } from './constants.js';
 
 
 export default class Game {
@@ -77,22 +77,22 @@ export default class Game {
             await this.spriteManager.loadImage('grass', 'src/assets/grass.png');
             await this.spriteManager.loadImage('berry_bush', 'src/assets/berry_bush.png');
             await this.spriteManager.loadImage('goblin', 'src/assets/goblin.png');
-            await this.spriteManager.loadImage('stone', 'src/assets/stone.png');
-            await this.spriteManager.loadImage('iron_ore', 'src/assets/iron_ore.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.STONE, 'src/assets/stone.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.IRON_ORE, 'src/assets/iron_ore.png');
             await this.spriteManager.loadImage('deer', 'src/assets/deer.png');
-            await this.spriteManager.loadImage('dirt', 'src/assets/dirt.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.DIRT, 'src/assets/dirt.png');
             await this.spriteManager.loadImage('wild_boar', 'src/assets/wild_boar.png');
             await this.spriteManager.loadImage('mushroom', 'src/assets/mushroom.png');
             await this.spriteManager.loadImage('mushrooms', 'src/assets/mushrooms.png');
-            await this.spriteManager.loadImage('wood', 'src/assets/wood.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.WOOD, 'src/assets/wood.png');
             await this.spriteManager.loadImage('stone_pile', 'src/assets/stone_pile.png');
-            await this.spriteManager.loadImage('berries', 'src/assets/berries.png');
-            await this.spriteManager.loadImage('meat', 'src/assets/meat.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.BERRIES, 'src/assets/berries.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.MEAT, 'src/assets/meat.png');
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
             
             await this.spriteManager.loadImage('dirt_pile', 'src/assets/dirt_pile.png');
             await this.spriteManager.loadImage('farm_plot', 'src/assets/farmPlot.png');
-            await this.spriteManager.loadImage('bandage', 'src/assets/bandage.png');
+            await this.spriteManager.loadImage(RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png');
             await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
             await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
             await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
@@ -147,7 +147,7 @@ export default class Game {
         // Update settler needs
         this.settlers.forEach(settler => {
             settler.updateNeeds(deltaTime * this.gameSpeed);
-            if (settler.needsTreatment() && this.map.resourcePiles.some(p => p.type === 'bandage' && p.quantity > 0)) {
+            if (settler.needsTreatment() && this.map.resourcePiles.some(p => p.type === RESOURCE_TYPES.BANDAGE && p.quantity > 0)) {
                 const availableSettler = this.settlers.find(s => s.state === 'idle' && s !== settler);
                 const existingTreatmentTask = this.taskManager.hasTaskForTargetSettler(settler) ||
                                              this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.TREATMENT && s.currentTask.targetSettler === settler);
@@ -311,7 +311,7 @@ export default class Game {
     spawnTravelingMerchant() {
         console.log("A traveling merchant has arrived!");
         // Example trade: buy 10 wood for 5 gold
-        this.tradeManager.initiateTrade('traders', [{ type: 'buy', resource: 'wood', quantity: 10, price: 5 }]);
+        this.tradeManager.initiateTrade('traders', [{ type: 'buy', resource: RESOURCE_TYPES.WOOD, quantity: 10, price: 5 }]);
         // Example trade: sell 5 food for 10 gold
         this.tradeManager.initiateTrade('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     }
@@ -478,15 +478,15 @@ export default class Game {
             } else if (this.selectedBuilding === 'animal_pen') {
                 newBuilding = new AnimalPen(tileX, tileY);
             } else if (this.selectedBuilding === 'bed') {
-                newBuilding = new Furniture('bed', tileX, tileY, 1, 2, 'wood', 50);
+                newBuilding = new Furniture('bed', tileX, tileY, 1, 2, RESOURCE_TYPES.WOOD, 50);
             } else if (this.selectedBuilding === 'table') {
-                newBuilding = new Furniture('table', tileX, tileY, 2, 1, 'wood', 75);
+                newBuilding = new Furniture('table', tileX, tileY, 2, 1, RESOURCE_TYPES.WOOD, 75);
             } else if (this.selectedBuilding === 'barricade') {
-                newBuilding = new Building('barricade', tileX, tileY, 1, 1, "wood", 0); // Barricade is a simple building
+                newBuilding = new Building('barricade', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === 'wall') {
-                newBuilding = new Building('wall', tileX, tileY, 1, 1, 'wood', 0, 1); // Walls require 1 wood
+                newBuilding = new Building('wall', tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, 1); // Walls require 1 wood
             } else {
-                newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, "wood", 0); // Start with 0 health
+                newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Start with 0 health
             }
             this.map.addBuilding(newBuilding);
             // Hauling should happen before building starts if resources are needed
@@ -530,7 +530,7 @@ export default class Game {
                 } else if (clickedBuilding.type === 'farm_plot') {
                     const farmPlot = clickedBuilding;
                     if (farmPlot.growthStage === 0) {
-                        this.taskManager.addTask(new Task(TASK_TYPES.SOW_CROP, tileX, tileY, null, 0, 3, farmPlot, null, 'wheat')); // Hardcode wheat for now
+                        this.taskManager.addTask(new Task(TASK_TYPES.SOW_CROP, tileX, tileY, null, 0, 3, farmPlot, null, RESOURCE_TYPES.WHEAT)); // Hardcode wheat for now
                         console.log(`Sow crop task added for wheat at ${tileX},${tileY}`);
                     } else if (farmPlot.growthStage === 3) {
                         this.taskManager.addTask(new Task(TASK_TYPES.HARVEST_CROP, tileX, tileY, null, 0, 3, farmPlot));
@@ -555,26 +555,26 @@ export default class Game {
             } else {
                 const clickedEnemy = this.enemies.find(e => Math.floor(e.x) === tileX && Math.floor(e.y) === tileY);
                 if (clickedEnemy && clickedEnemy.isDead && clickedEnemy.decay <= 50 && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
-                    this.taskManager.addTask(new Task(TASK_TYPES.BUTCHER, tileX, tileY, "meat", 1, 2, null, null, null, null, null, null, clickedEnemy));
+                    this.taskManager.addTask(new Task(TASK_TYPES.BUTCHER, tileX, tileY, RESOURCE_TYPES.MEAT, 1, 2, null, null, null, null, null, null, clickedEnemy));
                     clickedEnemy.isMarkedForButcher = true;
                     console.log(`Butcher task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 2) { // If a tree is clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.CHOP_WOOD, tileX, tileY, "wood", 2.5, 2));
+                    this.taskManager.addTask(new Task(TASK_TYPES.CHOP_WOOD, tileX, tileY, RESOURCE_TYPES.WOOD, 2.5, 2));
                     console.log(`Chop wood task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 3) { // If a stone is clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.MINE_STONE, tileX, tileY, "stone", 2.5, 2));
+                    this.taskManager.addTask(new Task(TASK_TYPES.MINE_STONE, tileX, tileY, RESOURCE_TYPES.STONE, 2.5, 2));
                     console.log(`Mine stone task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 4) { // If berries are clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.GATHER_BERRIES, tileX, tileY, "berries", 1, 2));
+                    this.taskManager.addTask(new Task(TASK_TYPES.GATHER_BERRIES, tileX, tileY, RESOURCE_TYPES.BERRIES, 1, 2));
                     console.log(`Gather berries task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 5) { // If iron_ore is clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.MINE_IRON_ORE, tileX, tileY, "iron_ore", 10, 2));
+                    this.taskManager.addTask(new Task(TASK_TYPES.MINE_IRON_ORE, tileX, tileY, RESOURCE_TYPES.IRON_ORE, 10, 2));
                     console.log(`Mine iron ore task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 6) { // If wild food is clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.MUSHROOM, tileX, tileY, "mushrooms", 1, 2));
+                    this.taskManager.addTask(new Task(TASK_TYPES.MUSHROOM, tileX, tileY, RESOURCE_TYPES.MUSHROOMS, 1, 2));
                     console.log(`Forage food task added at ${tileX},${tileY}`);
                 } else if (clickedTile === 7) { // If animal is clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.HUNT_ANIMAL, tileX, tileY, "meat", 2.5, 2));
+                    this.taskManager.addTask(new Task(TASK_TYPES.HUNT_ANIMAL, tileX, tileY, RESOURCE_TYPES.MEAT, 2.5, 2));
                     console.log(`Hunt animal task added at ${tileX},${tileY}`);
                 }
             }

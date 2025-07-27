@@ -1,11 +1,11 @@
 
 import Settler from './settler.js';
-import { ENEMY_RUN_SPEED } from './constants.js';
+import { ENEMY_RUN_SPEED, RESOURCE_TYPES } from './constants.js';
 
 let enemyIdCounter = 0;
 
 export default class Enemy {
-    constructor(name, x, y, targetSettler, spriteManager, lootType = 'meat') {
+    constructor(name, x, y, targetSettler, spriteManager, lootType = RESOURCE_TYPES.MEAT) {
         this.id = enemyIdCounter++;
         this.name = name;
         this.x = x;
@@ -157,7 +157,7 @@ export default class Enemy {
         this.isDead = data.isDead || false;
         this.isButchered = data.isButchered || false;
         this.isMarkedForButcher = data.isMarkedForButcher || false;
-        this.lootType = data.lootType || 'meat';
+        this.lootType = data.lootType || RESOURCE_TYPES.MEAT;
         this.decay = data.decay || 0;
     }
 }

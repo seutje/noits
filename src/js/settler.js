@@ -1,7 +1,7 @@
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
-import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES } from './constants.js';
+import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES } from './constants.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
@@ -154,7 +154,7 @@ export default class Settler {
         // Basic AI: Change state based on needs
         if (this.targetEnemy && this.targetEnemy.health > 0) {
             this.state = "combat";
-        } else if (this.needsTreatment() && this.map.resourcePiles.some(p => p.type === 'bandage' && p.quantity > 0)) {
+        } else if (this.needsTreatment() && this.map.resourcePiles.some(p => p.type === RESOURCE_TYPES.BANDAGE && p.quantity > 0)) {
             this.state = "seeking_treatment";
         } else if (this.hunger < 20) {
             this.state = "seeking_food";
@@ -179,7 +179,7 @@ export default class Settler {
             const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
             let assigned = false;
             for (const room of storageRooms) {
-                const foodTypes = ["berries", "mushrooms", "meat"];
+                const foodTypes = [RESOURCE_TYPES.BERRIES, RESOURCE_TYPES.MUSHROOMS, RESOURCE_TYPES.MEAT];
                 for (const food of foodTypes) {
                     if (room.storage[food] && room.storage[food] > 0) {
                         const targetTile = room.tiles[0];
@@ -367,7 +367,7 @@ export default class Settler {
                         this.pickUpPile(resourceType, 1); // Settler carries the resource
                         if (this.currentTask.type === TASK_TYPES.HUNT_ANIMAL) {
                             // Hunting yields extra materials like bandages dropped on the ground
-                            const bandagePile = new ResourcePile('bandage', 1, this.currentTask.targetX, this.currentTask.targetY, this.map.tileSize, this.spriteManager);
+                            const bandagePile = new ResourcePile(RESOURCE_TYPES.BANDAGE, 1, this.currentTask.targetX, this.currentTask.targetY, this.map.tileSize, this.spriteManager);
                             this.map.addResourcePile(bandagePile);
                         }
                         this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
@@ -385,7 +385,7 @@ export default class Settler {
                         this.currentTask.quantity -= amountToButcher;
 
                         if (this.currentTask.quantity <= 0) {
-                            const lootType = this.currentTask.targetEnemy.lootType || 'meat';
+                            const lootType = this.currentTask.targetEnemy.lootType || RESOURCE_TYPES.MEAT;
                             this.pickUpPile(lootType, 1);
                             this.currentTask.targetEnemy.isButchered = true;
                             this.currentTask.targetEnemy.isMarkedForButcher = false;
@@ -522,7 +522,7 @@ export default class Settler {
 
                     if (!this.currentTask.stage) {
                         this.currentTask.stage = 'pickup';
-                        const pile = this.map.resourcePiles.find(p => p.type === 'bandage' && p.quantity > 0);
+                        const pile = this.map.resourcePiles.find(p => p.type === RESOURCE_TYPES.BANDAGE && p.quantity > 0);
                         if (pile) {
                             this.currentTask.sourceX = pile.x;
                             this.currentTask.sourceY = pile.y;
@@ -537,14 +537,14 @@ export default class Settler {
 
                     if (this.currentTask.stage === 'pickup') {
                         if (this.x === this.currentTask.targetX && this.y === this.currentTask.targetY) {
-                            const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === 'bandage');
+                            const pile = this.map.resourcePiles.find(p => p.x === this.currentTask.sourceX && p.y === this.currentTask.sourceY && p.type === RESOURCE_TYPES.BANDAGE);
                             if (pile && pile.remove(1)) {
                                 if (pile.quantity <= 0) {
                                     this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                                 }
-                                this.pickUpPile('bandage', 1);
+                                this.pickUpPile(RESOURCE_TYPES.BANDAGE, 1);
                                 if (this.x === targetSettler.x && this.y === targetSettler.y) {
-                                    if (this.carrying && this.carrying.type === 'bandage') {
+                                    if (this.carrying && this.carrying.type === RESOURCE_TYPES.BANDAGE) {
                                         this.carrying.quantity -= 1;
                                         if (this.carrying.quantity <= 0) this.carrying = null;
                                         targetSettler.stopBleeding();
@@ -563,7 +563,7 @@ export default class Settler {
                         }
                     } else if (this.currentTask.stage === 'treat') {
                         if (this.x === targetSettler.x && this.y === targetSettler.y) {
-                            if (this.carrying && this.carrying.type === 'bandage') {
+                            if (this.carrying && this.carrying.type === RESOURCE_TYPES.BANDAGE) {
                                 this.carrying.quantity -= 1;
                                 if (this.carrying.quantity <= 0) this.carrying = null;
                                 targetSettler.stopBleeding();

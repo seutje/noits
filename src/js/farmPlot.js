@@ -1,5 +1,6 @@
 import Building from './building.js';
 import SpriteManager from './spriteManager.js';
+import { RESOURCE_TYPES } from './constants.js';
 
 export default class FarmPlot extends Building {
     constructor(x, y, spriteManager) {
@@ -53,7 +54,7 @@ export default class FarmPlot extends Building {
 
         // Render crop based on growth stage
         if (this.crop) {
-            if (this.crop === 'wheat') {
+            if (this.crop === RESOURCE_TYPES.WHEAT) {
                 let spriteName;
                 const currentGrowthStage = Math.floor(this.growthStage);
                 if (currentGrowthStage === 1) {

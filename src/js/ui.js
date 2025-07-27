@@ -1,5 +1,5 @@
 
-import { TASK_TYPES } from './constants.js';
+import { TASK_TYPES, RESOURCE_TYPES } from './constants.js';
 
 export default class UI {
     constructor(ctx) {
@@ -133,7 +133,7 @@ export default class UI {
         addBandageButton.textContent = 'Add Bandage';
         addBandageButton.onclick = () => {
             if (this.gameInstance) {
-                this.gameInstance.resourceManager.addResource('bandage', 1);
+                this.gameInstance.resourceManager.addResource(RESOURCE_TYPES.BANDAGE, 1);
             }
         };
         this.buildMenu.appendChild(addBandageButton);

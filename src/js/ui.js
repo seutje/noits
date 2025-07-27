@@ -173,6 +173,11 @@ export default class UI {
         this.helpButton.onclick = () => this.toggleHelp();
         this.uiContainer.appendChild(this.helpButton);
 
+        this.priorityButton = document.createElement('button');
+        this.priorityButton.textContent = 'Task Priorities';
+        this.priorityButton.onclick = () => this.togglePriorityManager();
+        this.uiContainer.appendChild(this.priorityButton);
+
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';
         this.helpOverlay.style.position = 'absolute';
@@ -203,6 +208,22 @@ export default class UI {
         helpContent.appendChild(closeHelpButton);
         this.helpOverlay.appendChild(helpContent);
         document.body.appendChild(this.helpOverlay);
+
+        this.priorityOverlay = document.createElement('div');
+        this.priorityOverlay.id = 'priority-overlay';
+        this.priorityOverlay.style.position = 'absolute';
+        this.priorityOverlay.style.top = '0';
+        this.priorityOverlay.style.left = '0';
+        this.priorityOverlay.style.width = '100%';
+        this.priorityOverlay.style.height = '100%';
+        this.priorityOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        this.priorityOverlay.style.color = 'white';
+        this.priorityOverlay.style.padding = '20px';
+        this.priorityOverlay.style.boxSizing = 'border-box';
+        this.priorityOverlay.style.display = 'none';
+        this.priorityOverlay.style.overflow = 'auto';
+        this.priorityOverlay.style.zIndex = '1001';
+        document.body.appendChild(this.priorityOverlay);
 
         this.tooltip = document.createElement('div');
         this.tooltip.id = 'tooltip';
@@ -330,6 +351,54 @@ export default class UI {
             this.showHelp();
         } else {
             this.hideHelp();
+        }
+    }
+
+    showPriorityManager() {
+        if (!this.gameInstance) return;
+        this.priorityOverlay.innerHTML = '';
+        this.gameInstance.settlers.forEach(settler => {
+            const settlerDiv = document.createElement('div');
+            settlerDiv.innerHTML = `<h3>${settler.name}</h3>`;
+            Object.keys(settler.taskPriorities).forEach(taskType => {
+                const container = document.createElement('div');
+                const label = document.createElement('label');
+                label.textContent = taskType;
+                label.style.marginRight = '10px';
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = '0';
+                slider.max = '10';
+                slider.value = settler.taskPriorities[taskType];
+                const valueSpan = document.createElement('span');
+                valueSpan.textContent = slider.value;
+                slider.addEventListener('input', () => {
+                    valueSpan.textContent = slider.value;
+                    settler.taskPriorities[taskType] = parseInt(slider.value);
+                });
+                container.appendChild(label);
+                container.appendChild(slider);
+                container.appendChild(valueSpan);
+                settlerDiv.appendChild(container);
+            });
+            this.priorityOverlay.appendChild(settlerDiv);
+        });
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Close';
+        closeBtn.onclick = () => this.hidePriorityManager();
+        this.priorityOverlay.appendChild(closeBtn);
+        this.priorityOverlay.style.display = 'block';
+    }
+
+    hidePriorityManager() {
+        this.priorityOverlay.style.display = 'none';
+    }
+
+    togglePriorityManager() {
+        if (this.priorityOverlay.style.display === 'none') {
+            this.showPriorityManager();
+        } else {
+            this.hidePriorityManager();
         }
     }
 }

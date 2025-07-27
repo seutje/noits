@@ -36,6 +36,10 @@ export default class Settler {
             combat: 1,
             medical: 1
         };
+        this.taskPriorities = {};
+        Object.values(TASK_TYPES).forEach(type => {
+            this.taskPriorities[type] = 5;
+        });
         this.equippedWeapon = null; // Stores a Weapon object
         this.equippedArmor = {}; // Stores Armor objects by body part (e.g., { head: ArmorObject, torso: ArmorObject })
         this.targetEnemy = null; // The enemy the settler is currently targeting
@@ -765,7 +769,8 @@ export default class Settler {
             targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null, // Only save ID, actual object will be re-linked
             isDead: this.isDead,
             isSleeping: this.isSleeping,
-            sleepingInBed: this.sleepingInBed
+            sleepingInBed: this.sleepingInBed,
+            taskPriorities: this.taskPriorities
         };
     }
 
@@ -816,5 +821,8 @@ export default class Settler {
         this.isDead = data.isDead || false;
         this.isSleeping = data.isSleeping || false;
         this.sleepingInBed = data.sleepingInBed || false;
+        if (data.taskPriorities) {
+            this.taskPriorities = data.taskPriorities;
+        }
     }
 }

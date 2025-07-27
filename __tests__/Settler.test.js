@@ -62,6 +62,9 @@ describe('Settler', () => {
             combat: 1,
             medical: 1
         });
+        Object.values(TASK_TYPES).forEach(type => {
+            expect(settler.taskPriorities[type]).toBe(5);
+        });
     });
 
     test('updateNeeds should decrease hunger and sleep over time', () => {

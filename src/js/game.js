@@ -158,7 +158,7 @@ export default class Game {
                 }
             }
             if (settler.state === "idle" && !settler.currentTask) {
-                const task = this.taskManager.getTask(t => !(
+                const task = this.taskManager.getTaskForSettler(settler, t => !(
                     settler.carrying &&
                     (t.type === TASK_TYPES.HAUL || GATHER_TASK_TYPES.has(t.type))
                 ));

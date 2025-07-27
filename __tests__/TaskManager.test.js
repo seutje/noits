@@ -56,4 +56,18 @@ describe('TaskManager', () => {
         expect(taskManager.tasks).toContain(haulTask);
         expect(taskManager.tasks).not.toContain(buildTask);
     });
+
+    test('getTaskForSettler respects settler priorities', () => {
+        const settler = { taskPriorities: { [TASK_TYPES.BUILD]: 0, [TASK_TYPES.HAUL]: 5 } };
+        const haulTask = new Task(TASK_TYPES.HAUL, 1, 1);
+        const buildTask = new Task(TASK_TYPES.BUILD, 2, 2);
+        taskManager.addTask(buildTask);
+        taskManager.addTask(haulTask);
+
+        const task = taskManager.getTaskForSettler(settler);
+
+        expect(task).toBe(haulTask);
+        expect(taskManager.tasks).toContain(buildTask);
+        expect(taskManager.tasks).not.toContain(haulTask);
+    });
 });

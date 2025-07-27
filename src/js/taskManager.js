@@ -36,6 +36,19 @@ export default class TaskManager {
         return null;
     }
 
+    getTaskForSettler(settler, filterFn = null) {
+        for (let i = 0; i < this.tasks.length; i++) {
+            const task = this.tasks[i];
+            if (settler.taskPriorities && settler.taskPriorities[task.type] > 0) {
+                if (!filterFn || filterFn(task)) {
+                    this.tasks.splice(i, 1);
+                    return task;
+                }
+            }
+        }
+        return null;
+    }
+
     // You might want more sophisticated methods later, like:
     // assignTask(settler) { ... }
     // removeTask(task) { ... }

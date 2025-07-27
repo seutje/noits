@@ -565,7 +565,9 @@ export default class Game {
                     console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
                 }
             } else {
-                const clickedEnemy = this.enemies.find(e => Math.floor(e.x) === tileX && Math.floor(e.y) === tileY);
+                const clickedEnemy = this.enemies.find(
+                    e => Math.round(e.x) === tileX && Math.round(e.y) === tileY
+                );
                 if (clickedEnemy && clickedEnemy.isDead && clickedEnemy.decay <= 50 && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
                     this.taskManager.addTask(new Task(TASK_TYPES.BUTCHER, tileX, tileY, RESOURCE_TYPES.MEAT, 1, 2, null, null, null, null, null, null, clickedEnemy));
                     clickedEnemy.isMarkedForButcher = true;

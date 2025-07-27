@@ -20,6 +20,22 @@ export const RESOURCE_TYPES = {
   BLOCK: 'block'
 };
 
+// Categories assigned to each resource. Resources can belong to multiple
+// categories (e.g., wheat is considered food).
+export const RESOURCE_CATEGORIES = {
+  [RESOURCE_TYPES.WOOD]: ['material'],
+  [RESOURCE_TYPES.STONE]: ['material'],
+  [RESOURCE_TYPES.IRON_ORE]: ['material'],
+  [RESOURCE_TYPES.DIRT]: ['material'],
+  [RESOURCE_TYPES.WHEAT]: ['food'],
+  [RESOURCE_TYPES.BERRIES]: ['food'],
+  [RESOURCE_TYPES.MUSHROOMS]: ['food'],
+  [RESOURCE_TYPES.MEAT]: ['food'],
+  [RESOURCE_TYPES.BANDAGE]: ['medical'],
+  [RESOURCE_TYPES.PLANK]: ['material'],
+  [RESOURCE_TYPES.BLOCK]: ['material']
+};
+
 // Individual task type constants
 export const TASK_TYPES = {
   CHOP_WOOD: 'chop_wood',

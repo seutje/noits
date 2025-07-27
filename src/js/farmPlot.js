@@ -6,6 +6,7 @@ export default class FarmPlot extends Building {
     constructor(x, y, spriteManager) {
         // Farm plots require no construction materials
         super('farm_plot', x, y, 1, 1, null, 0, 0);
+        this.drawBase = false;
         this.crop = null; // What is planted (e.g., 'wheat')
         this.growthStage = 0; // 0: empty, 1: planted, 2: growing, 3: mature
         this.growthRate = 0.01; // How fast it grows per game tick

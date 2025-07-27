@@ -117,14 +117,12 @@ export default class Settler {
     }
 
     isAdjacentToBuilding(building) {
-        const sx = Math.floor(this.x);
-        const sy = Math.floor(this.y);
-        return (
-            sx >= building.x - 1 &&
-            sx <= building.x + building.width &&
-            sy >= building.y - 1 &&
-            sy <= building.y + building.height
-        );
+        const withinX = this.x >= building.x - 1 && this.x <= building.x + building.width;
+        const withinY = this.y >= building.y - 1 && this.y <= building.y + building.height;
+        const insideX = this.x >= building.x && this.x < building.x + building.width;
+        const insideY = this.y >= building.y && this.y < building.y + building.height;
+        const inside = insideX && insideY;
+        return withinX && withinY && !inside;
     }
 
     updateNeeds(deltaTime) {
@@ -279,23 +277,28 @@ export default class Settler {
 
         // Execute current task
         if (this.currentTask) {
-            // Move towards the target
+            // Check if arrived at target before moving to avoid overshoot
             const speed = SETTLER_RUN_SPEED; // tiles per second
-            if (this.x < this.currentTask.targetX) {
-                this.x += speed * (deltaTime / 1000);
-            } else if (this.x > this.currentTask.targetX) {
-                this.x -= speed * (deltaTime / 1000);
-            }
-            if (this.y < this.currentTask.targetY) {
-                this.y += speed * (deltaTime / 1000);
-            } else if (this.y > this.currentTask.targetY) {
-                this.y -= speed * (deltaTime / 1000);
-            }
-
-            // Check if arrived at target
-            const arrived = this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building
+            let arrived = this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building
                 ? this.isAdjacentToBuilding(this.currentTask.building)
                 : Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed;
+
+            if (!arrived) {
+                if (this.x < this.currentTask.targetX) {
+                    this.x += speed * (deltaTime / 1000);
+                } else if (this.x > this.currentTask.targetX) {
+                    this.x -= speed * (deltaTime / 1000);
+                }
+                if (this.y < this.currentTask.targetY) {
+                    this.y += speed * (deltaTime / 1000);
+                } else if (this.y > this.currentTask.targetY) {
+                    this.y -= speed * (deltaTime / 1000);
+                }
+
+                arrived = this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building
+                    ? this.isAdjacentToBuilding(this.currentTask.building)
+                    : Math.abs(this.x - this.currentTask.targetX) < speed && Math.abs(this.y - this.currentTask.targetY) < speed;
+            }
             if (arrived) {
                 if (this.currentTask.type !== TASK_TYPES.BUILD) {
                     this.x = this.currentTask.targetX; // Snap to tile

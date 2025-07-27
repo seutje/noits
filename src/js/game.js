@@ -562,7 +562,14 @@ export default class Game {
 
             // Restore enemies
             this.enemies = gameState.enemies.map(eData => {
-                const enemy = new Enemy(eData.name, eData.x, eData.y, null, this.spriteManager); // Target settler will be re-assigned in update
+                const enemy = new Enemy(
+                    eData.name,
+                    eData.x,
+                    eData.y,
+                    null,
+                    this.map,
+                    this.spriteManager
+                ); // Target settler will be re-assigned in update
                 enemy.deserialize(eData);
                 return enemy;
             });

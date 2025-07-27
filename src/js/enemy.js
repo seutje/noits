@@ -2,11 +2,20 @@ import { debugLog } from './debug.js';
 
 import Settler from './settler.js';
 import { ENEMY_RUN_SPEED, RESOURCE_TYPES } from './constants.js';
+import { findPath } from './pathfinding.js';
 
 let enemyIdCounter = 0;
 
 export default class Enemy {
-    constructor(name, x, y, targetSettler, spriteManager, lootType = RESOURCE_TYPES.MEAT) {
+    constructor(
+        name,
+        x,
+        y,
+        targetSettler,
+        map,
+        spriteManager = null,
+        lootType = RESOURCE_TYPES.MEAT
+    ) {
         this.id = enemyIdCounter++;
         this.name = name;
         this.x = x;
@@ -16,6 +25,7 @@ export default class Enemy {
         this.attackSpeed = 1; // attacks per second
         this.attackCooldown = 0;
         this.targetSettler = targetSettler; // The settler this enemy is targeting
+        this.map = map;
         this.state = "attacking"; // For now, always attacking
         this.spriteManager = spriteManager;
         this.lootType = lootType; // Resource type yielded when butchered
@@ -24,6 +34,7 @@ export default class Enemy {
         this.isMarkedForButcher = false; // True when player has queued this enemy for butchering
         this.decay = 0; // 0-100 percentage of decay
         this.decayRate = 0.01; // percent per second
+        this.path = null;
     }
 
     update(deltaTime, settlers) {
@@ -38,26 +49,56 @@ export default class Enemy {
             // If target settler is dead, clear target
             if (this.targetSettler.isDead) {
                 this.targetSettler = null;
+                this.path = null;
             } else {
-                // Move towards the target settler
-                const speed = ENEMY_RUN_SPEED; // tiles per second
-                if (this.x < this.targetSettler.x) {
-                    this.x += speed * (deltaTime / 1000);
-                } else if (this.x > this.targetSettler.x) {
-                    this.x -= speed * (deltaTime / 1000);
+                const targetX = Math.floor(this.targetSettler.x);
+                const targetY = Math.floor(this.targetSettler.y);
+
+                if (!this.path) {
+                    if (Math.floor(this.x) === targetX && Math.floor(this.y) === targetY) {
+                        this.path = [];
+                    } else {
+                        this.path = findPath(
+                            { x: Math.floor(this.x), y: Math.floor(this.y) },
+                            { x: targetX, y: targetY },
+                            this.map
+                        );
+                        if (!this.path) {
+                            this.path = [{ x: targetX, y: targetY }];
+                        }
+                    }
                 }
-                if (this.y < this.targetSettler.y) {
-                    this.y += speed * (deltaTime / 1000);
-                } else if (this.y > this.targetSettler.y) {
-                    this.y -= speed * (deltaTime / 1000);
+
+                if (this.path && this.path.length > 0) {
+                    const targetNode = this.path[0];
+                    const speed = ENEMY_RUN_SPEED;
+                    if (this.x < targetNode.x) {
+                        this.x += speed * (deltaTime / 1000);
+                    } else if (this.x > targetNode.x) {
+                        this.x -= speed * (deltaTime / 1000);
+                    }
+                    if (this.y < targetNode.y) {
+                        this.y += speed * (deltaTime / 1000);
+                    } else if (this.y > targetNode.y) {
+                        this.y -= speed * (deltaTime / 1000);
+                    }
+
+                    if (Math.abs(this.x - targetNode.x) < 0.1 && Math.abs(this.y - targetNode.y) < 0.1) {
+                        this.x = targetNode.x;
+                        this.y = targetNode.y;
+                        this.path.shift();
+                        this.path = null; // recalc on next tile
+                    }
                 }
 
                 // Check if within attack range (simple distance check)
-                const distance = Math.sqrt(Math.pow(this.x - this.targetSettler.x, 2) + Math.pow(this.y - this.targetSettler.y, 2));
-                if (distance < 1.5) { // Within 1.5 tiles, consider it melee range
+                const distance = Math.sqrt(
+                    Math.pow(this.x - this.targetSettler.x, 2) + Math.pow(this.y - this.targetSettler.y, 2)
+                );
+                if (distance < 1.5) {
                     if (this.attackCooldown <= 0) {
                         this.dealDamage(this.targetSettler);
-                        this.attackCooldown = 1 / this.attackSpeed; // Reset cooldown
+                        this.attackCooldown = 1 / this.attackSpeed;
                     }
                 }
             }

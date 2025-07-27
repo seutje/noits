@@ -23,7 +23,7 @@ describe('Enemy', () => {
         target.equipArmor(helmet);
         jest.spyOn(target, 'takeDamage');
 
-        const enemy = new Enemy('Raider', 0, 0, target);
+        const enemy = new Enemy('Raider', 0, 0, target, mockMap);
         const originalRandom = Math.random;
         Math.random = () => 0; // Hit head
         enemy.dealDamage(target);
@@ -34,7 +34,7 @@ describe('Enemy', () => {
 
     test('update attacks target when in range', () => {
         const target = new Settler('Target', 0, 0, mockResourceManager, mockMap, mockRoomManager);
-        const enemy = new Enemy('Raider', 0, 0, target);
+        const enemy = new Enemy('Raider', 0, 0, target, mockMap);
         enemy.attackCooldown = 0;
         jest.spyOn(enemy, 'dealDamage').mockImplementation(() => {});
 

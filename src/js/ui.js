@@ -6,14 +6,6 @@ export default class UI {
         this.ctx = ctx;
         this.uiContainer = document.createElement('div');
         this.uiContainer.id = 'ui-container';
-        this.uiContainer.style.position = 'absolute';
-        this.uiContainer.style.top = '0';
-        this.uiContainer.style.left = '0';
-        this.uiContainer.style.width = '100%';
-        this.uiContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        this.uiContainer.style.color = 'white';
-        this.uiContainer.style.padding = '10px';
-        this.uiContainer.style.boxSizing = 'border-box';
         document.body.appendChild(this.uiContainer);
 
         this.timeElement = document.createElement('span');
@@ -22,23 +14,19 @@ export default class UI {
 
         this.resourcesElement = document.createElement('span');
         this.resourcesElement.id = 'resources-display';
-        this.resourcesElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.resourcesElement);
 
         this.settlersElement = document.createElement('div');
         this.settlersElement.id = 'settlers-display';
-        this.settlersElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.settlersElement);
 
         this.temperatureElement = document.createElement('span');
         this.temperatureElement.id = 'temperature-display';
-        this.temperatureElement.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.temperatureElement);
 
         // Speed slider
         this.speedLabel = document.createElement('span');
         this.speedLabel.textContent = 'Speed: ';
-        this.speedLabel.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.speedLabel);
 
         this.speedSlider = document.createElement('input');
@@ -63,7 +51,6 @@ export default class UI {
         // Volume slider
         this.volumeLabel = document.createElement('span');
         this.volumeLabel.textContent = 'Volume: ';
-        this.volumeLabel.style.marginLeft = '20px';
         this.uiContainer.appendChild(this.volumeLabel);
 
         this.volumeSlider = document.createElement('input');
@@ -90,12 +77,6 @@ export default class UI {
         // Build menu
         this.buildMenu = document.createElement('div');
         this.buildMenu.id = 'build-menu';
-        this.buildMenu.style.position = 'absolute';
-        this.buildMenu.style.bottom = '10px';
-        this.buildMenu.style.left = '10px';
-        this.buildMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        this.buildMenu.style.padding = '10px';
-        this.buildMenu.style.borderRadius = '5px';
         document.body.appendChild(this.buildMenu);
 
         this.buildMenuTabs = document.createElement('div');
@@ -180,18 +161,6 @@ export default class UI {
 
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';
-        this.helpOverlay.style.position = 'absolute';
-        this.helpOverlay.style.top = '0';
-        this.helpOverlay.style.left = '0';
-        this.helpOverlay.style.width = '100%';
-        this.helpOverlay.style.height = '100%';
-        this.helpOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        this.helpOverlay.style.color = 'white';
-        this.helpOverlay.style.padding = '20px';
-        this.helpOverlay.style.boxSizing = 'border-box';
-        this.helpOverlay.style.display = 'none';
-        this.helpOverlay.style.overflow = 'auto';
-        this.helpOverlay.style.zIndex = '1001';
         const helpContent = document.createElement('div');
         helpContent.innerHTML = `
             <h2>How to Play</h2>
@@ -211,18 +180,6 @@ export default class UI {
 
         this.priorityOverlay = document.createElement('div');
         this.priorityOverlay.id = 'priority-overlay';
-        this.priorityOverlay.style.position = 'absolute';
-        this.priorityOverlay.style.top = '0';
-        this.priorityOverlay.style.left = '0';
-        this.priorityOverlay.style.width = '100%';
-        this.priorityOverlay.style.height = '100%';
-        this.priorityOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        this.priorityOverlay.style.color = 'white';
-        this.priorityOverlay.style.padding = '20px';
-        this.priorityOverlay.style.boxSizing = 'border-box';
-        this.priorityOverlay.style.display = 'none';
-        this.priorityOverlay.style.overflow = 'auto';
-        this.priorityOverlay.style.zIndex = '1001';
         // Prevent clicks inside the overlay from reaching the game canvas
         this.priorityOverlay.addEventListener('mousedown', (event) => {
             event.stopPropagation();
@@ -234,13 +191,6 @@ export default class UI {
 
         this.tooltip = document.createElement('div');
         this.tooltip.id = 'tooltip';
-        this.tooltip.style.position = 'absolute';
-        this.tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        this.tooltip.style.color = 'white';
-        this.tooltip.style.padding = '5px';
-        this.tooltip.style.borderRadius = '3px';
-        this.tooltip.style.pointerEvents = 'none'; // Allow clicks to pass through
-        this.tooltip.style.display = 'none';
         document.body.appendChild(this.tooltip);
 
         // Global mouse move listener for tooltip positioning
@@ -371,7 +321,7 @@ export default class UI {
                 const container = document.createElement('div');
                 const label = document.createElement('label');
                 label.textContent = taskType;
-                label.style.marginRight = '10px';
+                label.classList.add('priority-label');
                 const slider = document.createElement('input');
                 slider.type = 'range';
                 slider.min = '0';

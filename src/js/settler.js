@@ -360,11 +360,16 @@ export default class Settler {
                     if (this.currentTask.craftingProgress >= recipe.time) {
                         for (const output of recipe.outputs) {
                             const outputQuality = this.calculateOutputQuality(output.quality);
-                            this.resourceManager.addResource(
+                            const pile = new ResourcePile(
                                 output.resourceType,
                                 output.quantity,
+                                station ? station.x : Math.floor(this.x),
+                                station ? station.y : Math.floor(this.y),
+                                this.map.tileSize,
+                                this.spriteManager,
                                 outputQuality,
                             );
+                            this.map.addResourcePile(pile);
                         }
                         console.log(`${this.name} completed crafting ${recipe.name}.`);
                         this.currentTask = null;

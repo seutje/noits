@@ -463,4 +463,27 @@ describe('Settler', () => {
         expect(mockMap.resourcePiles.length).toBe(0);
         expect(settler.currentTask).toBe(null);
     });
+
+    test('seeking_sleep finds a bed and assigns sleep task', () => {
+        const bed = { type: 'bed', x: 1, y: 1, occupant: null };
+        mockMap.buildings = [bed];
+        settler.sleep = 10;
+
+        settler.updateNeeds(1000);
+
+        expect(settler.currentTask.type).toBe('sleep');
+        expect(settler.currentTask.bed).toBe(bed);
+    });
+
+    test('settler wakes up when attacked above 20 sleep', () => {
+        settler.isSleeping = true;
+        settler.sleep = 25;
+        settler.sleepingInBed = false;
+        const enemy = {};
+
+        settler.takeDamage('head', 5, false, enemy);
+
+        expect(settler.isSleeping).toBe(false);
+        expect(settler.state).toBe('combat');
+    });
 });

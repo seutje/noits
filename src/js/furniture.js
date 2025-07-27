@@ -4,6 +4,9 @@ export default class Furniture extends Building {
     constructor(type, x, y, width, height, material, health) {
         super(type, x, y, width, height, material, health);
         this.isFurniture = true;
+        if (type === 'bed') {
+            this.occupant = null; // Settler currently using the bed
+        }
     }
 
     render(ctx, tileSize) {

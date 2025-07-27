@@ -73,43 +73,51 @@ export default class Game {
 
     async start() {
         try {
-            
-            await this.spriteManager.loadImage('settler', 'src/assets/settler.png');
-            await this.spriteManager.loadImage('tree', 'src/assets/tree.png');
-            await this.spriteManager.loadImage('grass', 'src/assets/grass.png');
-            await this.spriteManager.loadImage('water', 'src/assets/water.png');
-            await this.spriteManager.loadImage('berry_bush', 'src/assets/berry_bush.png');
-            await this.spriteManager.loadImage('goblin', 'src/assets/goblin.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.STONE, 'src/assets/stone.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.IRON_ORE, 'src/assets/iron_ore.png');
-            await this.spriteManager.loadImage('deer', 'src/assets/deer.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.DIRT, 'src/assets/dirt.png');
-            await this.spriteManager.loadImage('wild_boar', 'src/assets/wild_boar.png');
-            await this.spriteManager.loadImage('mushroom', 'src/assets/mushroom.png');
-            await this.spriteManager.loadImage('mushrooms', 'src/assets/mushrooms.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.WOOD, 'src/assets/wood.png');
-            await this.spriteManager.loadImage('stone_pile', 'src/assets/stone_pile.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.BERRIES, 'src/assets/berries.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.MEAT, 'src/assets/meat.png');
+            this.ui.showLoadingScreen();
+            const sprites = [
+                ['settler', 'src/assets/settler.png'],
+                ['tree', 'src/assets/tree.png'],
+                ['grass', 'src/assets/grass.png'],
+                ['water', 'src/assets/water.png'],
+                ['berry_bush', 'src/assets/berry_bush.png'],
+                ['goblin', 'src/assets/goblin.png'],
+                [RESOURCE_TYPES.STONE, 'src/assets/stone.png'],
+                [RESOURCE_TYPES.IRON_ORE, 'src/assets/iron_ore.png'],
+                ['deer', 'src/assets/deer.png'],
+                [RESOURCE_TYPES.DIRT, 'src/assets/dirt.png'],
+                ['wild_boar', 'src/assets/wild_boar.png'],
+                ['mushroom', 'src/assets/mushroom.png'],
+                ['mushrooms', 'src/assets/mushrooms.png'],
+                [RESOURCE_TYPES.WOOD, 'src/assets/wood.png'],
+                ['stone_pile', 'src/assets/stone_pile.png'],
+                [RESOURCE_TYPES.BERRIES, 'src/assets/berries.png'],
+                [RESOURCE_TYPES.MEAT, 'src/assets/meat.png'],
+                ['dirt_pile', 'src/assets/dirt_pile.png'],
+                ['farm_plot', 'src/assets/farmPlot.png'],
+                [RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png'],
+                ['crafting_station', 'src/assets/crafting_station.png'],
+                ['table', 'src/assets/table.png'],
+                ['bed', 'src/assets/bed.png'],
+                ['wheat_1', 'src/assets/wheat_1.png'],
+                ['wheat_2', 'src/assets/wheat_2.png'],
+                ['wheat_3', 'src/assets/wheat_3.png'],
+                ['wheat_pile', 'src/assets/wheat_pile.png'],
+                ['cotton_1', 'src/assets/cotton_1.png'],
+                ['cotton_2', 'src/assets/cotton_2.png'],
+                ['cotton_3', 'src/assets/cotton_3.png'],
+                ['cotton_pile', 'src/assets/cotton_pile.png'],
+                ['iron_ore_pile', 'src/assets/iron_ore_pile.png']
+            ];
+            for (let i = 0; i < sprites.length; i++) {
+                const [name, src] = sprites[i];
+                await this.spriteManager.loadImage(name, src);
+                this.ui.updateLoadingProgress((i + 1) / sprites.length);
+            }
             await this.soundManager.loadSound('action', ACTION_BEEP_URL);
-            
-            await this.spriteManager.loadImage('dirt_pile', 'src/assets/dirt_pile.png');
-            await this.spriteManager.loadImage('farm_plot', 'src/assets/farmPlot.png');
-            await this.spriteManager.loadImage(RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png');
-            await this.spriteManager.loadImage('crafting_station', 'src/assets/crafting_station.png');
-            await this.spriteManager.loadImage('table', 'src/assets/table.png');
-            await this.spriteManager.loadImage('bed', 'src/assets/bed.png');
-            await this.spriteManager.loadImage('wheat_1', 'src/assets/wheat_1.png');
-            await this.spriteManager.loadImage('wheat_2', 'src/assets/wheat_2.png');
-            await this.spriteManager.loadImage('wheat_3', 'src/assets/wheat_3.png');
-            await this.spriteManager.loadImage('wheat_pile', 'src/assets/wheat_pile.png');
-            await this.spriteManager.loadImage('cotton_1', 'src/assets/cotton_1.png');
-            await this.spriteManager.loadImage('cotton_2', 'src/assets/cotton_2.png');
-            await this.spriteManager.loadImage('cotton_3', 'src/assets/cotton_3.png');
-            await this.spriteManager.loadImage('cotton_pile', 'src/assets/cotton_pile.png');
-            await this.spriteManager.loadImage('iron_ore_pile', 'src/assets/iron_ore_pile.png');
         } catch (error) {
             console.error("Failed to load sprite:", error);
+        } finally {
+            this.ui.hideLoadingScreen();
         }
 
         // Create a new settler

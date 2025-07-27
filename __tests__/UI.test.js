@@ -64,4 +64,14 @@ describe('UI tooltips', () => {
         ui.hideCraftingStationMenu();
         expect(ui.craftingStationMenu.style.display).toBe('none');
     });
+
+    test('loading screen shows and updates', () => {
+        const ui = new UI({});
+        ui.showLoadingScreen();
+        ui.updateLoadingProgress(0.5);
+        expect(ui.loadingScreen.style.display).toBe('flex');
+        expect(ui.loadingBar.style.width).toBe('50%');
+        ui.hideLoadingScreen();
+        expect(ui.loadingScreen.style.display).toBe('none');
+    });
 });

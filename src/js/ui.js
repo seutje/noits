@@ -8,6 +8,18 @@ export default class UI {
         this.uiContainer.id = 'ui-container';
         document.body.appendChild(this.uiContainer);
 
+        // Loading screen elements
+        this.loadingScreen = document.createElement('div');
+        this.loadingScreen.id = 'loading-screen';
+        const barContainer = document.createElement('div');
+        barContainer.id = 'loading-bar-container';
+        this.loadingBar = document.createElement('div');
+        this.loadingBar.id = 'loading-bar';
+        barContainer.appendChild(this.loadingBar);
+        this.loadingScreen.appendChild(barContainer);
+        this.loadingScreen.style.display = 'none';
+        document.body.appendChild(this.loadingScreen);
+
         this.timeElement = document.createElement('span');
         this.timeElement.id = 'time-display';
         this.uiContainer.appendChild(this.timeElement);
@@ -535,5 +547,18 @@ export default class UI {
     hideCraftingStationMenu() {
         this.craftingStationMenu.style.display = 'none';
         this.selectedCraftingStation = null;
+    }
+
+    showLoadingScreen() {
+        this.loadingScreen.style.display = 'flex';
+        this.updateLoadingProgress(0);
+    }
+
+    updateLoadingProgress(progress) {
+        this.loadingBar.style.width = `${Math.floor(progress * 100)}%`;
+    }
+
+    hideLoadingScreen() {
+        this.loadingScreen.style.display = 'none';
     }
 }

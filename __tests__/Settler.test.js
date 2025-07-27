@@ -25,7 +25,11 @@ describe('Settler', () => {
             resourcePiles: [],
             addResourcePile: jest.fn(function(pile) { this.resourcePiles.push(pile); }),
             tileSize: 1,
-            buildings: []
+            buildings: [],
+            tiles: [],
+            getTile: jest.fn(function(x, y) { return this.tiles[y]?.[x] ?? 0; }),
+            getBuildingAt: jest.fn().mockReturnValue(null),
+            findAdjacentFreeTile: jest.fn((x, y) => ({ x, y }))
         };
         mockRoomManager = {
             rooms: [],
@@ -148,6 +152,35 @@ describe('Settler', () => {
         expect(settler.y).toBeGreaterThan(0);
         expect(settler.x).toBeLessThan(10);
         expect(settler.y).toBeLessThan(10);
+    });
+
+    test('settler avoids water tiles when moving', () => {
+        mockMap.getTile.mockImplementation((x, y) => (x === 1 && y === 0 ? 8 : 0));
+        mockMap.findAdjacentFreeTile.mockReturnValue({ x: 0, y: 1 });
+        const task = new Task('move', 2, 0);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000); // move towards target
+        expect(settler.x).toBeGreaterThan(0);
+        expect(settler.x).toBeLessThan(1); // should stop before water
+
+        settler.updateNeeds(1000); // attempt to move again, should go around
+        expect(settler.x).toBe(0);
+        expect(settler.y).toBe(1);
+    });
+
+    test('settler moves out of water tile if stuck', () => {
+        mockMap.getTile.mockImplementation((x, y) => (x === 0 && y === 0 ? 8 : 0));
+        mockMap.findAdjacentFreeTile.mockReturnValue({ x: 1, y: 0 });
+        const task = new Task('move', 2, 0);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000);
+        expect(mockMap.getTile(Math.floor(settler.x), Math.floor(settler.y))).not.toBe(8);
     });
 
     test('should complete task when target is reached', () => {

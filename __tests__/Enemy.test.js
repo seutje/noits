@@ -13,7 +13,12 @@ describe('Enemy', () => {
             removeResource: jest.fn(),
             getResourceQuantity: jest.fn().mockReturnValue(0)
         };
-        mockMap = { removeResourceNode: jest.fn() };
+        mockMap = {
+            removeResourceNode: jest.fn(),
+            getTile: jest.fn().mockReturnValue(0),
+            getBuildingAt: jest.fn().mockReturnValue(null),
+            findAdjacentFreeTile: jest.fn((x, y) => ({ x, y }))
+        };
         mockRoomManager = { rooms: [], getRoomAt: jest.fn(), addResourceToStorage: jest.fn() };
     });
 

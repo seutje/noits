@@ -268,17 +268,54 @@ export default class Settler {
 
         // Execute current task
         if (this.currentTask) {
-            // Move towards the target
+            // Move towards the target while avoiding water and buildings
             const speed = SETTLER_RUN_SPEED; // tiles per second
-            if (this.x < this.currentTask.targetX) {
-                this.x += speed * (deltaTime / 1000);
-            } else if (this.x > this.currentTask.targetX) {
-                this.x -= speed * (deltaTime / 1000);
+            const step = speed * (deltaTime / 1000);
+
+            const isPassable = (x, y) => {
+                const tile = this.map.getTile(Math.floor(x), Math.floor(y));
+                const building = this.map.getBuildingAt(Math.floor(x), Math.floor(y));
+                return tile !== 8 && !building;
+            };
+
+            // If somehow inside an unpassable tile, move to a free adjacent tile
+            if (!isPassable(this.x, this.y)) {
+                const free = this.map.findAdjacentFreeTile(Math.floor(this.x), Math.floor(this.y));
+                this.x = free.x;
+                this.y = free.y;
             }
+
+            const oldX = this.x;
+            const oldY = this.y;
+
+            if (this.x < this.currentTask.targetX) {
+                const candidate = this.x + step;
+                if (isPassable(candidate, this.y)) {
+                    this.x = candidate;
+                }
+            } else if (this.x > this.currentTask.targetX) {
+                const candidate = this.x - step;
+                if (isPassable(candidate, this.y)) {
+                    this.x = candidate;
+                }
+            }
+
             if (this.y < this.currentTask.targetY) {
-                this.y += speed * (deltaTime / 1000);
+                const candidate = this.y + step;
+                if (isPassable(this.x, candidate)) {
+                    this.y = candidate;
+                }
             } else if (this.y > this.currentTask.targetY) {
-                this.y -= speed * (deltaTime / 1000);
+                const candidate = this.y - step;
+                if (isPassable(this.x, candidate)) {
+                    this.y = candidate;
+                }
+            }
+
+            if (this.x === oldX && this.y === oldY) {
+                const next = this.map.findAdjacentFreeTile(Math.floor(this.x), Math.floor(this.y), this.currentTask.targetX, this.currentTask.targetY);
+                this.x = next.x;
+                this.y = next.y;
             }
 
             // Check if arrived at target

@@ -4,6 +4,16 @@ import { BUILDING_TYPES } from '../src/js/constants.js';
 import Map from '../src/js/map.js';
 
 describe('Building', () => {
+    test('passable property defaults to true', () => {
+        const building = new Building(BUILDING_TYPES.BARRICADE, 0, 0, 1, 1, 'wood', 100);
+        expect(building.passable).toBe(true);
+    });
+
+    test('wall building is not passable', () => {
+        const building = new Building(BUILDING_TYPES.WALL, 0, 0, 1, 1, 'wood', 0, 1, false);
+        expect(building.passable).toBe(false);
+    });
+
     test('takeDamage reduces health and does not go below zero', () => {
         const building = new Building(BUILDING_TYPES.BARRICADE, 0, 0, 1, 1, 'wood', 100);
         building.takeDamage(30);

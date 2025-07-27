@@ -134,7 +134,8 @@ describe('Game', () => {
             1,
             'wood',
             0,
-            1
+            1,
+            false
         );
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(2);
         expect(Task).toHaveBeenCalledWith(

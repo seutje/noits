@@ -10,6 +10,7 @@ export default class Enemy {
         this.name = name;
         this.x = x;
         this.y = y;
+        this.path = null;
         this.health = 100;
         this.damage = 10; // Base damage
         this.attackSpeed = 1; // attacks per second
@@ -37,18 +38,33 @@ export default class Enemy {
             // If target settler is dead, clear target
             if (this.targetSettler.isDead) {
                 this.targetSettler = null;
+                this.path = null;
             } else {
-                // Move towards the target settler
-                const speed = ENEMY_RUN_SPEED; // tiles per second
-                if (this.x < this.targetSettler.x) {
-                    this.x += speed * (deltaTime / 1000);
-                } else if (this.x > this.targetSettler.x) {
-                    this.x -= speed * (deltaTime / 1000);
+                const speed = ENEMY_RUN_SPEED * (deltaTime / 1000);
+                const map = this.targetSettler.map;
+                if (!this.path) {
+                    this.path = map.findPath(Math.floor(this.x), Math.floor(this.y), Math.floor(this.targetSettler.x), Math.floor(this.targetSettler.y));
                 }
-                if (this.y < this.targetSettler.y) {
-                    this.y += speed * (deltaTime / 1000);
-                } else if (this.y > this.targetSettler.y) {
-                    this.y -= speed * (deltaTime / 1000);
+                if (this.path && this.path.length > 0) {
+                    const next = this.path[0];
+                    const dx = next.x - this.x;
+                    const dy = next.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist <= speed) {
+                        this.x = next.x;
+                        this.y = next.y;
+                        this.path.shift();
+                    } else {
+                        const angle = Math.atan2(dy, dx);
+                        const nx = this.x + Math.cos(angle) * speed;
+                        const ny = this.y + Math.sin(angle) * speed;
+                        if (map.isTileWalkable(Math.floor(nx), Math.floor(ny))) {
+                            this.x = nx;
+                            this.y = ny;
+                        } else {
+                            this.path = map.findPath(Math.floor(this.x), Math.floor(this.y), Math.floor(this.targetSettler.x), Math.floor(this.targetSettler.y));
+                        }
+                    }
                 }
 
                 // Check if within attack range (simple distance check)
@@ -75,6 +91,7 @@ export default class Enemy {
                     }
                 }
                 this.targetSettler = closestSettler;
+                this.path = null;
             }
         }
     }

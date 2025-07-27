@@ -1,5 +1,6 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
+import Building from '../src/js/building.js';
 import { TASK_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES } from '../src/js/constants.js';
 import ResourcePile from '../src/js/resourcePile.js';
 
@@ -25,7 +26,48 @@ describe('Settler', () => {
             resourcePiles: [],
             addResourcePile: jest.fn(function(pile) { this.resourcePiles.push(pile); }),
             tileSize: 1,
-            buildings: []
+            buildings: [],
+            isTileWalkable: function(x, y) {
+                const blocking = this.buildings.find(b => x >= b.x && x < b.x + b.width && y >= b.y && y < b.y + b.height && !b.passable);
+                return !blocking;
+            },
+            findPath: function(sx, sy, ex, ey) {
+                const queue = [{ x: sx, y: sy }];
+                const visited = new Set([`${sx},${sy}`]);
+                const prev = new Map();
+                const dirs = [
+                    { dx: 1, dy: 0 },
+                    { dx: -1, dy: 0 },
+                    { dx: 0, dy: 1 },
+                    { dx: 0, dy: -1 },
+                ];
+                while (queue.length) {
+                    const { x, y } = queue.shift();
+                    if (x === ex && y === ey) {
+                        const path = [];
+                        let cx = ex, cy = ey;
+                        while (cx !== sx || cy !== sy) {
+                            path.unshift({ x: cx, y: cy });
+                            const p = prev.get(`${cx},${cy}`);
+                            if (!p) break;
+                            cx = p.x;
+                            cy = p.y;
+                        }
+                        return path;
+                    }
+                    for (const { dx, dy } of dirs) {
+                        const nx = x + dx;
+                        const ny = y + dy;
+                        const key = `${nx},${ny}`;
+                        if (!visited.has(key) && this.isTileWalkable(nx, ny)) {
+                            visited.add(key);
+                            queue.push({ x: nx, y: ny });
+                            prev.set(key, { x, y });
+                        }
+                    }
+                }
+                return [];
+            }
         };
         mockRoomManager = {
             rooms: [],
@@ -144,10 +186,24 @@ describe('Settler', () => {
         settler.y = 0;
         settler.updateNeeds(1000); // Simulate 1 second
         // Expect settler to have moved towards (10,10)
-        expect(settler.x).toBeGreaterThan(0);
-        expect(settler.y).toBeGreaterThan(0);
+        expect(settler.x === 0 && settler.y === 0).toBe(false);
         expect(settler.x).toBeLessThan(10);
         expect(settler.y).toBeLessThan(10);
+    });
+
+    test('settler avoids impassable buildings', () => {
+        const wall = new Building(BUILDING_TYPES.WALL, 1, 0, 1, 1, 'wood', 100, 1, false);
+        mockMap.buildings = [wall];
+        const task = new Task('move', 2, 0);
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+        // Move enough times for settler to reach destination around the wall
+        for (let i = 0; i < 40; i++) {
+            settler.updateNeeds(1000);
+        }
+        expect(Math.round(settler.x)).toBe(2);
+        expect(Math.round(settler.y)).toBe(0);
     });
 
     test('should complete task when target is reached', () => {

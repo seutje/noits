@@ -2,7 +2,7 @@ import ResourcePile from './resourcePile.js';
 import { RESOURCE_TYPES } from './constants.js';
 
 export default class Building {
-    constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1) {
+    constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1, passable = true) {
         this.type = type; // e.g., "wall", "floor", "house"
         this.x = x;
         this.y = y;
@@ -12,6 +12,7 @@ export default class Building {
         this.buildProgress = buildProgress; // 0-100, 100 means built
         this.maxHealth = 100; // Max health for destruction
         this.health = this.maxHealth; // Current health
+        this.passable = passable; // Whether units can walk through this building
 
         // New properties for resource delivery
         this.resourcesRequired = resourcesRequired;
@@ -105,7 +106,8 @@ export default class Building {
             resourcesDelivered: this.resourcesDelivered,
             maxHealth: this.maxHealth,
             health: this.health,
-            inventory: this.inventory
+            inventory: this.inventory,
+            passable: this.passable
         };
     }
 
@@ -122,5 +124,6 @@ export default class Building {
         this.maxHealth = data.maxHealth;
         this.health = data.health;
         this.inventory = data.inventory || {};
+        this.passable = data.passable ?? true;
     }
 }

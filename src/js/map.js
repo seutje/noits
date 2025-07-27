@@ -101,6 +101,23 @@ export default class Map {
         this.buildings.push(building);
     }
 
+    isTileWalkable(x, y) {
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height) return false;
+        if (this.getTile(x, y) === 8) return false; // water
+        for (const building of this.buildings) {
+            if (
+                x >= building.x &&
+                x < building.x + building.width &&
+                y >= building.y &&
+                y < building.y + building.height &&
+                !building.passable
+            ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     getTile(x, y) {
         if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
             return this.tiles[y][x];
@@ -168,6 +185,47 @@ export default class Map {
 
         if (best) return best;
         return { x, y };
+    }
+
+    findPath(startX, startY, endX, endY) {
+        const queue = [{ x: startX, y: startY }];
+        const visited = new Set([`${startX},${startY}`]);
+        const prev = new Map();
+        const dirs = [
+            { dx: 1, dy: 0 },
+            { dx: -1, dy: 0 },
+            { dx: 0, dy: 1 },
+            { dx: 0, dy: -1 },
+        ];
+
+        while (queue.length > 0) {
+            const { x, y } = queue.shift();
+            if (x === endX && y === endY) {
+                const path = [];
+                let cx = endX;
+                let cy = endY;
+                while (cx !== startX || cy !== startY) {
+                    path.unshift({ x: cx, y: cy });
+                    const p = prev.get(`${cx},${cy}`);
+                    if (!p) break;
+                    cx = p.x;
+                    cy = p.y;
+                }
+                return path;
+            }
+
+            for (const { dx, dy } of dirs) {
+                const nx = x + dx;
+                const ny = y + dy;
+                const key = `${nx},${ny}`;
+                if (!visited.has(key) && this.isTileWalkable(nx, ny)) {
+                    visited.add(key);
+                    queue.push({ x: nx, y: ny });
+                    prev.set(key, { x, y });
+                }
+            }
+        }
+        return [];
     }
 
     render(ctx) {
@@ -273,7 +331,17 @@ export default class Map {
             } else if (buildingData.type === BUILDING_TYPES.BED || buildingData.type === BUILDING_TYPES.TABLE) {
                 building = new Furniture(buildingData.type, buildingData.x, buildingData.y, 1, 1, buildingData.material, buildingData.health, this.spriteManager);
             } else {
-                building = new Building(buildingData.type, buildingData.x, buildingData.y, buildingData.width, buildingData.height, buildingData.material, buildingData.health);
+                building = new Building(
+                    buildingData.type,
+                    buildingData.x,
+                    buildingData.y,
+                    buildingData.width,
+                    buildingData.height,
+                    buildingData.material,
+                    buildingData.health,
+                    buildingData.resourcesRequired ?? 1,
+                    buildingData.passable ?? true
+                );
             }
             building.deserialize(buildingData);
             if (building.type === BUILDING_TYPES.BED || building.type === BUILDING_TYPES.TABLE) {

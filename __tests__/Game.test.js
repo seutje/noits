@@ -20,14 +20,14 @@ jest.mock('../src/js/building.js', () => {
     });
 });
 jest.mock('../src/js/task.js', () => {
-    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, difficulty, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
+    return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, priority, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
         return {
             type,
             targetX,
             targetY,
             resourceType,
             quantity,
-            difficulty,
+            priority,
             building,
             recipe,
             cropType,
@@ -273,6 +273,21 @@ describe('Game', () => {
         farmPlot.growthStage = 3;
         game.update(16);
         expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.objectContaining({ type: TASK_TYPES.HARVEST_CROP }));
+    });
+
+    test('addCraftTask queues haul and craft tasks', () => {
+        const station = { x: 2, y: 3, getResourceQuantity: jest.fn().mockReturnValue(0) };
+        const recipe = { inputs: [{ resourceType: 'cotton', quantity: 1 }], outputs: [], time: 1, name: 'bandage' };
+        game.addCraftTask(station, recipe);
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(2);
+        const haulTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(haulTask.type).toBe(TASK_TYPES.HAUL);
+        expect(haulTask.resourceType).toBe('cotton');
+        expect(haulTask.building).toBe(station);
+        const craftTask = game.taskManager.addTask.mock.calls[1][0];
+        expect(craftTask.type).toBe(TASK_TYPES.CRAFT);
+        expect(craftTask.recipe).toBe(recipe);
+        expect(haulTask.priority).toBeGreaterThan(craftTask.priority);
     });
 
     test('handleClick marks dead enemy for butchering', () => {

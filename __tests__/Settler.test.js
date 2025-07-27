@@ -199,7 +199,12 @@ describe('Settler', () => {
 
         settler.updateNeeds(1000); // Simulate 1 second (crafting time)
 
-        expect(mockResourceManager.addResource).toHaveBeenCalledWith("plank", 1, 1.1); // Expect quality to be 1.1
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const craftedPile = settler.map.addResourcePile.mock.calls[0][0];
+        expect(craftedPile.type).toBe("plank");
+        expect(craftedPile.quantity).toBe(1);
+        expect(craftedPile.quality).toBeCloseTo(1.1);
+        expect(mockResourceManager.addResource).not.toHaveBeenCalled();
         expect(settler.currentTask).toBe(null);
     });
 

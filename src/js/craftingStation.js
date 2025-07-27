@@ -6,10 +6,24 @@ export default class CraftingStation extends Building {
     constructor(x, y) {
         super("crafting_station", x, y, 1, 1, RESOURCE_TYPES.WOOD, 0);
         this.recipes = []; // List of recipes this station can craft
+        this.autoCraft = false;
+        this.desiredRecipe = null;
 
-        // Add example recipes
-        this.addRecipe(new Recipe("plank_from_wood", [{ resourceType: RESOURCE_TYPES.WOOD, quantity: 1 }], [{ resourceType: RESOURCE_TYPES.PLANK, quantity: 1, quality: 1 }], 5));
-        this.addRecipe(new Recipe("block_from_stone", [{ resourceType: RESOURCE_TYPES.STONE, quantity: 1 }], [{ resourceType: RESOURCE_TYPES.BLOCK, quantity: 1, quality: 1 }], 7));
+        // Default recipe: Bandage from cotton
+        this.addRecipe(
+            new Recipe(
+                "bandage",
+                [{ resourceType: RESOURCE_TYPES.COTTON, quantity: 1 }],
+                [
+                    {
+                        resourceType: RESOURCE_TYPES.BANDAGE,
+                        quantity: 1,
+                        quality: 1,
+                    },
+                ],
+                3,
+            ),
+        );
     }
 
     addRecipe(recipe) {

@@ -327,35 +327,52 @@ export default class Settler {
                     }
                 } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
                     const recipe = this.currentTask.recipe;
-                    // Check if resources are available for crafting
-                    let resourcesAvailable = true;
-                    for (const input of recipe.inputs) {
-                        if (this.resourceManager.getResourceQuantity(input.resourceType) < input.quantity) {
-                            resourcesAvailable = false;
-                            break;
+                    const station = this.currentTask.building;
+
+                    if (!this.currentTask.inputsConsumed) {
+                        let resourcesAvailable = true;
+                        for (const input of recipe.inputs) {
+                            const available = station
+                                ? station.getResourceQuantity(input.resourceType)
+                                : this.resourceManager.getResourceQuantity(input.resourceType);
+                            if (available < input.quantity) {
+                                resourcesAvailable = false;
+                                break;
+                            }
+                        }
+
+                        if (resourcesAvailable) {
+                            for (const input of recipe.inputs) {
+                                if (station) {
+                                    station.removeFromInventory(input.resourceType, input.quantity);
+                                } else {
+                                    this.resourceManager.removeResource(input.resourceType, input.quantity);
+                                }
+                            }
+                            this.currentTask.inputsConsumed = true;
+                        } else {
+                            console.log(`${this.name} is waiting for resources to craft ${recipe.name}.`);
+                            return;
                         }
                     }
 
-                    if (resourcesAvailable) {
-                        // Consume input resources
-                        for (const input of recipe.inputs) {
-                            this.resourceManager.removeResource(input.resourceType, input.quantity);
+                    this.currentTask.craftingProgress += (deltaTime / 1000);
+                    if (this.currentTask.craftingProgress >= recipe.time) {
+                        for (const output of recipe.outputs) {
+                            const outputQuality = this.calculateOutputQuality(output.quality);
+                            const pile = new ResourcePile(
+                                output.resourceType,
+                                output.quantity,
+                                station ? station.x : Math.floor(this.x),
+                                station ? station.y : Math.floor(this.y),
+                                this.map.tileSize,
+                                this.spriteManager,
+                                outputQuality,
+                            );
+                            this.map.addResourcePile(pile);
                         }
-
-                        // Simulate crafting time
-                        this.currentTask.craftingProgress += (deltaTime / 1000);
-                        if (this.currentTask.craftingProgress >= recipe.time) {
-                            // Produce output resources
-                            for (const output of recipe.outputs) {
-                                const outputQuality = this.calculateOutputQuality(output.quality);
-                                this.resourceManager.addResource(output.resourceType, output.quantity, outputQuality);
-                            }
-                            console.log(`${this.name} completed crafting ${recipe.name}.`);
-                            this.currentTask = null; // Task completed
-                        }
-                    } else {
-                        console.log(`${this.name} stopped crafting ${recipe.name} due to lack of resources.`);
-                        this.currentTask = null; // Clear the task
+                        console.log(`${this.name} completed crafting ${recipe.name}.`);
+                        this.currentTask = null;
                     }
                 } else if (
                     this.currentTask.type === TASK_TYPES.MINE_STONE ||

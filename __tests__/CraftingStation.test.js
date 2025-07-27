@@ -15,7 +15,9 @@ describe('CraftingStation', () => {
         expect(craftingStation.type).toBe('crafting_station');
         expect(craftingStation.x).toBe(0);
         expect(craftingStation.y).toBe(0);
-        expect(craftingStation.recipes).toEqual([expect.any(Recipe), expect.any(Recipe)]);
+        expect(craftingStation.recipes).toEqual([expect.any(Recipe)]);
+        expect(craftingStation.autoCraft).toBe(false);
+        expect(craftingStation.desiredRecipe).toBe(null);
     });
 
     test('should add a recipe', () => {

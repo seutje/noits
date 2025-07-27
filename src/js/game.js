@@ -213,13 +213,72 @@ export default class Game {
                     }
                 }
             }
+            if (building.type === 'crafting_station') {
+                const station = building;
+                if (station.autoCraft && station.desiredRecipe) {
+                    const hasTask = this.taskManager.tasks.some(
+                        t => t.type === TASK_TYPES.CRAFT && t.building === station,
+                    );
+                    const inProgress = this.settlers.some(
+                        s => s.currentTask && s.currentTask.type === TASK_TYPES.CRAFT && s.currentTask.building === station,
+                    );
+                    if (!hasTask && !inProgress) {
+                        this.addCraftTask(station, station.desiredRecipe);
+                    }
+                }
+            }
 
-            // Ensure a build task exists for unfinished buildings
+            // Queue hauling tasks for unfinished buildings and only start build
+            // tasks once materials are delivered
             if (building.buildProgress < 100) {
-                const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.BUILD && t.building === building);
-                const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.BUILD && s.currentTask.building === building);
-                if (!hasTask && !inProgress) {
-                    this.taskManager.addTask(new Task(TASK_TYPES.BUILD, building.x, building.y, null, 100, 2, building));
+                if (building.resourcesDelivered < building.resourcesRequired) {
+                    const hasHaul = this.taskManager.tasks.some(
+                        t => t.type === TASK_TYPES.HAUL && t.building === building,
+                    );
+                    const hauling = this.settlers.some(
+                        s =>
+                            s.currentTask &&
+                            s.currentTask.type === TASK_TYPES.HAUL &&
+                            s.currentTask.building === building,
+                    );
+                    if (!hasHaul && !hauling) {
+                        this.taskManager.addTask(
+                            new Task(
+                                TASK_TYPES.HAUL,
+                                building.x,
+                                building.y,
+                                building.material,
+                                building.resourcesRequired - building.resourcesDelivered,
+                                3,
+                                building,
+                            ),
+                        );
+                    }
+                }
+
+                if (building.resourcesDelivered >= building.resourcesRequired) {
+                    const hasTask = this.taskManager.tasks.some(
+                        t => t.type === TASK_TYPES.BUILD && t.building === building,
+                    );
+                    const inProgress = this.settlers.some(
+                        s =>
+                            s.currentTask &&
+                            s.currentTask.type === TASK_TYPES.BUILD &&
+                            s.currentTask.building === building,
+                    );
+                    if (!hasTask && !inProgress) {
+                        this.taskManager.addTask(
+                            new Task(
+                                TASK_TYPES.BUILD,
+                                building.x,
+                                building.y,
+                                null,
+                                100,
+                                2,
+                                building,
+                            ),
+                        );
+                    }
                 }
             }
         });
@@ -369,6 +428,43 @@ export default class Game {
         this.taskManager.addTask(
             new Task(TASK_TYPES.HARVEST_CROP, farmPlot.x, farmPlot.y, null, 0, 3, farmPlot)
         );
+    }
+
+    addCraftTask(craftingStation, recipe, quantity = 1) {
+        // Ensure required resources get delivered to the station
+        recipe.inputs.forEach(input => {
+            const existing = craftingStation.getResourceQuantity(input.resourceType);
+            const required = input.quantity * quantity;
+            const missing = required - existing;
+            if (missing > 0) {
+                this.taskManager.addTask(
+                    new Task(
+                        TASK_TYPES.HAUL,
+                        craftingStation.x,
+                        craftingStation.y,
+                        input.resourceType,
+                        missing,
+                        3,
+                        craftingStation,
+                    ),
+                );
+            }
+        });
+
+        for (let i = 0; i < quantity; i++) {
+            this.taskManager.addTask(
+                new Task(
+                    TASK_TYPES.CRAFT,
+                    craftingStation.x,
+                    craftingStation.y,
+                    null,
+                    0,
+                    2,
+                    craftingStation,
+                    recipe,
+                ),
+            );
+        }
     }
 
     saveGame() {
@@ -580,17 +676,8 @@ export default class Game {
                 const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
                 if (clickedBuilding) {
                     if (clickedBuilding.type === 'crafting_station') {
-                        // For now, hardcode a crafting task for testing
                         const craftingStation = clickedBuilding;
-                        if (craftingStation.recipes && craftingStation.recipes.length > 0) {
-                            const recipe = craftingStation.recipes[0]; // Get the first recipe
-                            if (recipe) {
-                                this.taskManager.addTask(new Task(TASK_TYPES.CRAFT, tileX, tileY, null, 0, 3, craftingStation, recipe));
-                                console.log(`Crafting task for ${recipe.name} added at ${tileX},${tileY}`);
-                            }
-                        } else {
-                            console.warn("Crafting station has no recipes defined.");
-                        }
+                        this.ui.showCraftingStationMenu(craftingStation, event.clientX, event.clientY);
                     } else if (clickedBuilding.type === 'farm_plot') {
                         const farmPlot = clickedBuilding;
                         this.ui.showFarmPlotMenu(farmPlot, event.clientX, event.clientY);

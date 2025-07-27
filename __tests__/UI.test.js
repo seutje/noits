@@ -51,4 +51,17 @@ describe('UI tooltips', () => {
         ui.hideFarmPlotMenu();
         expect(ui.farmPlotMenu.style.display).toBe('none');
     });
+
+    test('crafting station menu shows with recipe list', () => {
+        const ui = new UI({});
+        const mockGame = { addCraftTask: jest.fn() };
+        ui.setGameInstance(mockGame);
+        const station = { recipes: [{ name: 'bandage' }], autoCraft: false };
+        ui.showCraftingStationMenu(station, 5, 5);
+        expect(ui.craftingStationMenu.style.display).toBe('block');
+        expect(ui.recipeSelect.options.length).toBe(1);
+        expect(ui.autoCraftCheckbox.checked).toBe(false);
+        ui.hideCraftingStationMenu();
+        expect(ui.craftingStationMenu.style.display).toBe('none');
+    });
 });

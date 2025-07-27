@@ -80,6 +80,16 @@ export default class TaskManager {
             });
 
             if (bestSettler) {
+                if (task.type === TASK_TYPES.BUILD && task.building) {
+                    const pos = bestSettler.map.findAdjacentFreeTile(
+                        task.building.x,
+                        task.building.y,
+                        bestSettler.x,
+                        bestSettler.y,
+                    );
+                    task.targetX = pos.x;
+                    task.targetY = pos.y;
+                }
                 if (bestSettler.currentBuilding && bestSettler.currentBuilding !== task.building) {
                     bestSettler.currentBuilding.occupant = null;
                     bestSettler.currentBuilding = null;

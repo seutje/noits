@@ -270,11 +270,15 @@ export default class Game {
                             s.currentTask.building === building,
                     );
                     if (!hasTask && !inProgress) {
+                        const buildPos = this.map.findAdjacentFreeTile(
+                            building.x,
+                            building.y,
+                        );
                         this.taskManager.addTask(
                             new Task(
                                 TASK_TYPES.BUILD,
-                                building.x,
-                                building.y,
+                                buildPos.x,
+                                buildPos.y,
                                 null,
                                 100,
                                 2,
@@ -679,7 +683,18 @@ export default class Game {
                 );
             }
             // Build task has lower priority so it begins once resources arrive (if any)
-            this.taskManager.addTask(new Task(TASK_TYPES.BUILD, tileX, tileY, null, 100, 2, newBuilding));
+            const buildPos = this.map.findAdjacentFreeTile(tileX, tileY);
+            this.taskManager.addTask(
+                new Task(
+                    TASK_TYPES.BUILD,
+                    buildPos.x,
+                    buildPos.y,
+                    null,
+                    100,
+                    2,
+                    newBuilding,
+                ),
+            );
             this.soundManager.play('action');
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;

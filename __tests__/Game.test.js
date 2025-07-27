@@ -115,12 +115,12 @@ describe('Game', () => {
     });
 
     test('handleClick should place a building when in build mode', () => {
-        game.toggleBuildMode('wall');
-        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
-
         // Calculate expected tile coordinates based on mock canvas size and default camera
         const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+        game.map.findAdjacentFreeTile = jest.fn().mockReturnValue({ x: expectedTileX + 1, y: expectedTileY });
+        game.toggleBuildMode('wall');
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
 
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
         expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
@@ -138,7 +138,7 @@ describe('Game', () => {
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(2);
         expect(Task).toHaveBeenCalledWith(
             TASK_TYPES.BUILD,
-            expectedTileX,
+            expectedTileX + 1,
             expectedTileY,
             null,
             100,
@@ -153,11 +153,11 @@ describe('Game', () => {
     });
 
     test('handleClick should not create haul task for farm plot', () => {
-        game.toggleBuildMode('farm_plot');
-        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
-
         const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+        game.map.findAdjacentFreeTile = jest.fn().mockReturnValue({ x: expectedTileX + 1, y: expectedTileY });
+        game.toggleBuildMode('farm_plot');
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
 
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
         expect(game.map.addBuilding).toHaveBeenCalledWith(expect.any(Object));
@@ -175,6 +175,8 @@ describe('Game', () => {
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
         const buildTask = game.taskManager.addTask.mock.calls[0][0];
         expect(buildTask.type).toBe(TASK_TYPES.BUILD);
+        expect(buildTask.targetX).toBe(expectedTileX + 1);
+        expect(buildTask.targetY).toBe(expectedTileY);
     });
 
     test('handleClick should not place a building when not in build mode', () => {

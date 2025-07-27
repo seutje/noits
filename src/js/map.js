@@ -131,6 +131,32 @@ export default class Map {
         return this.buildings;
     }
 
+    findAdjacentFreeTile(x, y) {
+        const directions = [
+            { dx: 1, dy: 0 },
+            { dx: -1, dy: 0 },
+            { dx: 0, dy: 1 },
+            { dx: 0, dy: -1 },
+        ];
+
+        for (const { dx, dy } of directions) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (
+                nx >= 0 &&
+                nx < this.width &&
+                ny >= 0 &&
+                ny < this.height &&
+                this.getTile(nx, ny) !== 8 &&
+                !this.getBuildingAt(nx, ny)
+            ) {
+                return { x: nx, y: ny };
+            }
+        }
+
+        return { x, y };
+    }
+
     render(ctx) {
         const treeSprite = this.spriteManager.getSprite('tree');
         const grassSprite = this.spriteManager.getSprite('grass');

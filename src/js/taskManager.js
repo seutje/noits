@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 import Task from './task.js';
 import { TASK_TYPES } from './constants.js';
 
@@ -102,7 +103,7 @@ export default class TaskManager {
                 }
 
                 this.tasks.splice(i, 1);
-                console.log(`${bestSettler.name} picked up task: ${task.type}`);
+                debugLog(`${bestSettler.name} picked up task: ${task.type}`);
             } else {
                 i++;
             }

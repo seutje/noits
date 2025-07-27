@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 export default class Faction {
     constructor(name, initialRelation = 0) {
         this.name = name;
@@ -8,7 +9,7 @@ export default class Faction {
         this.relation += amount;
         if (this.relation > 100) this.relation = 100;
         if (this.relation < -100) this.relation = -100;
-        console.log(`Faction ${this.name} relation changed by ${amount}. New relation: ${this.relation}`);
+        debugLog(`Faction ${this.name} relation changed by ${amount}. New relation: ${this.relation}`);
     }
 
     getRelationStatus() {

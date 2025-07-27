@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
@@ -55,12 +56,12 @@ export default class Settler {
 
     equipWeapon(weapon) {
         this.equippedWeapon = weapon;
-        console.log(`${this.name} equipped ${weapon.name}.`);
+        debugLog(`${this.name} equipped ${weapon.name}.`);
     }
 
     unequipWeapon() {
         if (this.equippedWeapon) {
-            console.log(`${this.name} unequipped ${this.equippedWeapon.name}.`);
+            debugLog(`${this.name} unequipped ${this.equippedWeapon.name}.`);
             this.equippedWeapon = null;
         }
     }
@@ -68,7 +69,7 @@ export default class Settler {
     equipArmor(armor) {
         if (armor.bodyPart) {
             this.equippedArmor[armor.bodyPart] = armor;
-            console.log(`${this.name} equipped ${armor.name} on ${armor.bodyPart}.`);
+            debugLog(`${this.name} equipped ${armor.name} on ${armor.bodyPart}.`);
         } else {
             console.warn(`Armor ${armor.name} has no specified body part.`);
         }
@@ -76,7 +77,7 @@ export default class Settler {
 
     unequipArmor(bodyPart) {
         if (this.equippedArmor[bodyPart]) {
-            console.log(`${this.name} unequipped ${this.equippedArmor[bodyPart].name} from ${bodyPart}.`);
+            debugLog(`${this.name} unequipped ${this.equippedArmor[bodyPart].name} from ${bodyPart}.`);
             delete this.equippedArmor[bodyPart];
         }
     }
@@ -113,9 +114,9 @@ export default class Settler {
     setTargetEnemy(enemy) {
         this.targetEnemy = enemy;
         if (enemy) {
-            console.log(`${this.name} is now targeting ${enemy.name}.`);
+            debugLog(`${this.name} is now targeting ${enemy.name}.`);
         } else {
-            console.log(`${this.name} no longer has a target enemy.`);
+            debugLog(`${this.name} no longer has a target enemy.`);
         }
     }
 
@@ -199,7 +200,7 @@ export default class Settler {
             this.currentTask = null;
             this.path = null;
             this.state = 'sleeping';
-            console.log(`${this.name} collapsed from exhaustion.`);
+            debugLog(`${this.name} collapsed from exhaustion.`);
         }
 
         // If hungry, create a task to go eat from storage
@@ -218,7 +219,7 @@ export default class Settler {
                             foodType: food,
                             room
                         };
-                        console.log(`${this.name} is moving to eat ${food} from storage.`);
+                        debugLog(`${this.name} is moving to eat ${food} from storage.`);
                         assigned = true;
                         break;
                     }
@@ -233,7 +234,7 @@ export default class Settler {
                 const bed = beds[0];
                 bed.occupant = this;
                 this.currentTask = { type: TASK_TYPES.SLEEP, targetX: bed.x, targetY: bed.y, bed };
-                console.log(`${this.name} is heading to bed at ${bed.x},${bed.y}.`);
+                debugLog(`${this.name} is heading to bed at ${bed.x},${bed.y}.`);
             }
         }
 
@@ -246,14 +247,14 @@ export default class Settler {
                 const targetBuilding = (this.map.buildings || []).find(b => b.buildProgress < 100 && b.material === this.carrying.type && b.resourcesDelivered < b.resourcesRequired);
                 if (targetBuilding) {
                     this.currentTask = { type: TASK_TYPES.HAUL, targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
-                    console.log(`${this.name} is hauling ${this.carrying.type} to construction site.`);
+                    debugLog(`${this.name} is hauling ${this.carrying.type} to construction site.`);
                 } else {
                     const target = this.roomManager.findStorageRoomAndTile(this.carrying.type);
                     if (target) {
                         this.currentTask = { type: TASK_TYPES.HAUL, targetX: target.tile.x, targetY: target.tile.y, resource: this.carrying };
-                        console.log(`${this.name} is hauling ${this.carrying.type} to storage.`);
+                        debugLog(`${this.name} is hauling ${this.carrying.type} to storage.`);
                     } else {
-                        console.log(`${this.name} has resources to haul but no storage room found. Dropping on the ground.`);
+                        debugLog(`${this.name} has resources to haul but no storage room found. Dropping on the ground.`);
                         const dropX = Math.floor(this.x);
                         const dropY = Math.floor(this.y);
                         const existingPile = this.map.resourcePiles.find(p => p.x === dropX && p.y === dropY && p.type === this.carrying.type);
@@ -311,7 +312,7 @@ export default class Settler {
                     this.path = null;
 
                     if (this.currentTask.type === "move") {
-                        console.log(`${this.name} completed task: ${this.currentTask.type}`);
+                        debugLog(`${this.name} completed task: ${this.currentTask.type}`);
                         this.currentTask = null;
                         this.path = null;
                     } else if (this.currentTask.type === TASK_TYPES.SLEEP && this.currentTask.bed) {
@@ -337,7 +338,7 @@ export default class Settler {
                             } else if (building.getResourceQuantity(material) >= amountToConsume) {
                                 building.resourcesDelivered = building.getResourceQuantity(material);
                             } else {
-                                console.log(`${this.name} needs ${material} delivered to build site.`);
+                                debugLog(`${this.name} needs ${material} delivered to build site.`);
                                 if (building.occupant === this) {
                                     building.occupant = null;
                                     this.currentBuilding = null;
@@ -353,7 +354,7 @@ export default class Settler {
                             building.buildProgress += workAmount; // Increase build progress
                             if (building.buildProgress >= 100) {
                                 building.buildProgress = 100;
-                                console.log(`${this.name} completed building task for ${building.type}`);
+                                debugLog(`${this.name} completed building task for ${building.type}`);
                                 if (building.occupant === this) {
                                     building.occupant = null;
                                     this.currentBuilding = null;
@@ -398,7 +399,7 @@ export default class Settler {
                                 }
                                 this.currentTask.inputsConsumed = true;
                             } else {
-                                console.log(`${this.name} is waiting for resources to craft ${recipe.name}.`);
+                                debugLog(`${this.name} is waiting for resources to craft ${recipe.name}.`);
                                 return;
                             }
                         }
@@ -418,7 +419,7 @@ export default class Settler {
                                 );
                                 this.map.addResourcePile(pile);
                             }
-                            console.log(`${this.name} completed crafting ${recipe.name}.`);
+                            debugLog(`${this.name} completed crafting ${recipe.name}.`);
                             if (station && station.occupant === this) {
                                 station.occupant = null;
                                 this.currentBuilding = null;
@@ -445,7 +446,7 @@ export default class Settler {
                             } else {
                                 this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
                             }
-                            console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
+                            debugLog(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                             this.currentTask = null;
                             this.path = null; // Task completed
                         }
@@ -464,14 +465,14 @@ export default class Settler {
                         if (this.currentTask.quantity <= 0) {
                             this.pickUpPile(resourceType, 1); // Settler carries the resource
                             this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
-                            console.log(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
+                            debugLog(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
                             this.currentTask = null;
                             this.path = null;
                         }
                     } else if (this.currentTask.type === TASK_TYPES.BUTCHER && this.currentTask.targetEnemy) {
                         if (this.currentTask.targetEnemy.decay > 50) {
                             this.currentTask.targetEnemy.isMarkedForButcher = false;
-                            console.log(`${this.currentTask.targetEnemy.name} is too decayed to butcher.`);
+                            debugLog(`${this.currentTask.targetEnemy.name} is too decayed to butcher.`);
                             this.currentTask = null;
                             this.path = null;
                         } else {
@@ -484,7 +485,7 @@ export default class Settler {
                                 this.pickUpPile(lootType, 1);
                                 this.currentTask.targetEnemy.isButchered = true;
                                 this.currentTask.targetEnemy.isMarkedForButcher = false;
-                                console.log(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
+                                debugLog(`${this.name} butchered ${this.currentTask.targetEnemy.name}.`);
                                 this.currentTask = null;
                                 this.path = null;
                             }
@@ -492,9 +493,9 @@ export default class Settler {
                     } else if (this.currentTask.type === TASK_TYPES.SOW_CROP && this.currentTask.building) {
                         const farmPlot = this.currentTask.building;
                         if (farmPlot.plant(this.currentTask.cropType)) {
-                            console.log(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
+                            debugLog(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
                         } else {
-                            console.log(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
+                            debugLog(`${this.name} failed to plant at ${farmPlot.x},${farmPlot.y}.`);
                         }
                         this.currentTask = null;
                         this.path = null; // Task completed immediately after action
@@ -504,16 +505,16 @@ export default class Settler {
                         if (harvestedCrop) {
                             const pile = new ResourcePile(harvestedCrop, 1, farmPlot.x, farmPlot.y, this.map.tileSize, this.spriteManager);
                             this.map.addResourcePile(pile);
-                            console.log(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y} and created a pile.`);
+                            debugLog(`${this.name} harvested ${harvestedCrop} from ${farmPlot.x},${farmPlot.y} and created a pile.`);
                         } else {
-                            console.log(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
+                            debugLog(`${this.name} failed to harvest at ${farmPlot.x},${farmPlot.y}.`);
                         }
                         this.currentTask = null;
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === TASK_TYPES.TEND_ANIMALS && this.currentTask.building) {
                         const animalPen = this.currentTask.building;
                         // Simulate tending animals - perhaps increases animal health/reproduction rate
-                        console.log(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
+                        debugLog(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                         this.currentTask = null;
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
@@ -522,9 +523,9 @@ export default class Settler {
                             this.hunger += 30;
                             if (this.hunger > 100) this.hunger = 100;
                             this.state = "idle";
-                            console.log(`${this.name} ate ${this.currentTask.foodType} from storage.`);
+                            debugLog(`${this.name} ate ${this.currentTask.foodType} from storage.`);
                         } else {
-                            console.log(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
+                            debugLog(`${this.name} could not find ${this.currentTask.foodType} at storage.`);
                         }
                         this.currentTask = null;
                         this.path = null;
@@ -540,7 +541,7 @@ export default class Settler {
                                     this.currentTask.targetX = pile.x;
                                     this.currentTask.targetY = pile.y;
                                 } else {
-                                    console.log(`${this.name} couldn't find ${this.currentTask.resourceType} to haul.`);
+                                    debugLog(`${this.name} couldn't find ${this.currentTask.resourceType} to haul.`);
                                     this.currentTask = null;
                                     this.path = null;
                                     return;
@@ -557,7 +558,7 @@ export default class Settler {
                                     this.currentTask.targetX = building.x;
                                     this.currentTask.targetY = building.y;
                                 } else {
-                                    console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
+                                    debugLog(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
                                     this.currentTask = null;
                                     this.path = null;
                                 }
@@ -568,7 +569,7 @@ export default class Settler {
                             this.carrying = null;
                             this.currentTask = null;
                             this.path = null;
-                            console.log(`${this.name} delivered ${deliveredType} to building site.`);
+                            debugLog(`${this.name} delivered ${deliveredType} to building site.`);
                         }
                     } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.sourceX !== undefined && !this.currentTask.building && !this.currentTask.resource) {
                         if (this.x === this.currentTask.sourceX && this.y === this.currentTask.sourceY) {
@@ -584,12 +585,12 @@ export default class Settler {
                                     this.currentTask.targetX = target.tile.x;
                                     this.currentTask.targetY = target.tile.y;
                                 } else {
-                                    console.log(`${this.name} couldn't find storage for ${this.currentTask.resourceType}.`);
+                                    debugLog(`${this.name} couldn't find storage for ${this.currentTask.resourceType}.`);
                                     this.currentTask = null;
                                     this.path = null;
                                 }
                             } else {
-                                console.log(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
+                                debugLog(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
                                 this.currentTask = null;
                                 this.path = null;
                             }
@@ -599,7 +600,7 @@ export default class Settler {
                         if (room && room.type === "storage") {
                             const success = this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
                             if (success) {
-                                console.log(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
+                                debugLog(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
                             } else {
                                 const dropX = Math.floor(this.x);
                                 const dropY = Math.floor(this.y);
@@ -610,18 +611,18 @@ export default class Settler {
                                     const newPile = new ResourcePile(this.currentTask.resource.type, this.currentTask.resource.quantity, dropX, dropY, this.map.tileSize, this.spriteManager);
                                     this.map.addResourcePile(newPile);
                                 }
-                                console.log(`${this.name} dropped ${this.currentTask.resource.type} on the ground.`);
+                                debugLog(`${this.name} dropped ${this.currentTask.resource.type} on the ground.`);
                             }
                             this.carrying = null; // Clear carried resource
                         } else {
-                            console.log(`${this.name} arrived at haul destination but it's not a storage room.`);
+                            debugLog(`${this.name} arrived at haul destination but it's not a storage room.`);
                         }
                         this.currentTask = null;
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === TASK_TYPES.EXPLORE && this.currentTask.targetLocation) {
                         // Settler has arrived at the exploration target
                         this.map.worldMap.discoverLocation(this.currentTask.targetLocation.id);
-                        console.log(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
+                        debugLog(`${this.name} has arrived at ${this.currentTask.targetLocation.name} and discovered it.`);
                         this.currentTask = null;
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === TASK_TYPES.TREATMENT && this.currentTask.targetSettler) {
@@ -636,7 +637,7 @@ export default class Settler {
                                 this.currentTask.targetX = pile.x;
                                 this.currentTask.targetY = pile.y;
                             } else {
-                                console.log(`${this.name} could not find bandages for treatment.`);
+                                debugLog(`${this.name} could not find bandages for treatment.`);
                                 this.currentTask = null;
                                 this.path = null;
                                 return;
@@ -656,7 +657,7 @@ export default class Settler {
                                             this.carrying.quantity -= 1;
                                             if (this.carrying.quantity <= 0) this.carrying = null;
                                             targetSettler.stopBleeding();
-                                            console.log(`${this.name} treated ${targetSettler.name}.`);
+                                            debugLog(`${this.name} treated ${targetSettler.name}.`);
                                             this.currentTask = null;
                                             this.path = null;
                                             return;
@@ -666,7 +667,7 @@ export default class Settler {
                                     this.currentTask.targetX = targetSettler.x;
                                     this.currentTask.targetY = targetSettler.y;
                                 } else {
-                                    console.log(`${this.name} failed to pick up bandage.`);
+                                    debugLog(`${this.name} failed to pick up bandage.`);
                                     this.currentTask = null;
                                     this.path = null;
                                 }
@@ -677,9 +678,9 @@ export default class Settler {
                                     this.carrying.quantity -= 1;
                                     if (this.carrying.quantity <= 0) this.carrying = null;
                                     targetSettler.stopBleeding();
-                                    console.log(`${this.name} treated ${targetSettler.name}.`);
+                                    debugLog(`${this.name} treated ${targetSettler.name}.`);
                                 } else {
-                                    console.log(`${this.name} lost the bandage before treating ${targetSettler.name}.`);
+                                    debugLog(`${this.name} lost the bandage before treating ${targetSettler.name}.`);
                                 }
                                 this.currentTask = null;
                                 this.path = null;
@@ -704,7 +705,7 @@ export default class Settler {
                 this.dealDamage(this.targetEnemy);
                 // Check if enemy is defeated
                 if (this.targetEnemy.health <= 0) {
-                    console.log(`${this.name} defeated ${this.targetEnemy.name}!`);
+                    debugLog(`${this.name} defeated ${this.targetEnemy.name}!`);
                     this.targetEnemy = null; // Clear target
                     this.state = "idle"; // Return to idle
                 }
@@ -770,7 +771,7 @@ export default class Settler {
             this.bodyParts[bodyPart].health -= amount;
             if (this.bodyParts[bodyPart].health < 0) this.bodyParts[bodyPart].health = 0;
             this.bodyParts[bodyPart].bleeding = bleeding;
-            console.log(`${this.name} took ${amount} damage to ${bodyPart}. Health: ${this.bodyParts[bodyPart].health}. Bleeding: ${this.bodyParts[bodyPart].bleeding}`);
+            debugLog(`${this.name} took ${amount} damage to ${bodyPart}. Health: ${this.bodyParts[bodyPart].health}. Bleeding: ${this.bodyParts[bodyPart].bleeding}`);
             if (attacker && this.targetEnemy === null) {
                 this.setTargetEnemy(attacker);
                 if (this.currentTask) {
@@ -796,7 +797,7 @@ export default class Settler {
                 this.currentTask = null;
                 this.path = null; // Clear any current task
                 this.targetEnemy = null; // Clear target enemy
-                console.log(`${this.name} has died.`);
+                debugLog(`${this.name} has died.`);
             }
         } else {
             console.warn(`Invalid body part: ${bodyPart}`);
@@ -823,7 +824,7 @@ export default class Settler {
         if (!weapon) {
             // If no weapon, use fists
             weapon = { name: "fists", damage: 5 }; // Base damage for unarmed combat
-            console.log(`${this.name} is fighting with ${weapon.name}.`);
+            debugLog(`${this.name} is fighting with ${weapon.name}.`);
         }
 
         // Base damage from weapon (or fists)
@@ -845,7 +846,7 @@ export default class Settler {
 
             // Apply damage to the target settler
             targetSettler.takeDamage(randomBodyPart, damage, true); // Assume bleeding for now
-            console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
+            debugLog(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage to ${randomBodyPart}.`);
         } else { // Target is likely an Enemy
             targetSettler.health -= damage;
             if (targetSettler.health <= 0) {
@@ -854,9 +855,9 @@ export default class Settler {
                 targetSettler.state = "dead";
                 targetSettler.currentTask = null; // Clear any current task
                 targetSettler.targetSettler = null; // Clear target settler for enemy
-                console.log(`${targetSettler.name} has died.`);
+                debugLog(`${targetSettler.name} has died.`);
             }
-            console.log(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage. ${targetSettler.name} health: ${targetSettler.health.toFixed(1)}`);
+            debugLog(`${this.name} attacked ${targetSettler.name} dealing ${damage.toFixed(1)} damage. ${targetSettler.name} health: ${targetSettler.health.toFixed(1)}`);
         }
     }
 

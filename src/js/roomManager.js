@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 import ResourcePile from './resourcePile.js';
 import Task from './task.js';
 import { TASK_TYPES } from './constants.js';
@@ -55,7 +56,7 @@ export default class RoomManager {
 
         if (newRoom.tiles.length > 0) {
             this.rooms.push(newRoom);
-            console.log(`Designated a ${type} room with ${newRoom.tiles.length} tiles.`);
+            debugLog(`Designated a ${type} room with ${newRoom.tiles.length} tiles.`);
             if (type === 'storage' && this.taskManager) {
                 this.assignHaulingTasksForDroppedPiles();
             }
@@ -114,7 +115,7 @@ export default class RoomManager {
             room.storage[resourceType] = 0;
         }
         room.storage[resourceType] += quantity;
-        console.log(`Added ${quantity} ${resourceType} to storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+        debugLog(`Added ${quantity} ${resourceType} to storage room ${room.id}. Current: ${room.storage[resourceType]}`);
 
         if (room.tiles.length > 0) {
             let emptyTile = null;
@@ -160,7 +161,7 @@ export default class RoomManager {
         if (room.type === "storage") {
             if (room.storage[resourceType] && room.storage[resourceType] >= quantity) {
                 room.storage[resourceType] -= quantity;
-                console.log(`Removed ${quantity} ${resourceType} from storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+                debugLog(`Removed ${quantity} ${resourceType} from storage room ${room.id}. Current: ${room.storage[resourceType]}`);
                 if (this.taskManager) {
                     this.assignHaulingTasksForDroppedPiles();
                 }

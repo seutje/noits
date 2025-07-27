@@ -1,6 +1,7 @@
+import { debugLog } from './debug.js';
 import Game from './game.js';
 
-console.log("Game starting...");
+debugLog("Game starting...");
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -19,4 +20,4 @@ window.addEventListener('resize', handleResize);
 const game = new Game(ctx);
 game.start();
 
-console.log("Canvas initialized.");
+debugLog("Canvas initialized.");

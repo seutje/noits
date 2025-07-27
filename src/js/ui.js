@@ -1,5 +1,6 @@
 
 import { TASK_TYPES, RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
+import { setDebugMode } from './debug.js';
 
 export default class UI {
     constructor(ctx) {
@@ -85,6 +86,16 @@ export default class UI {
                 this.gameInstance.setSoundVolume(value);
             }
         });
+        this.debugCheckbox = document.createElement("input");
+        this.debugCheckbox.type = "checkbox";
+        const debugLabel = document.createElement("label");
+        debugLabel.textContent = "Debug";
+        debugLabel.appendChild(this.debugCheckbox);
+        this.uiContainer.appendChild(debugLabel);
+        this.debugCheckbox.addEventListener("change", () => {
+            setDebugMode(this.debugCheckbox.checked);
+        });
+
 
         // Build menu
         this.buildMenu = document.createElement('div');

@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 export default class WorldMap {
     constructor() {
         this.locations = [];
@@ -61,7 +62,7 @@ export default class WorldMap {
         const location = this.locations.find(loc => loc.id === locationId);
         if (location) {
             location.discovered = true;
-            console.log(`Location discovered: ${location.name}`);
+            debugLog(`Location discovered: ${location.name}`);
             return true;
         }
         return false;

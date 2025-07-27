@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 
 import ResourcePile from './resourcePile.js';
 import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
@@ -19,13 +20,13 @@ export default class EventManager {
                 description: "A wild animal is attacking your colony!",
                 condition: () => true, // Always possible for now
                 action: () => {
-                    console.log("Event: Wild Animal Attack!");
+                    debugLog("Event: Wild Animal Attack!");
                     this.game.notificationManager.addNotification("A wild animal is attacking your colony!", 'warning');
                     // Spawn a new enemy
                     if (this.game.settlers.length > 0) {
                         const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
                         this.game.enemies.push(new this.EnemyClass("Wild Boar", 49, 29, targetSettler, this.game.spriteManager, RESOURCE_TYPES.MEAT));
-                        console.log("A wild boar has appeared!");
+                        debugLog("A wild boar has appeared!");
                     this.game.notificationManager.addNotification("A wild boar has appeared!", 'warning');
                     }
                 }
@@ -35,13 +36,13 @@ export default class EventManager {
                 description: "You discovered a new resource node!",
                 condition: () => true, // Always possible for now
                 action: () => {
-                    console.log("Event: Resource Discovery!");
+                    debugLog("Event: Resource Discovery!");
                     this.game.notificationManager.addNotification("You discovered a new resource node!", 'info');
                     const resourceTypes = [RESOURCE_TYPES.WOOD, RESOURCE_TYPES.STONE, RESOURCE_TYPES.IRON_ORE];
                     const randomResource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
                     const quantity = Math.floor(Math.random() * 50) + 20; // 20-70 units
                     this.game.resourceManager.addResource(randomResource, quantity);
-                    console.log(`Discovered ${quantity} units of ${randomResource}!`);
+                    debugLog(`Discovered ${quantity} units of ${randomResource}!`);
                     this.game.notificationManager.addNotification(`Discovered ${quantity} units of ${randomResource}!`, 'info');
                 }
             },
@@ -50,11 +51,11 @@ export default class EventManager {
                 description: "One of your settlers has fallen ill.",
                 condition: () => this.game.settlers.length > 0, // Only if there are settlers
                 action: () => {
-                    console.log("Event: Settler Sickness!");
+                    debugLog("Event: Settler Sickness!");
                     this.game.notificationManager.addNotification("One of your settlers has fallen ill.", 'warning');
                     const sickSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
                     sickSettler.takeDamage('torso', 30, false); // Make them sick, not bleeding
-                    console.log(`${sickSettler.name} has fallen ill.`);
+                    debugLog(`${sickSettler.name} has fallen ill.`);
                     this.game.notificationManager.addNotification(`${sickSettler.name} has fallen ill.`, 'warning');
                 }
             },
@@ -63,7 +64,7 @@ export default class EventManager {
                 description: "Your crops yielded an abundant harvest!",
                 condition: () => this.game.map.buildings.some(b => b.type === BUILDING_TYPES.FARM_PLOT && b.growthStage === 3), // Only if there are mature farm plots
                 action: () => {
-                    console.log("Event: Good Harvest!");
+                    debugLog("Event: Good Harvest!");
                     this.game.notificationManager.addNotification("Your crops yielded an abundant harvest!", 'success');
                     const farmPlots = this.game.map.buildings.filter(b => b.type === BUILDING_TYPES.FARM_PLOT && b.growthStage === 3);
                     if (farmPlots.length > 0) {
@@ -72,7 +73,7 @@ export default class EventManager {
                             if (harvestedCrop) {
                                 const pile = new ResourcePile(harvestedCrop, 2, plot.x, plot.y, this.game.map.tileSize, this.game.spriteManager);
                                 this.game.map.addResourcePile(pile);
-                                console.log(`Doubled harvest from a farm plot: ${harvestedCrop}!`);
+                                debugLog(`Doubled harvest from a farm plot: ${harvestedCrop}!`);
                                 this.game.notificationManager.addNotification(`Doubled harvest from a farm plot: ${harvestedCrop}!`, 'success');
                             }
                         });
@@ -84,12 +85,12 @@ export default class EventManager {
                 description: "A vile force of darkness has arrived!",
                 condition: () => true,
                 action: () => {
-                    console.log("Event: Vile Force of Darkness!");
+                    debugLog("Event: Vile Force of Darkness!");
                     this.game.notificationManager.addNotification("A vile force of darkness has arrived!", 'warning');
                     if (this.game.settlers.length > 0) {
                         const targetSettler = this.game.settlers[Math.floor(Math.random() * this.game.settlers.length)];
                         this.game.enemies.push(new this.EnemyClass("Goblin", 49, 29, targetSettler, this.game.spriteManager));
-                        console.log("A goblin has appeared!");
+                        debugLog("A goblin has appeared!");
                         this.game.notificationManager.addNotification("A goblin has appeared!", 'warning');
                     }
                 }
@@ -110,7 +111,7 @@ export default class EventManager {
         const possibleEvents = this.events.filter(event => event.condition());
         if (possibleEvents.length > 0) {
             const eventToTrigger = possibleEvents[Math.floor(Math.random() * possibleEvents.length)];
-            console.log(`Triggering event: ${eventToTrigger.name}`);
+            debugLog(`Triggering event: ${eventToTrigger.name}`);
             eventToTrigger.action();
         }
     }

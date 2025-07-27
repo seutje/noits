@@ -1,3 +1,4 @@
+import { debugLog } from './debug.js';
 import Building from './building.js';
 import Recipe from './recipe.js';
 import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
@@ -36,7 +37,7 @@ export default class CraftingStation extends Building {
     // Crafting logic will be implemented later
     craft(recipeName, resourceManager) {
         // Placeholder for crafting logic
-        console.log(`Crafting ${recipeName} at ${this.type} station.`);
+        debugLog(`Crafting ${recipeName} at ${this.type} station.`);
     }
 
     render(ctx, tileSize) {

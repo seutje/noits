@@ -57,6 +57,8 @@ export default class Game {
         this.gameSpeed = 1; // Default game speed
         this.haulingCheckTimer = 0; // Timer for hauling task assignment
         this.haulingCheckInterval = 1; // seconds between hauling checks
+        this.uiUpdateTimer = 0; // Timer for throttling UI updates
+        this.uiUpdateInterval = 100; // Minimum time between UI updates in ms
         this.temperature = 20; // Initial temperature in Celsius
         this.buildMode = false; // New property for build mode
         this.selectedBuilding = null; // New property to hold the selected building type
@@ -142,6 +144,9 @@ export default class Game {
             this.roomManager.assignHaulingTasksForDroppedPiles(this.settlers);
             this.haulingCheckTimer = 0;
         }
+
+        // Accumulate real time for throttled UI updates
+        this.uiUpdateTimer += deltaTime;
         
         // Update settler needs
         // Update settler needs
@@ -202,7 +207,10 @@ export default class Game {
             const resource = this.resourceManager.getAllResources()[type];
             resourceString += `${type}: ${Math.floor(resource.quantity)} (Q:${resource.quality.toFixed(2)}), `;
         }
-        this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers, this.temperature); // Remove trailing comma and space
+        if (this.uiUpdateTimer >= this.uiUpdateInterval) {
+            this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers, this.temperature); // Remove trailing comma and space
+            this.uiUpdateTimer = 0;
+        }
     }
 
     render() {
@@ -255,6 +263,7 @@ export default class Game {
     resume() {
         this.isPaused = false;
         this.lastTime = performance.now();
+        this.uiUpdateTimer = 0;
     }
 
     togglePause() {

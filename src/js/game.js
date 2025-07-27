@@ -523,55 +523,56 @@ export default class Game {
             this.buildMode = false; // Exit build mode after placing
             this.selectedBuilding = null;
         } else {
-            // Check if a building was clicked
-            const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
-            if (clickedBuilding) {
-                if (clickedBuilding.type === 'crafting_station') {
-                    // For now, hardcode a crafting task for testing
-                    const craftingStation = clickedBuilding;
-                    if (craftingStation.recipes && craftingStation.recipes.length > 0) {
-                        const recipe = craftingStation.recipes[0]; // Get the first recipe
-                        if (recipe) {
-                            this.taskManager.addTask(new Task(TASK_TYPES.CRAFT, tileX, tileY, null, 0, 3, craftingStation, recipe));
-                            console.log(`Crafting task for ${recipe.name} added at ${tileX},${tileY}`);
-                        }
-                    } else {
-                        console.warn("Crafting station has no recipes defined.");
-                    }
-                } else if (clickedBuilding.type === 'farm_plot') {
-                    const farmPlot = clickedBuilding;
-                    if (farmPlot.growthStage === 0) {
-                        this.taskManager.addTask(new Task(TASK_TYPES.SOW_CROP, tileX, tileY, null, 0, 3, farmPlot, null, RESOURCE_TYPES.WHEAT)); // Hardcode wheat for now
-                        console.log(`Sow crop task added for wheat at ${tileX},${tileY}`);
-                    } else if (farmPlot.growthStage === 3) {
-                        this.taskManager.addTask(new Task(TASK_TYPES.HARVEST_CROP, tileX, tileY, null, 0, 3, farmPlot));
-                        console.log(`Harvest crop task added at ${tileX},${tileY}`);
-                    } else {
-                        console.log(`Farm plot at ${tileX},${tileY} is not ready for action.`);
-                    }
-                } else if (clickedBuilding.type === 'animal_pen') {
-                    const animalPen = clickedBuilding;
-                    this.taskManager.addTask(new Task(TASK_TYPES.TEND_ANIMALS, tileX, tileY, null, 0, 3, animalPen));
-                    console.log(`Tend animals task added at ${tileX},${tileY}`);
-                } else if (typeof clickedBuilding.takeDamage === 'function') {
-                    // Temporarily disabled direct damage on mouse clicks
-                    // clickedBuilding.takeDamage(25); // Example: 25 damage per click
-                    // if (clickedBuilding.health <= 0) {
-                    //     clickedBuilding.spillInventory(this.map);
-                    //     this.map.removeBuilding(clickedBuilding);
-                    //     console.log(`Building at ${tileX},${tileY} destroyed.`);
-                    // }
-                } else {
-                    console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
-                }
+            // Check if an enemy corpse was clicked first
+            const clickedEnemy = this.enemies.find(
+                e => Math.round(e.x) === tileX && Math.round(e.y) === tileY
+            );
+            if (clickedEnemy && clickedEnemy.isDead && clickedEnemy.decay <= 50 && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
+                this.taskManager.addTask(new Task(TASK_TYPES.BUTCHER, tileX, tileY, RESOURCE_TYPES.MEAT, 1, 2, null, null, null, null, null, null, clickedEnemy));
+                clickedEnemy.isMarkedForButcher = true;
+                console.log(`Butcher task added at ${tileX},${tileY}`);
             } else {
-                const clickedEnemy = this.enemies.find(
-                    e => Math.round(e.x) === tileX && Math.round(e.y) === tileY
-                );
-                if (clickedEnemy && clickedEnemy.isDead && clickedEnemy.decay <= 50 && !clickedEnemy.isMarkedForButcher && !clickedEnemy.isButchered) {
-                    this.taskManager.addTask(new Task(TASK_TYPES.BUTCHER, tileX, tileY, RESOURCE_TYPES.MEAT, 1, 2, null, null, null, null, null, null, clickedEnemy));
-                    clickedEnemy.isMarkedForButcher = true;
-                    console.log(`Butcher task added at ${tileX},${tileY}`);
+                // Check if a building was clicked
+                const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
+                if (clickedBuilding) {
+                    if (clickedBuilding.type === 'crafting_station') {
+                        // For now, hardcode a crafting task for testing
+                        const craftingStation = clickedBuilding;
+                        if (craftingStation.recipes && craftingStation.recipes.length > 0) {
+                            const recipe = craftingStation.recipes[0]; // Get the first recipe
+                            if (recipe) {
+                                this.taskManager.addTask(new Task(TASK_TYPES.CRAFT, tileX, tileY, null, 0, 3, craftingStation, recipe));
+                                console.log(`Crafting task for ${recipe.name} added at ${tileX},${tileY}`);
+                            }
+                        } else {
+                            console.warn("Crafting station has no recipes defined.");
+                        }
+                    } else if (clickedBuilding.type === 'farm_plot') {
+                        const farmPlot = clickedBuilding;
+                        if (farmPlot.growthStage === 0) {
+                            this.taskManager.addTask(new Task(TASK_TYPES.SOW_CROP, tileX, tileY, null, 0, 3, farmPlot, null, RESOURCE_TYPES.WHEAT)); // Hardcode wheat for now
+                            console.log(`Sow crop task added for wheat at ${tileX},${tileY}`);
+                        } else if (farmPlot.growthStage === 3) {
+                            this.taskManager.addTask(new Task(TASK_TYPES.HARVEST_CROP, tileX, tileY, null, 0, 3, farmPlot));
+                            console.log(`Harvest crop task added at ${tileX},${tileY}`);
+                        } else {
+                            console.log(`Farm plot at ${tileX},${tileY} is not ready for action.`);
+                        }
+                    } else if (clickedBuilding.type === 'animal_pen') {
+                        const animalPen = clickedBuilding;
+                        this.taskManager.addTask(new Task(TASK_TYPES.TEND_ANIMALS, tileX, tileY, null, 0, 3, animalPen));
+                        console.log(`Tend animals task added at ${tileX},${tileY}`);
+                    } else if (typeof clickedBuilding.takeDamage === 'function') {
+                        // Temporarily disabled direct damage on mouse clicks
+                        // clickedBuilding.takeDamage(25); // Example: 25 damage per click
+                        // if (clickedBuilding.health <= 0) {
+                        //     clickedBuilding.spillInventory(this.map);
+                        //     this.map.removeBuilding(clickedBuilding);
+                        //     console.log(`Building at ${tileX},${tileY} destroyed.`);
+                        // }
+                    } else {
+                        console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
+                    }
                 } else if (clickedTile === 2) { // If a tree is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.CHOP_WOOD, tileX, tileY, RESOURCE_TYPES.WOOD, 2.5, 2));
                     console.log(`Chop wood task added at ${tileX},${tileY}`);

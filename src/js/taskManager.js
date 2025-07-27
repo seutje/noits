@@ -20,7 +20,15 @@ export default class TaskManager {
         this.tasks.splice(low, 0, task);
     }
 
-    getTask() {
+    getTask(filterFn = null) {
+        if (filterFn) {
+            for (let i = 0; i < this.tasks.length; i++) {
+                if (filterFn(this.tasks[i])) {
+                    return this.tasks.splice(i, 1)[0];
+                }
+            }
+            return null;
+        }
         if (this.tasks.length > 0) {
             return this.tasks.shift(); // Get the first task in the queue
         }

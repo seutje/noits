@@ -22,6 +22,16 @@ import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
 import SoundManager, { ACTION_BEEP_URL } from './soundManager.js';
 
+const GATHER_TASK_TYPES = new Set([
+    'chop_wood',
+    'gather_berries',
+    'mushroom',
+    'hunt_animal',
+    'mine_stone',
+    'mine_iron_ore',
+    'dig_dirt'
+]);
+
 export default class Game {
     constructor(ctx) {
         this.ctx = ctx;
@@ -156,7 +166,10 @@ export default class Game {
                 }
             }
             if (settler.state === "idle" && !settler.currentTask) {
-                const task = this.taskManager.getTask();
+                const task = this.taskManager.getTask(t => !(
+                    settler.carrying &&
+                    (t.type === 'haul' || GATHER_TASK_TYPES.has(t.type))
+                ));
                 if (task) {
                     settler.currentTask = task;
                     console.log(`${settler.name} picked up task: ${task.type}`);

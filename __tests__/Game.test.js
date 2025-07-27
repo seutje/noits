@@ -76,8 +76,11 @@ describe('Game', () => {
         game.map.addBuilding = jest.fn(); // Mock addBuilding
         game.ui.setGameInstance = jest.fn();
         game.ui.update = jest.fn();
+        game.ui.showFarmPlotMenu = jest.fn();
         game.resourceManager.addResource = jest.fn();
         game.resourceManager.getAllResources.mockReturnValue({});
+
+        game.map.getBuildingAt = jest.fn();
         
         game.settlers[0].render = jest.fn();
         game.settlers[0].hunger = 100;
@@ -178,6 +181,16 @@ describe('Game', () => {
         game.buildMode = false;
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
         expect(game.map.addBuilding).not.toHaveBeenCalled();
+    });
+
+    test('handleClick on farm plot shows menu', () => {
+        const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
+        const tileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+        const farmPlot = { type: 'farm_plot', x: tileX, y: tileY, growthStage: 0 };
+        game.map.getBuildingAt.mockReturnValue(farmPlot);
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+        expect(game.ui.showFarmPlotMenu).toHaveBeenCalledWith(farmPlot, 100, 100);
+        expect(game.taskManager.addTask).not.toHaveBeenCalled();
     });
 
     test('handleClick should add wood and remove tree when tree is clicked', () => {

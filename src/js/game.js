@@ -327,6 +327,28 @@ export default class Game {
         this.tradeManager.initiateTrade('traders', [{ type: 'sell', resource: 'food', quantity: 5, price: 10 }]);
     }
 
+    addSowCropTask(farmPlot) {
+        this.taskManager.addTask(
+            new Task(
+                TASK_TYPES.SOW_CROP,
+                farmPlot.x,
+                farmPlot.y,
+                null,
+                0,
+                3,
+                farmPlot,
+                null,
+                RESOURCE_TYPES.WHEAT
+            )
+        );
+    }
+
+    addHarvestCropTask(farmPlot) {
+        this.taskManager.addTask(
+            new Task(TASK_TYPES.HARVEST_CROP, farmPlot.x, farmPlot.y, null, 0, 3, farmPlot)
+        );
+    }
+
     saveGame() {
         const gameState = {
             settlers: this.settlers.map(settler => settler.serialize()),
@@ -549,15 +571,7 @@ export default class Game {
                         }
                     } else if (clickedBuilding.type === 'farm_plot') {
                         const farmPlot = clickedBuilding;
-                        if (farmPlot.growthStage === 0) {
-                            this.taskManager.addTask(new Task(TASK_TYPES.SOW_CROP, tileX, tileY, null, 0, 3, farmPlot, null, RESOURCE_TYPES.WHEAT)); // Hardcode wheat for now
-                            console.log(`Sow crop task added for wheat at ${tileX},${tileY}`);
-                        } else if (farmPlot.growthStage === 3) {
-                            this.taskManager.addTask(new Task(TASK_TYPES.HARVEST_CROP, tileX, tileY, null, 0, 3, farmPlot));
-                            console.log(`Harvest crop task added at ${tileX},${tileY}`);
-                        } else {
-                            console.log(`Farm plot at ${tileX},${tileY} is not ready for action.`);
-                        }
+                        this.ui.showFarmPlotMenu(farmPlot, event.clientX, event.clientY);
                     } else if (clickedBuilding.type === 'animal_pen') {
                         const animalPen = clickedBuilding;
                         this.taskManager.addTask(new Task(TASK_TYPES.TEND_ANIMALS, tileX, tileY, null, 0, 3, animalPen));

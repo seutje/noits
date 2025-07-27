@@ -36,4 +36,17 @@ describe('UI tooltips', () => {
         const ui = new UI({});
         expect(ui.priorityButton.parentElement).toBe(ui.buildMenu);
     });
+
+    test('farm plot menu shows with correct button states', () => {
+        const ui = new UI({});
+        const mockGame = { addSowCropTask: jest.fn(), addHarvestCropTask: jest.fn() };
+        ui.setGameInstance(mockGame);
+        const farmPlot = { crop: null, growthStage: 0, x: 1, y: 2 };
+        ui.showFarmPlotMenu(farmPlot, 10, 20);
+        expect(ui.farmPlotMenu.style.display).toBe('block');
+        expect(ui.plantWheatButton.disabled).toBe(false);
+        expect(ui.harvestButton.disabled).toBe(true);
+        ui.hideFarmPlotMenu();
+        expect(ui.farmPlotMenu.style.display).toBe('none');
+    });
 });

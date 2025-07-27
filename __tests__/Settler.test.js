@@ -1,6 +1,6 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
-import { TASK_TYPES } from '../src/js/constants.js';
+import { TASK_TYPES, HEALTH_REGEN_RATE } from '../src/js/constants.js';
 import ResourcePile from '../src/js/resourcePile.js';
 
 jest.mock('../src/js/resourceManager.js');
@@ -521,5 +521,19 @@ describe('Settler', () => {
 
         expect(settler.isSleeping).toBe(false);
         expect(settler.state).toBe('combat');
+    });
+
+    test('health regenerates based on hunger level', () => {
+        settler.bodyParts.head.health = 50;
+        settler.hunger = 100;
+        settler.updateNeeds(1000);
+        const expectedHigh = 50 + ((settler.hunger) / 100) * HEALTH_REGEN_RATE;
+        expect(settler.bodyParts.head.health).toBeCloseTo(expectedHigh, 5);
+
+        settler.bodyParts.head.health = 50;
+        settler.hunger = 50;
+        settler.updateNeeds(1000);
+        const expectedLow = 50 + ((settler.hunger) / 100) * HEALTH_REGEN_RATE;
+        expect(settler.bodyParts.head.health).toBeCloseTo(expectedLow, 5);
     });
 });

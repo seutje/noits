@@ -190,7 +190,7 @@ export default class Map {
     findPath(startX, startY, endX, endY) {
         const queue = [{ x: startX, y: startY }];
         const visited = new Set([`${startX},${startY}`]);
-        const prev = new Map();
+        const prev = new globalThis.Map();
         const dirs = [
             { dx: 1, dy: 0 },
             { dx: -1, dy: 0 },

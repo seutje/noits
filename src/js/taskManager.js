@@ -52,37 +52,45 @@ export default class TaskManager {
     assignTasks(settlers, filterFn = null) {
         for (let i = 0; i < this.tasks.length; ) {
             const task = this.tasks[i];
-            let eligibleSettlers = settlers.filter(s => !s.currentTask);
-            if (task.building) {
-                if (task.building.occupant) {
-                    eligibleSettlers = eligibleSettlers.filter(s => s === task.building.occupant);
-                } else {
-                    eligibleSettlers = eligibleSettlers.filter(s => s.x === task.building.x && s.y === task.building.y);
-                }
-            }
             let bestSettler = null;
             let bestPriority = -1;
-            eligibleSettlers.forEach(settler => {
+
+            settlers.forEach(settler => {
+                if (settler.currentTask) return;
+
+                if (task.building && task.building.occupant && task.building.occupant !== settler) {
+                    return; // building already in use
+                }
+
                 const isSelfTreatment = task.type === TASK_TYPES.TREATMENT && task.targetSettler === settler;
                 if (settler.state !== 'idle' && !(isSelfTreatment && settler.state === 'seeking_treatment')) return;
-                const priority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
-                if (priority > 0 && (!filterFn || filterFn(task, settler))) {
-                    if (priority > bestPriority) {
-                        bestPriority = priority;
-                        bestSettler = settler;
-                    }
+
+                const basePriority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
+                if (basePriority <= 0 || (filterFn && !filterFn(task, settler))) return;
+
+                let priority = basePriority;
+                if (task.building && settler.x === task.building.x && settler.y === task.building.y) {
+                    priority += 0.1; // prefer settlers already at location
+                }
+
+                if (priority > bestPriority) {
+                    bestPriority = priority;
+                    bestSettler = settler;
                 }
             });
+
             if (bestSettler) {
                 if (bestSettler.currentBuilding && bestSettler.currentBuilding !== task.building) {
                     bestSettler.currentBuilding.occupant = null;
                     bestSettler.currentBuilding = null;
                 }
+
                 bestSettler.currentTask = task;
                 if (task.building) {
                     task.building.occupant = bestSettler;
                     bestSettler.currentBuilding = task.building;
                 }
+
                 this.tasks.splice(i, 1);
                 console.log(`${bestSettler.name} picked up task: ${task.type}`);
             } else {

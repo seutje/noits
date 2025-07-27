@@ -312,6 +312,10 @@ export default class Settler {
                             building.resourcesDelivered = building.getResourceQuantity(material);
                         } else {
                             console.log(`${this.name} needs ${material} delivered to build site.`);
+                            if (building.occupant === this) {
+                                building.occupant = null;
+                                this.currentBuilding = null;
+                            }
                             this.currentTask = null;
                             return;
                         }
@@ -323,6 +327,10 @@ export default class Settler {
                         if (building.buildProgress >= 100) {
                             building.buildProgress = 100;
                             console.log(`${this.name} completed building task for ${building.type}`);
+                            if (building.occupant === this) {
+                                building.occupant = null;
+                                this.currentBuilding = null;
+                            }
                             this.currentTask = null; // Task completed
                         }
                     }

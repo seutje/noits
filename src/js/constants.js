@@ -17,6 +17,18 @@ export const BUILDING_TYPES = {
   TABLE: 'table'
 };
 
+// Properties for each building type
+export const BUILDING_TYPE_PROPERTIES = {
+  [BUILDING_TYPES.WALL]: { passable: false },
+  [BUILDING_TYPES.FLOOR]: { passable: true },
+  [BUILDING_TYPES.CRAFTING_STATION]: { passable: true },
+  [BUILDING_TYPES.FARM_PLOT]: { passable: true },
+  [BUILDING_TYPES.ANIMAL_PEN]: { passable: true },
+  [BUILDING_TYPES.BARRICADE]: { passable: true },
+  [BUILDING_TYPES.BED]: { passable: true },
+  [BUILDING_TYPES.TABLE]: { passable: true }
+};
+
 // Resource types used throughout the game
 export const RESOURCE_TYPES = {
   WOOD: 'wood',

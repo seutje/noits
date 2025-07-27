@@ -1,4 +1,6 @@
 
+import { BUILDING_TYPE_PROPERTIES } from './constants.js';
+
 // A* pathfinding algorithm
 export function findPath(start, end, map) {
     if (start.x === end.x && start.y === end.y) {
@@ -62,14 +64,31 @@ function getNeighbors(node, map) {
     const { x, y } = node;
 
     const currentTile = map.getTile ? map.getTile(x, y) : 0;
-    const isUnpassable = currentTile === 8;
+    const currentBuilding = map.getBuildingAt ? map.getBuildingAt(x, y) : null;
+    const isUnpassable =
+        currentTile === 8 ||
+        (currentBuilding &&
+            BUILDING_TYPE_PROPERTIES[currentBuilding.type] &&
+            BUILDING_TYPE_PROPERTIES[currentBuilding.type].passable === false);
 
     const checkAndAdd = (nx, ny) => {
         if (
-            nx >= 0 && nx < map.width && ny >= 0 && ny < map.height &&
+            nx >= 0 &&
+            nx < map.width &&
+            ny >= 0 &&
+            ny < map.height &&
             (map.getTile ? map.getTile(nx, ny) : 0) !== 8
         ) {
-            neighbors.push({ x: nx, y: ny });
+            const b = map.getBuildingAt ? map.getBuildingAt(nx, ny) : null;
+            if (
+                !b ||
+                !(
+                    BUILDING_TYPE_PROPERTIES[b.type] &&
+                    BUILDING_TYPE_PROPERTIES[b.type].passable === false
+                )
+            ) {
+                neighbors.push({ x: nx, y: ny });
+            }
         }
     };
 

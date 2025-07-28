@@ -10,6 +10,7 @@ import Settler from './settler.js';
 import TaskManager from './taskManager.js';
 import Building from './building.js';
 import CraftingStation from './craftingStation.js';
+import Oven from './oven.js';
 import Task from './task.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
@@ -97,6 +98,8 @@ export default class Game {
                 [BUILDING_TYPES.FARM_PLOT, 'src/assets/farmPlot.png'],
                 [RESOURCE_TYPES.BANDAGE, 'src/assets/bandage.png'],
                 [BUILDING_TYPES.CRAFTING_STATION, 'src/assets/crafting_station.png'],
+                [BUILDING_TYPES.OVEN, 'src/assets/oven.png'],
+                [RESOURCE_TYPES.BREAD, 'src/assets/bread.png'],
                 [BUILDING_TYPES.TABLE, 'src/assets/table.png'],
                 [BUILDING_TYPES.BED, 'src/assets/bed.png'],
                 ['wheat_1', 'src/assets/wheat_1.png'],
@@ -227,7 +230,10 @@ export default class Game {
                     }
                 }
             }
-            if (building.type === BUILDING_TYPES.CRAFTING_STATION) {
+            if (
+                building.type === BUILDING_TYPES.CRAFTING_STATION ||
+                building.type === BUILDING_TYPES.OVEN
+            ) {
                 const station = building;
                 if (station.buildProgress === 100 && station.autoCraft && station.desiredRecipe) {
                     const hasTask = this.taskManager.tasks.some(
@@ -728,6 +734,8 @@ export default class Game {
                 newBuilding = new Furniture(BUILDING_TYPES.BED, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.TABLE) {
                 newBuilding = new Furniture(BUILDING_TYPES.TABLE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.OVEN) {
+                newBuilding = new Oven(tileX, tileY, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE) {
                 newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === BUILDING_TYPES.WALL) {
@@ -782,7 +790,10 @@ export default class Game {
                 // Check if a building was clicked
                 const clickedBuilding = this.map.getBuildingAt(tileX, tileY);
                 if (clickedBuilding) {
-                    if (clickedBuilding.type === BUILDING_TYPES.CRAFTING_STATION) {
+                    if (
+                        clickedBuilding.type === BUILDING_TYPES.CRAFTING_STATION ||
+                        clickedBuilding.type === BUILDING_TYPES.OVEN
+                    ) {
                         const craftingStation = clickedBuilding;
                         this.ui.showCraftingStationMenu(craftingStation, event.clientX, event.clientY);
                     } else if (clickedBuilding.type === BUILDING_TYPES.FARM_PLOT) {

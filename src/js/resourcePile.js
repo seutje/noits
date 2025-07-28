@@ -33,6 +33,7 @@ export default class ResourcePile extends Resource {
         const meatSprite = this.spriteManager.getSprite(RESOURCE_TYPES.MEAT);
         const mushroomsSprite = this.spriteManager.getSprite(RESOURCE_TYPES.MUSHROOMS);
         const bandageSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BANDAGE);
+        const breadSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BREAD);
         const dirtPileSprite = this.spriteManager.getSprite('dirt_pile');
         const wheatPileSprite = this.spriteManager.getSprite('wheat_pile');
         const cottonPileSprite = this.spriteManager.getSprite('cotton_pile');
@@ -49,6 +50,8 @@ export default class ResourcePile extends Resource {
             ctx.drawImage(mushroomsSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.BANDAGE && bandageSprite) {
             ctx.drawImage(bandageSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else if (this.type === RESOURCE_TYPES.BREAD && breadSprite) {
+            ctx.drawImage(breadSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.DIRT && dirtPileSprite) {
             ctx.drawImage(dirtPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.WHEAT && wheatPileSprite) {

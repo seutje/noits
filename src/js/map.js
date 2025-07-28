@@ -1,6 +1,7 @@
 import ResourcePile from './resourcePile.js';
 import Building from './building.js';
 import CraftingStation from './craftingStation.js';
+import Oven from './oven.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import Furniture from './furniture.js';
@@ -267,6 +268,8 @@ export default class Map {
             let building;
             if (buildingData.type === BUILDING_TYPES.CRAFTING_STATION) {
                 building = new CraftingStation(buildingData.x, buildingData.y, this.spriteManager);
+            } else if (buildingData.type === BUILDING_TYPES.OVEN) {
+                building = new Oven(buildingData.x, buildingData.y, this.spriteManager);
             } else if (buildingData.type === BUILDING_TYPES.FARM_PLOT) {
                 building = new FarmPlot(buildingData.x, buildingData.y, this.spriteManager);
             } else if (buildingData.type === BUILDING_TYPES.ANIMAL_PEN) {

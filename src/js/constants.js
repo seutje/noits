@@ -10,6 +10,7 @@ export const BUILDING_TYPES = {
   WALL: 'wall',
   FLOOR: 'floor',
   CRAFTING_STATION: 'crafting_station',
+  OVEN: 'oven',
   FARM_PLOT: 'farm_plot',
   ANIMAL_PEN: 'animal_pen',
   BARRICADE: 'barricade',
@@ -22,6 +23,7 @@ export const BUILDING_TYPE_PROPERTIES = {
   [BUILDING_TYPES.WALL]: { passable: false },
   [BUILDING_TYPES.FLOOR]: { passable: true },
   [BUILDING_TYPES.CRAFTING_STATION]: { passable: true },
+  [BUILDING_TYPES.OVEN]: { passable: true },
   [BUILDING_TYPES.FARM_PLOT]: { passable: true },
   [BUILDING_TYPES.ANIMAL_PEN]: { passable: true },
   [BUILDING_TYPES.BARRICADE]: { passable: true },
@@ -40,6 +42,7 @@ export const RESOURCE_TYPES = {
   BERRIES: 'berries',
   MUSHROOMS: 'mushrooms',
   MEAT: 'meat',
+  BREAD: 'bread',
   BANDAGE: 'bandage',
   PLANK: 'plank',
   BLOCK: 'block'
@@ -57,6 +60,7 @@ export const RESOURCE_CATEGORIES = {
   [RESOURCE_TYPES.BERRIES]: ['food'],
   [RESOURCE_TYPES.MUSHROOMS]: ['food'],
   [RESOURCE_TYPES.MEAT]: ['food'],
+  [RESOURCE_TYPES.BREAD]: ['food'],
   [RESOURCE_TYPES.BANDAGE]: ['medical'],
   [RESOURCE_TYPES.PLANK]: ['material'],
   [RESOURCE_TYPES.BLOCK]: ['material']

@@ -154,8 +154,9 @@ export default class Map {
                 const buildingPassable = b
                     ? BUILDING_TYPE_PROPERTIES[b.type]?.passable !== false
                     : true;
+
                 if (tile !== 8 || buildingPassable) {
-                    if (!b) {
+                    if (!b || buildingPassable) {
                         if (fromX !== null && fromY !== null) {
                             const dist = (fromX - nx) ** 2 + (fromY - ny) ** 2;
                             if (dist < bestDist) {

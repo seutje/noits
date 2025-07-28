@@ -1,5 +1,7 @@
 import Map from '../src/js/map.js';
 import ResourcePile from '../src/js/resourcePile.js';
+import Building from '../src/js/building.js';
+import { BUILDING_TYPES } from '../src/js/constants.js';
 
 describe('Map resource piles', () => {
     test('should not allow multiple piles on same tile', () => {
@@ -54,5 +56,21 @@ describe('Map resource piles', () => {
             );
         });
         expect(hasCluster).toBe(true);
+    });
+});
+
+describe('findAdjacentFreeTile', () => {
+    test('returns passable floor tile on water', () => {
+        const map = new Map(3, 3, 32, { getSprite: jest.fn() });
+        map.tiles = [
+            [0, 0, 0],
+            [0, 8, 8],
+            [0, 0, 0],
+        ];
+        const floor = new Building(BUILDING_TYPES.FLOOR, 1, 1, 1, 1, 'wood', 100);
+        map.addBuilding(floor);
+
+        const pos = map.findAdjacentFreeTile(2, 1);
+        expect(pos).toEqual({ x: 1, y: 1 });
     });
 });

@@ -72,15 +72,16 @@ export default class Enemy {
                 if (this.path && this.path.length > 0) {
                     const targetNode = this.path[0];
                     const speed = ENEMY_RUN_SPEED;
+                    const delta = speed * (deltaTime / 1000);
                     if (this.x < targetNode.x) {
-                        this.x += speed * (deltaTime / 1000);
+                        this.x = Math.min(this.x + delta, targetNode.x);
                     } else if (this.x > targetNode.x) {
-                        this.x -= speed * (deltaTime / 1000);
+                        this.x = Math.max(this.x - delta, targetNode.x);
                     }
                     if (this.y < targetNode.y) {
-                        this.y += speed * (deltaTime / 1000);
+                        this.y = Math.min(this.y + delta, targetNode.y);
                     } else if (this.y > targetNode.y) {
-                        this.y -= speed * (deltaTime / 1000);
+                        this.y = Math.max(this.y - delta, targetNode.y);
                     }
 
                     if (Math.abs(this.x - targetNode.x) < 0.1 && Math.abs(this.y - targetNode.y) < 0.1) {

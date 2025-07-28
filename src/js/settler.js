@@ -267,10 +267,29 @@ export default class Settler {
                 this.dropCarriedResource();
                 this.state = "idle";
             } else {
-                const targetBuilding = (this.map.buildings || []).find(b => b.buildProgress < 100 && b.material === this.carrying.type && b.resourcesDelivered < b.resourcesRequired);
+                const targetBuilding = (this.map.buildings || []).find(
+                    b =>
+                        b.buildProgress < 100 &&
+                        b.material === this.carrying.type &&
+                        b.resourcesDelivered < b.resourcesRequired,
+                );
                 if (targetBuilding) {
-                    this.currentTask = { type: TASK_TYPES.HAUL, targetX: targetBuilding.x, targetY: targetBuilding.y, resource: this.carrying, building: targetBuilding };
-                    debugLog(`${this.name} is hauling ${this.carrying.type} to construction site.`);
+                    const pos = this.map.findAdjacentFreeTile(
+                        targetBuilding.x,
+                        targetBuilding.y,
+                        Math.floor(this.x),
+                        Math.floor(this.y),
+                    );
+                    this.currentTask = {
+                        type: TASK_TYPES.HAUL,
+                        targetX: pos.x,
+                        targetY: pos.y,
+                        resource: this.carrying,
+                        building: targetBuilding,
+                    };
+                    debugLog(
+                        `${this.name} is hauling ${this.carrying.type} to construction site.`,
+                    );
                 } else {
                     const target = this.roomManager.findStorageRoomAndTile(this.carrying.type);
                     if (target) {
@@ -627,10 +646,19 @@ export default class Settler {
                                     if (pile.quantity <= 0) {
                                         this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                                     }
-                                    this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
+                                    this.pickUpPile(
+                                        this.currentTask.resourceType,
+                                        this.currentTask.quantity,
+                                    );
                                     this.currentTask.resource = this.carrying;
-                                    this.currentTask.targetX = building.x;
-                                    this.currentTask.targetY = building.y;
+                                    const pos = this.map.findAdjacentFreeTile(
+                                        building.x,
+                                        building.y,
+                                        Math.floor(this.x),
+                                        Math.floor(this.y),
+                                    );
+                                    this.currentTask.targetX = pos.x;
+                                    this.currentTask.targetY = pos.y;
                                     this.path = null;
                                 } else {
                                     debugLog(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);

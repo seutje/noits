@@ -207,25 +207,34 @@ export default class Settler {
         // If hungry, create a task to go eat from storage
         if (this.state === "seeking_food" && !this.currentTask) {
             const storageRooms = this.roomManager.rooms.filter(room => room.type === "storage");
-            let assigned = false;
+
+            let bestFood = null;
+            let bestRoom = null;
+            let bestValue = -Infinity;
+
             for (const room of storageRooms) {
-                const foodTypes = [RESOURCE_TYPES.BERRIES, RESOURCE_TYPES.MUSHROOMS, RESOURCE_TYPES.MEAT];
-                for (const food of foodTypes) {
+                for (const food of Object.keys(FOOD_HUNGER_VALUES)) {
                     if (room.storage[food] && room.storage[food] > 0) {
-                        const targetTile = room.tiles[0];
-                        this.currentTask = {
-                            type: "eat",
-                            targetX: targetTile.x,
-                            targetY: targetTile.y,
-                            foodType: food,
-                            room
-                        };
-                        debugLog(`${this.name} is moving to eat ${food} from storage.`);
-                        assigned = true;
-                        break;
+                        const value = FOOD_HUNGER_VALUES[food] ?? 0;
+                        if (value > bestValue) {
+                            bestValue = value;
+                            bestFood = food;
+                            bestRoom = room;
+                        }
                     }
                 }
-                if (assigned) break;
+            }
+
+            if (bestFood) {
+                const targetTile = bestRoom.tiles[0];
+                this.currentTask = {
+                    type: "eat",
+                    targetX: targetTile.x,
+                    targetY: targetTile.y,
+                    foodType: bestFood,
+                    room: bestRoom
+                };
+                debugLog(`${this.name} is moving to eat ${bestFood} from storage.`);
             }
         }
 

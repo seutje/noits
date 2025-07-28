@@ -79,4 +79,28 @@ describe('RoomManager storage rules', () => {
         expect(foods[0].type).toBe(RESOURCE_TYPES.MEAT);
         expect(foods[1].type).toBe(RESOURCE_TYPES.BREAD);
     });
+
+    test('findHighestValueFoods returns duplicates when quantity allows', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const roomManager = new RoomManager(map, { getSprite: jest.fn() }, 32);
+        const room = roomManager.designateRoom(0, 0, 1, 1, 'storage');
+        room.storage[RESOURCE_TYPES.MEAT] = 2;
+
+        const foods = roomManager.findHighestValueFoods(2);
+        expect(foods.length).toBe(2);
+        expect(foods[0].type).toBe(RESOURCE_TYPES.MEAT);
+        expect(foods[1].type).toBe(RESOURCE_TYPES.MEAT);
+    });
+
+    test('removeResourceFromStorage reduces piles and counts', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const roomManager = new RoomManager(map, { getSprite: jest.fn() }, 32);
+        const room = roomManager.designateRoom(0, 0, 0, 0, 'storage');
+        roomManager.addResourceToStorage(room, RESOURCE_TYPES.BREAD, 2);
+
+        const removed = roomManager.removeResourceFromStorage(room, RESOURCE_TYPES.BREAD, 2);
+        expect(removed).toBe(true);
+        expect(room.storage[RESOURCE_TYPES.BREAD]).toBe(0);
+        expect(map.resourcePiles.length).toBe(0);
+    });
 });

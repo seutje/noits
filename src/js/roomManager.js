@@ -158,20 +158,38 @@ export default class RoomManager {
     }
 
     removeResourceFromStorage(room, resourceType, quantity) {
-        if (room.type === "storage") {
-            if (room.storage[resourceType] && room.storage[resourceType] >= quantity) {
-                room.storage[resourceType] -= quantity;
-                debugLog(`Removed ${quantity} ${resourceType} from storage room ${room.id}. Current: ${room.storage[resourceType]}`);
-                if (this.taskManager) {
-                    this.assignHaulingTasksForDroppedPiles();
-                }
-                return true;
-            }
+        if (room.type !== "storage") {
+            console.warn(`Room ${room.id} is not a storage room.`);
+            return false;
+        }
+
+        if (!room.storage[resourceType] || room.storage[resourceType] < quantity) {
             console.warn(`Not enough ${resourceType} in storage room ${room.id}.`);
             return false;
         }
-        console.warn(`Room ${room.id} is not a storage room.`);
-        return false;
+
+        let remaining = quantity;
+        for (const tile of room.tiles) {
+            if (remaining <= 0) break;
+            const pile = this.map.resourcePiles.find(p => p.x === tile.x && p.y === tile.y && p.type === resourceType);
+            if (pile) {
+                const removeAmount = Math.min(pile.quantity, remaining);
+                pile.remove(removeAmount);
+                remaining -= removeAmount;
+            }
+        }
+
+        if (remaining > 0) {
+            console.warn(`Storage room ${room.id} missing piles for ${resourceType}.`);
+            return false;
+        }
+
+        room.storage[resourceType] -= quantity;
+        debugLog(`Removed ${quantity} ${resourceType} from storage room ${room.id}. Current: ${room.storage[resourceType]}`);
+        if (this.taskManager) {
+            this.assignHaulingTasksForDroppedPiles();
+        }
+        return true;
     }
 
     findHighestValueFoods(count = 2) {
@@ -180,7 +198,9 @@ export default class RoomManager {
             if (room.type !== 'storage') continue;
             for (const food in FOOD_HUNGER_VALUES) {
                 if (food === RESOURCE_TYPES.MEAL) continue;
-                if (room.storage[food] && room.storage[food] > 0) {
+                const qty = room.storage[food] || 0;
+                const limit = Math.min(qty, count);
+                for (let i = 0; i < limit; i++) {
                     foods.push({ room, type: food, value: FOOD_HUNGER_VALUES[food] });
                 }
             }

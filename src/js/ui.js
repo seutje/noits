@@ -565,6 +565,13 @@ export default class UI {
             };
             actionCell.appendChild(delBtn);
 
+            const unassignBtn = document.createElement('button');
+            unassignBtn.textContent = 'Unassign';
+            unassignBtn.onclick = () => {
+                this.gameInstance.unassignTask(task);
+            };
+            actionCell.appendChild(unassignBtn);
+
             row.appendChild(typeCell);
             row.appendChild(assignedCell);
             row.appendChild(actionCell);

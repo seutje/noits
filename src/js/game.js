@@ -523,6 +523,11 @@ export default class Game {
         );
     }
 
+    deleteTask(task) {
+        this.taskManager.removeTask(task);
+        this.unassignTask(task);
+    }
+
     saveGame() {
         const gameState = {
             settlers: this.settlers.map(settler => settler.serialize()),

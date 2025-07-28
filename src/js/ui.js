@@ -561,7 +561,7 @@ export default class UI {
             const delBtn = document.createElement('button');
             delBtn.textContent = 'Delete';
             delBtn.onclick = () => {
-                this.gameInstance.taskManager.removeTask(task);
+                this.gameInstance.deleteTask(task);
             };
             actionCell.appendChild(delBtn);
 

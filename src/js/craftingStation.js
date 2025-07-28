@@ -43,8 +43,18 @@ export default class CraftingStation extends Building {
     render(ctx, tileSize) {
         super.render(ctx, tileSize);
 
-        if (this.buildProgress === 100 && this.stationSprite) {
-            ctx.drawImage(this.stationSprite, this.x * tileSize, this.y * tileSize, tileSize, tileSize);
+        if (this.buildProgress < 100) {
+            return; // Construction sprite already drawn by Building.render
+        }
+
+        if (this.stationSprite) {
+            ctx.drawImage(
+                this.stationSprite,
+                this.x * tileSize,
+                this.y * tileSize,
+                tileSize,
+                tileSize,
+            );
         } else {
             ctx.fillStyle = "purple"; // Example color for crafting station
             ctx.fillRect(this.x * tileSize, this.y * tileSize, this.width * tileSize, this.height * tileSize);

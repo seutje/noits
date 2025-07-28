@@ -37,7 +37,7 @@ export default class Settler {
             mining: 1,
             building: 1,
             crafting: 1,
-            baking: 1,
+            cooking: 1,
             combat: 1,
             medical: 1
         };
@@ -941,7 +941,7 @@ export default class Settler {
             this.currentTask.building &&
             this.currentTask.building.type === BUILDING_TYPES.OVEN
         ) {
-            skillLevel = this.skills.baking;
+            skillLevel = this.skills.cooking;
         }
         // Simple quality calculation: baseQuality + (skillLevel - 1) * 0.1
         const skillBonus = (skillLevel - 1) * 0.1;

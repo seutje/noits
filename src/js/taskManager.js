@@ -7,8 +7,8 @@ import { TASK_TYPES } from './constants.js';
 export const TASK_SKILL_MAP = {
     [TASK_TYPES.BUILD]: 'building',
     [TASK_TYPES.CRAFT]: 'crafting',
-    [TASK_TYPES.BAKING]: 'baking',
-    [TASK_TYPES.PREPARE_MEAL]: 'baking',
+    [TASK_TYPES.BAKING]: 'cooking',
+    [TASK_TYPES.PREPARE_MEAL]: 'cooking',
     [TASK_TYPES.SOW_CROP]: 'farming',
     [TASK_TYPES.HARVEST_CROP]: 'farming',
     [TASK_TYPES.TEND_ANIMALS]: 'farming',

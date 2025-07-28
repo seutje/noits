@@ -83,4 +83,27 @@ describe('TaskManager', () => {
         expect(settlerA.currentTask).toBeNull();
         expect(taskManager.tasks.length).toBe(0);
     });
+
+    test('removeTask deletes a task', () => {
+        const t1 = new Task(TASK_TYPES.HAUL, 1, 1);
+        const t2 = new Task(TASK_TYPES.BUILD, 2, 2);
+        taskManager.addTask(t1);
+        taskManager.addTask(t2);
+        taskManager.removeTask(t1);
+        expect(taskManager.tasks).not.toContain(t1);
+        expect(taskManager.tasks.length).toBe(1);
+    });
+
+    test('change listeners fire when tasks change', () => {
+        const t1 = new Task(TASK_TYPES.HAUL, 1, 1);
+        const listener = jest.fn();
+        taskManager.addChangeListener(listener);
+        taskManager.addTask(t1);
+        expect(listener).toHaveBeenCalledTimes(1);
+        taskManager.removeTask(t1);
+        expect(listener).toHaveBeenCalledTimes(2);
+        taskManager.removeChangeListener(listener);
+        taskManager.addTask(t1);
+        expect(listener).toHaveBeenCalledTimes(2);
+    });
 });

@@ -5,6 +5,7 @@ import { TASK_TYPES } from './constants.js';
 export default class TaskManager {
     constructor() {
         this.tasks = [];
+        this.changeListeners = [];
     }
 
     addTask(task) {
@@ -20,19 +21,24 @@ export default class TaskManager {
             }
         }
         this.tasks.splice(low, 0, task);
+        this.notifyChange();
     }
 
     getTask(filterFn = null) {
         if (filterFn) {
             for (let i = 0; i < this.tasks.length; i++) {
                 if (filterFn(this.tasks[i])) {
-                    return this.tasks.splice(i, 1)[0];
+                    const result = this.tasks.splice(i, 1)[0];
+                    this.notifyChange();
+                    return result;
                 }
             }
             return null;
         }
         if (this.tasks.length > 0) {
-            return this.tasks.shift(); // Get the first task in the queue
+            const result = this.tasks.shift(); // Get the first task in the queue
+            this.notifyChange();
+            return result;
         }
         return null;
     }
@@ -43,6 +49,7 @@ export default class TaskManager {
             if (settler.taskPriorities && settler.taskPriorities[task.type] > 0) {
                 if (!filterFn || filterFn(task)) {
                     this.tasks.splice(i, 1);
+                    this.notifyChange();
                     return task;
                 }
             }
@@ -51,6 +58,7 @@ export default class TaskManager {
     }
 
     assignTasks(settlers, filterFn = null) {
+        let changed = false;
         for (let i = 0; i < this.tasks.length; ) {
             const task = this.tasks[i];
             let bestSettler = null;
@@ -103,17 +111,40 @@ export default class TaskManager {
                 }
 
                 this.tasks.splice(i, 1);
+                changed = true;
                 debugLog(`${bestSettler.name} picked up task: ${task.type}`);
             } else {
                 i++;
             }
         }
+        if (changed) {
+            this.notifyChange();
+        }
     }
 
     // You might want more sophisticated methods later, like:
     // assignTask(settler) { ... }
-    // removeTask(task) { ... }
     // getTasksByType(type) { ... }
+
+    removeTask(task) {
+        const index = this.tasks.indexOf(task);
+        if (index !== -1) {
+            this.tasks.splice(index, 1);
+            this.notifyChange();
+        }
+    }
+
+    addChangeListener(listener) {
+        this.changeListeners.push(listener);
+    }
+
+    removeChangeListener(listener) {
+        this.changeListeners = this.changeListeners.filter(l => l !== listener);
+    }
+
+    notifyChange() {
+        this.changeListeners.forEach(listener => listener(this.tasks));
+    }
 
     hasTaskForTargetSettler(targetSettler) {
         return this.tasks.some(task => task.type === TASK_TYPES.TREATMENT && task.targetSettler === targetSettler);

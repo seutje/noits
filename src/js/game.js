@@ -498,6 +498,31 @@ export default class Game {
         }
     }
 
+    unassignTask(task) {
+        if (!task.assigned) return;
+        const settler = this.settlers.find(s => s.name === task.assigned);
+        if (settler && settler.currentTask === task) {
+            if (settler.currentBuilding && settler.currentBuilding === task.building) {
+                settler.currentBuilding.occupant = null;
+                settler.currentBuilding = null;
+            }
+            settler.currentTask = null;
+        }
+        if (task.building && task.building.occupant === settler) {
+            task.building.occupant = null;
+        }
+        task.assigned = null;
+        task.assignedSettler = null;
+        this.taskManager.notifyChange();
+        this.taskManager.assignTasks(
+            this.settlers,
+            (t, s) => !(
+                s.carrying &&
+                (t.type === TASK_TYPES.HAUL || GATHER_TASK_TYPES.has(t.type))
+            )
+        );
+    }
+
     saveGame() {
         const gameState = {
             settlers: this.settlers.map(settler => settler.serialize()),

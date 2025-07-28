@@ -17,7 +17,7 @@ describe('CraftingStation', () => {
         expect(craftingStation.type).toBe(BUILDING_TYPES.CRAFTING_STATION);
         expect(craftingStation.x).toBe(0);
         expect(craftingStation.y).toBe(0);
-        expect(craftingStation.recipes).toEqual([expect.any(Recipe)]);
+        expect(craftingStation.recipes).toEqual([expect.any(Recipe), expect.any(Recipe)]);
         expect(craftingStation.autoCraft).toBe(false);
         expect(craftingStation.desiredRecipe).toBe(null);
     });

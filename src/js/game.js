@@ -91,6 +91,7 @@ export default class Game {
                 ['mushroom', 'src/assets/mushroom.png'],
                 ['mushrooms', 'src/assets/mushrooms.png'],
                 [RESOURCE_TYPES.WOOD, 'src/assets/wood.png'],
+                [RESOURCE_TYPES.PLANK, 'src/assets/plank.png'],
                 ['stone_pile', 'src/assets/stone_pile.png'],
                 [RESOURCE_TYPES.BERRIES, 'src/assets/berries.png'],
                 [RESOURCE_TYPES.MEAT, 'src/assets/meat.png'],

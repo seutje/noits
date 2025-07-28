@@ -1,4 +1,4 @@
-import { debugLog } from './debug.js';
+import { debugLog, debugWarn } from './debug.js';
 export default class TradeManager {
     constructor(resourceManager, factions) {
         this.resourceManager = resourceManager;
@@ -13,7 +13,7 @@ export default class TradeManager {
     initiateTrade(factionId, offers) {
         const faction = this.factions[factionId];
         if (!faction) {
-            console.warn(`Faction ${factionId} not found.`);
+            debugWarn(`Faction ${factionId} not found.`);
             return;
         }
 

@@ -7,6 +7,7 @@ import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import Furniture from './furniture.js';
 import { BUILDING_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
+import { debugWarn } from './debug.js';
 
 export default class Map {
     constructor(width, height, tileSize, spriteManager) {
@@ -86,7 +87,7 @@ export default class Map {
             if (existing.type === resourcePile.type) {
                 existing.add(resourcePile.quantity);
             } else {
-                console.warn(`Tile ${resourcePile.x},${resourcePile.y} already has a pile.`);
+                debugWarn(`Tile ${resourcePile.x},${resourcePile.y} already has a pile.`);
                 return false;
             }
         } else {

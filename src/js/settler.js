@@ -1,4 +1,4 @@
-import { debugLog } from './debug.js';
+import { debugLog, debugWarn } from './debug.js';
 
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
@@ -72,7 +72,7 @@ export default class Settler {
             this.equippedArmor[armor.bodyPart] = armor;
             debugLog(`${this.name} equipped ${armor.name} on ${armor.bodyPart}.`);
         } else {
-            console.warn(`Armor ${armor.name} has no specified body part.`);
+            debugWarn(`Armor ${armor.name} has no specified body part.`);
         }
     }
 
@@ -995,7 +995,7 @@ export default class Settler {
                 debugLog(`${this.name} has died.`);
             }
         } else {
-            console.warn(`Invalid body part: ${bodyPart}`);
+            debugWarn(`Invalid body part: ${bodyPart}`);
         }
     }
 

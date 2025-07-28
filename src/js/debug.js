@@ -9,3 +9,9 @@ export function debugLog(...args) {
         console.log(...args);
     }
 }
+
+export function debugWarn(...args) {
+    if (debugMode) {
+        console.warn(...args);
+    }
+}

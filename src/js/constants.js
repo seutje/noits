@@ -11,6 +11,7 @@ export const BUILDING_TYPES = {
   FLOOR: 'floor',
   CRAFTING_STATION: 'crafting_station',
   OVEN: 'oven',
+  WELL: 'well',
   FARM_PLOT: 'farm_plot',
   ANIMAL_PEN: 'animal_pen',
   BARRICADE: 'barricade',
@@ -28,7 +29,8 @@ export const BUILDING_TYPE_PROPERTIES = {
   [BUILDING_TYPES.ANIMAL_PEN]: { passable: true },
   [BUILDING_TYPES.BARRICADE]: { passable: true },
   [BUILDING_TYPES.BED]: { passable: true },
-  [BUILDING_TYPES.TABLE]: { passable: true }
+  [BUILDING_TYPES.TABLE]: { passable: true },
+  [BUILDING_TYPES.WELL]: { passable: true }
 };
 
 // Resource types used throughout the game
@@ -46,7 +48,8 @@ export const RESOURCE_TYPES = {
   BANDAGE: 'bandage',
   PLANK: 'plank',
   BUCKET: 'bucket',
-  BLOCK: 'block'
+  BLOCK: 'block',
+  WATER: 'water'
 };
 
 // Categories assigned to each resource. Resources can belong to multiple
@@ -65,7 +68,8 @@ export const RESOURCE_CATEGORIES = {
   [RESOURCE_TYPES.BANDAGE]: ['medical'],
   [RESOURCE_TYPES.PLANK]: ['material'],
   [RESOURCE_TYPES.BUCKET]: ['material'],
-  [RESOURCE_TYPES.BLOCK]: ['material']
+  [RESOURCE_TYPES.BLOCK]: ['material'],
+  [RESOURCE_TYPES.WATER]: ['food']
 };
 
 // Hunger restored when consuming one unit of each food resource
@@ -74,7 +78,8 @@ export const FOOD_HUNGER_VALUES = {
   [RESOURCE_TYPES.BERRIES]: 10,
   [RESOURCE_TYPES.MUSHROOMS]: 8,
   [RESOURCE_TYPES.MEAT]: 30,
-  [RESOURCE_TYPES.BREAD]: 20
+  [RESOURCE_TYPES.BREAD]: 20,
+  [RESOURCE_TYPES.WATER]: 0
 };
 
 // Individual task type constants

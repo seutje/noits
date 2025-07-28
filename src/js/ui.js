@@ -401,6 +401,7 @@ export default class UI {
                 createButton('Build Floor', BUILDING_TYPES.FLOOR, false, 'Lays down a floor tile.');
                 createButton('Build Crafting Station', BUILDING_TYPES.CRAFTING_STATION, false, 'Allows settlers to craft items.');
                 createButton('Build Oven', BUILDING_TYPES.OVEN, false, 'Bakes bread from wheat.');
+                createButton('Build Well', BUILDING_TYPES.WELL, false, 'Provides water from buckets.');
                 createButton('Build Farm Plot', BUILDING_TYPES.FARM_PLOT, false, 'Used for growing crops.');
                 createButton('Build Animal Pen', BUILDING_TYPES.ANIMAL_PEN, false, 'Houses livestock.');
                 createButton('Build Barricade', BUILDING_TYPES.BARRICADE, false, 'A simple defensive barrier.');

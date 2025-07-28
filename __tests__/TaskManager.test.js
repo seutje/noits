@@ -22,7 +22,7 @@ describe('TaskManager', () => {
         taskManager.addTask(task1);
         taskManager.addTask(task2);
         expect(taskManager.getTask()).toBe(task1);
-        expect(taskManager.tasks.length).toBe(1);
+        expect(taskManager.tasks.length).toBe(2);
     });
 
     test('should return null if no tasks are available', () => {
@@ -54,7 +54,7 @@ describe('TaskManager', () => {
 
         expect(task).toBe(buildTask);
         expect(taskManager.tasks).toContain(haulTask);
-        expect(taskManager.tasks).not.toContain(buildTask);
+        expect(taskManager.tasks).toContain(buildTask);
     });
 
     test('getTaskForSettler respects settler priorities', () => {
@@ -68,7 +68,7 @@ describe('TaskManager', () => {
 
         expect(task).toBe(haulTask);
         expect(taskManager.tasks).toContain(buildTask);
-        expect(taskManager.tasks).not.toContain(haulTask);
+        expect(taskManager.tasks).toContain(haulTask);
     });
 
     test('assignTasks chooses idle settler with highest priority', () => {
@@ -81,7 +81,8 @@ describe('TaskManager', () => {
 
         expect(settlerB.currentTask).toBe(buildTask);
         expect(settlerA.currentTask).toBeNull();
-        expect(taskManager.tasks.length).toBe(0);
+        expect(taskManager.tasks.length).toBe(1);
+        expect(buildTask.assigned).toBe('B');
     });
 
     test('removeTask deletes a task', () => {

@@ -182,6 +182,11 @@ export default class UI {
         this.priorityButton.onclick = () => this.togglePriorityManager();
         this.buildMenu.appendChild(this.priorityButton);
 
+        this.taskManagerButton = document.createElement('button');
+        this.taskManagerButton.textContent = 'Task Manager';
+        this.taskManagerButton.onclick = () => this.toggleTaskManager();
+        this.buildMenu.appendChild(this.taskManagerButton);
+
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';
         const helpContent = document.createElement('div');
@@ -211,6 +216,16 @@ export default class UI {
             event.stopPropagation();
         });
         document.body.appendChild(this.priorityOverlay);
+
+        this.taskOverlay = document.createElement('div');
+        this.taskOverlay.id = 'task-overlay';
+        this.taskOverlay.addEventListener('mousedown', (event) => {
+            event.stopPropagation();
+        });
+        this.taskOverlay.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+        document.body.appendChild(this.taskOverlay);
 
         this.farmPlotMenu = document.createElement('div');
         this.farmPlotMenu.id = 'farm-plot-menu';
@@ -517,6 +532,40 @@ export default class UI {
             this.showPriorityManager();
         } else {
             this.hidePriorityManager();
+        }
+    }
+
+    showTaskManager() {
+        if (!this.gameInstance) return;
+        this.taskOverlay.innerHTML = '';
+        this.gameInstance.taskManager.tasks.forEach(task => {
+            const taskDiv = document.createElement('div');
+            taskDiv.textContent = task.type;
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Delete';
+            delBtn.onclick = () => {
+                this.gameInstance.taskManager.removeTask(task);
+                this.showTaskManager();
+            };
+            taskDiv.appendChild(delBtn);
+            this.taskOverlay.appendChild(taskDiv);
+        });
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Close';
+        closeBtn.onclick = () => this.hideTaskManager();
+        this.taskOverlay.appendChild(closeBtn);
+        this.taskOverlay.style.display = 'block';
+    }
+
+    hideTaskManager() {
+        this.taskOverlay.style.display = 'none';
+    }
+
+    toggleTaskManager() {
+        if (this.taskOverlay.style.display === 'none') {
+            this.showTaskManager();
+        } else {
+            this.hideTaskManager();
         }
     }
 

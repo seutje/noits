@@ -68,7 +68,8 @@ canvas {
 }
 
 #help-overlay,
-#priority-overlay {
+#priority-overlay,
+#task-overlay {
     position: absolute;
     top: 0;
     left: 0;

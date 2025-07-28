@@ -112,8 +112,14 @@ export default class TaskManager {
 
     // You might want more sophisticated methods later, like:
     // assignTask(settler) { ... }
-    // removeTask(task) { ... }
     // getTasksByType(type) { ... }
+
+    removeTask(task) {
+        const index = this.tasks.indexOf(task);
+        if (index !== -1) {
+            this.tasks.splice(index, 1);
+        }
+    }
 
     hasTaskForTargetSettler(targetSettler) {
         return this.tasks.some(task => task.type === TASK_TYPES.TREATMENT && task.targetSettler === targetSettler);

@@ -74,4 +74,31 @@ describe('UI tooltips', () => {
         ui.hideLoadingScreen();
         expect(ui.loadingScreen.style.display).toBe('none');
     });
+
+    test('task manager button is placed in build menu', () => {
+        const ui = new UI({});
+        expect(ui.taskManagerButton.parentElement).toBe(ui.buildMenu);
+    });
+
+    test('showTaskManager displays tasks and allows deletion', () => {
+        const ui = new UI({});
+        const task1 = { type: 'build' };
+        const task2 = { type: 'haul' };
+        const mockTaskManager = {
+            tasks: [task1, task2],
+            removeTask: jest.fn(function (task) {
+                const idx = this.tasks.indexOf(task);
+                if (idx !== -1) this.tasks.splice(idx, 1);
+            }),
+        };
+        const mockGame = { taskManager: mockTaskManager };
+        ui.setGameInstance(mockGame);
+        ui.showTaskManager();
+        expect(ui.taskOverlay.style.display).toBe('block');
+        const deleteButtons = ui.taskOverlay.querySelectorAll('button');
+        deleteButtons[0].dispatchEvent(new Event('click'));
+        expect(mockTaskManager.removeTask).toHaveBeenCalledWith(task1);
+        ui.hideTaskManager();
+        expect(ui.taskOverlay.style.display).toBe('none');
+    });
 });

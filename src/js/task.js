@@ -10,6 +10,7 @@ export default class Task {
         this.recipe = recipe; // For craft tasks
         this.assignedSettler = null;
         this.assigned = null; // identifier of the settler assigned to this task
+        this.paused = false; // when true, task will not be assigned
         this.craftingProgress = 0; // For craft tasks
         this.cropType = cropType; // For sow_crop tasks
         this.targetLocation = targetLocation; // For explore tasks
@@ -32,6 +33,7 @@ export default class Task {
             recipe: this.recipe ? { name: this.recipe.name } : null,
             assignedSettler: this.assignedSettler ? this.assignedSettler.name : null,
             assigned: this.assigned,
+            paused: this.paused,
             craftingProgress: this.craftingProgress,
             cropType: this.cropType,
             targetLocation: this.targetLocation ? { id: this.targetLocation.id } : null,
@@ -56,6 +58,7 @@ export default class Task {
         this.assignedSettler = data.assignedSettler; // Store raw data for now
         this.assigned = data.assigned || null;
         this.craftingProgress = data.craftingProgress;
+        this.paused = data.paused || false;
         this.cropType = data.cropType;
         this.targetLocation = data.targetLocation; // Store raw data for now
         this.carrying = data.carrying;

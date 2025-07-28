@@ -27,7 +27,7 @@ export default class TaskManager {
     getTask(filterFn = null) {
         for (let i = 0; i < this.tasks.length; i++) {
             const task = this.tasks[i];
-            if (task.assigned) continue;
+            if (task.assigned || task.paused) continue;
             if (!filterFn || filterFn(task)) {
                 return task;
             }
@@ -38,7 +38,7 @@ export default class TaskManager {
     getTaskForSettler(settler, filterFn = null) {
         for (let i = 0; i < this.tasks.length; i++) {
             const task = this.tasks[i];
-            if (task.assigned) continue;
+            if (task.assigned || task.paused) continue;
             if (settler.taskPriorities && settler.taskPriorities[task.type] > 0) {
                 if (!filterFn || filterFn(task)) {
                     return task;
@@ -52,7 +52,7 @@ export default class TaskManager {
         let changed = false;
         for (let i = 0; i < this.tasks.length; i++) {
             const task = this.tasks[i];
-            if (task.assigned) continue;
+            if (task.assigned || task.paused) continue;
             let bestSettler = null;
             let bestPriority = -1;
 

@@ -16,8 +16,18 @@ jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
 jest.mock('../src/js/building.js', () => {
-    return jest.fn().mockImplementation((type, x, y, width, height, material, buildProgress, resourcesRequired = 1) => {
-        return { type, x, y, width, height, material, buildProgress, resourcesRequired };
+    return jest.fn().mockImplementation((type, x, y, width, height, material, buildProgress, resourcesRequired = 1, constructionMaterials = null) => {
+        return {
+            type,
+            x,
+            y,
+            width,
+            height,
+            material,
+            buildProgress,
+            resourcesRequired,
+            constructionMaterials: constructionMaterials || { [material]: resourcesRequired },
+        };
     });
 });
 jest.mock('../src/js/task.js', () => {

@@ -15,7 +15,8 @@ export const BUILDING_TYPES = {
   ANIMAL_PEN: 'animal_pen',
   BARRICADE: 'barricade',
   BED: 'bed',
-  TABLE: 'table'
+  TABLE: 'table',
+  WELL: 'well'
 };
 
 // Properties for each building type
@@ -28,7 +29,8 @@ export const BUILDING_TYPE_PROPERTIES = {
   [BUILDING_TYPES.ANIMAL_PEN]: { passable: true },
   [BUILDING_TYPES.BARRICADE]: { passable: true },
   [BUILDING_TYPES.BED]: { passable: true },
-  [BUILDING_TYPES.TABLE]: { passable: true }
+  [BUILDING_TYPES.TABLE]: { passable: true },
+  [BUILDING_TYPES.WELL]: { passable: true }
 };
 
 // Resource types used throughout the game
@@ -46,7 +48,8 @@ export const RESOURCE_TYPES = {
   BANDAGE: 'bandage',
   PLANK: 'plank',
   BUCKET: 'bucket',
-  BLOCK: 'block'
+  BLOCK: 'block',
+  BUCKET_WATER: 'bucket_water'
 };
 
 // Categories assigned to each resource. Resources can belong to multiple
@@ -65,7 +68,8 @@ export const RESOURCE_CATEGORIES = {
   [RESOURCE_TYPES.BANDAGE]: ['medical'],
   [RESOURCE_TYPES.PLANK]: ['material'],
   [RESOURCE_TYPES.BUCKET]: ['material'],
-  [RESOURCE_TYPES.BLOCK]: ['material']
+  [RESOURCE_TYPES.BLOCK]: ['material'],
+  [RESOURCE_TYPES.BUCKET_WATER]: ['material']
 };
 
 // Hunger restored when consuming one unit of each food resource

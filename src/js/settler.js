@@ -270,8 +270,10 @@ export default class Settler {
                 const targetBuilding = (this.map.buildings || []).find(
                     b =>
                         b.buildProgress < 100 &&
-                        b.material === this.carrying.type &&
-                        b.resourcesDelivered < b.resourcesRequired,
+                        b.constructionMaterials &&
+                        b.constructionMaterials[this.carrying.type] &&
+                        b.getResourceQuantity(this.carrying.type) <
+                            b.constructionMaterials[this.carrying.type],
                 );
                 if (targetBuilding) {
                     const pos = this.map.findAdjacentFreeTile(
@@ -407,25 +409,25 @@ export default class Settler {
                         this.state = 'sleeping';
                     } else if (this.currentTask.type === TASK_TYPES.BUILD && this.currentTask.building) {
                         const building = this.currentTask.building;
-                        const material = building.material;
                         const consumptionRate = 0.1; // units of material per second
-                        const amountToConsume = consumptionRate * (deltaTime / 1000);
-    
+
                         if (building.resourcesDelivered < building.resourcesRequired) {
                             if (
                                 this.carrying &&
-                                this.carrying.type === material &&
+                                building.constructionMaterials[this.carrying.type] &&
                                 this.isAdjacentToBuilding(building)
                             ) {
-                                const needed = building.resourcesRequired - building.resourcesDelivered;
+                                const needed =
+                                    building.constructionMaterials[this.carrying.type] -
+                                    building.getResourceQuantity(this.carrying.type);
                                 const amountToDrop = Math.min(needed, this.carrying.quantity);
-                                building.addToInventory(material, amountToDrop);
+                                building.addToInventory(this.carrying.type, amountToDrop);
                                 this.carrying.quantity -= amountToDrop;
                                 if (this.carrying.quantity <= 0) this.carrying = null;
-                            } else if (building.getResourceQuantity(material) >= amountToConsume) {
-                                building.resourcesDelivered = building.getResourceQuantity(material);
+                            } else if (building.hasAllMaterials()) {
+                                // materials already delivered
                             } else {
-                                debugLog(`${this.name} needs ${material} delivered to build site.`);
+                                debugLog(`${this.name} needs materials delivered to build site.`);
                                 if (building.occupant === this) {
                                     building.occupant = null;
                                     this.currentBuilding = null;
@@ -435,7 +437,7 @@ export default class Settler {
                                 return;
                             }
                         }
-    
+
                         if (building.resourcesDelivered >= building.resourcesRequired) {
                             const workAmount = 1 * (deltaTime / 1000); // Amount of work done
                             building.buildProgress += workAmount; // Increase build progress

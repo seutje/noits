@@ -11,6 +11,7 @@ import TaskManager from './taskManager.js';
 import Building from './building.js';
 import CraftingStation from './craftingStation.js';
 import Oven from './oven.js';
+import Well from './well.js';
 import Task from './task.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
@@ -104,6 +105,8 @@ export default class Game {
                 [RESOURCE_TYPES.BREAD, 'src/assets/bread.png'],
                 [BUILDING_TYPES.TABLE, 'src/assets/table.png'],
                 [BUILDING_TYPES.BED, 'src/assets/bed.png'],
+                [BUILDING_TYPES.WELL, 'src/assets/well.png'],
+                [RESOURCE_TYPES.BUCKET_WATER, 'src/assets/bucket_water.png'],
                 ['wheat_1', 'src/assets/wheat_1.png'],
                 ['wheat_2', 'src/assets/wheat_2.png'],
                 ['wheat_3', 'src/assets/wheat_3.png'],
@@ -234,7 +237,8 @@ export default class Game {
             }
             if (
                 building.type === BUILDING_TYPES.CRAFTING_STATION ||
-                building.type === BUILDING_TYPES.OVEN
+                building.type === BUILDING_TYPES.OVEN ||
+                building.type === BUILDING_TYPES.WELL
             ) {
                 const station = building;
                 if (station.buildProgress === 100 && station.autoCraft && station.desiredRecipe) {
@@ -732,9 +736,10 @@ export default class Game {
             if (
                 clickedTile === 8 &&
                 this.selectedBuilding !== BUILDING_TYPES.FLOOR &&
+                this.selectedBuilding !== BUILDING_TYPES.WELL &&
                 (!existingBuilding || existingBuilding.type !== BUILDING_TYPES.FLOOR)
             ) {
-                debugLog('Cannot build here. Only floors can be built on water tiles.');
+                debugLog('Cannot build here. Only floors or wells can be built on water tiles.');
                 return;
             }
             // Place the selected building
@@ -751,6 +756,8 @@ export default class Game {
                 newBuilding = new Furniture(BUILDING_TYPES.TABLE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.OVEN) {
                 newBuilding = new Oven(tileX, tileY, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.WELL) {
+                newBuilding = new Well(tileX, tileY, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE) {
                 newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === BUILDING_TYPES.WALL) {
@@ -760,21 +767,23 @@ export default class Game {
             }
             this.map.addBuilding(newBuilding);
             // Hauling should happen before building starts if resources are needed
-            if (newBuilding.resourcesRequired > 0 && newBuilding.material) {
-                this.taskManager.addTask(
-                    // Start hauling to deliver materials to the new building
-                    // Initial target is the building site; Settler will search for
-                    // a resource pile when the task is picked up
-                    new Task(
-                        TASK_TYPES.HAUL,
-                        newBuilding.x,
-                        newBuilding.y,
-                        newBuilding.material,
-                        newBuilding.resourcesRequired,
-                        3,
-                        newBuilding
-                    )
-                );
+            if (newBuilding.constructionMaterials) {
+                for (const mat in newBuilding.constructionMaterials) {
+                    const qty = newBuilding.constructionMaterials[mat];
+                    if (qty > 0 && mat) {
+                        this.taskManager.addTask(
+                            new Task(
+                                TASK_TYPES.HAUL,
+                                newBuilding.x,
+                                newBuilding.y,
+                                mat,
+                                qty,
+                                3,
+                                newBuilding,
+                            ),
+                        );
+                    }
+                }
             }
             // Build task has lower priority so it begins once resources arrive (if any)
             const buildPos = this.map.findAdjacentFreeTile(tileX, tileY);
@@ -807,7 +816,8 @@ export default class Game {
                 if (clickedBuilding) {
                     if (
                         clickedBuilding.type === BUILDING_TYPES.CRAFTING_STATION ||
-                        clickedBuilding.type === BUILDING_TYPES.OVEN
+                        clickedBuilding.type === BUILDING_TYPES.OVEN ||
+                        clickedBuilding.type === BUILDING_TYPES.WELL
                     ) {
                         const craftingStation = clickedBuilding;
                         this.ui.showCraftingStationMenu(craftingStation, event.clientX, event.clientY);

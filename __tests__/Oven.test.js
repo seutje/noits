@@ -1,7 +1,7 @@
 import Oven from '../src/js/oven.js';
 import Recipe from '../src/js/recipe.js';
 import SpriteManager from '../src/js/spriteManager.js';
-import { BUILDING_TYPES } from '../src/js/constants.js';
+import { BUILDING_TYPES, RESOURCE_TYPES } from '../src/js/constants.js';
 
 jest.mock('../src/js/recipe.js');
 
@@ -15,5 +15,7 @@ describe('Oven', () => {
     test('should initialize with bread recipe', () => {
         expect(oven.type).toBe(BUILDING_TYPES.OVEN);
         expect(oven.recipes).toEqual([expect.any(Recipe)]);
+        expect(oven.material).toBe(RESOURCE_TYPES.STONE);
+        expect(oven.resourcesRequired).toBe(1);
     });
 });

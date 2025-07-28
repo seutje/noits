@@ -77,6 +77,7 @@ export const TASK_TYPES = {
   DIG_DIRT: 'dig_dirt',
   BUILD: 'build',
   CRAFT: 'craft',
+  BAKING: 'baking',
   SOW_CROP: 'sow_crop',
   HARVEST_CROP: 'harvest_crop',
   TEND_ANIMALS: 'tend_animals',

@@ -37,6 +37,7 @@ export default class Settler {
             mining: 1,
             building: 1,
             crafting: 1,
+            baking: 1,
             combat: 1,
             medical: 1
         };
@@ -363,7 +364,10 @@ export default class Settler {
                                 this.path = null; // Task completed
                             }
                         }
-                    } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
+                    } else if (
+                        (this.currentTask.type === TASK_TYPES.CRAFT || this.currentTask.type === TASK_TYPES.BAKING) &&
+                        this.currentTask.recipe
+                    ) {
                         const recipe = this.currentTask.recipe;
                         const station = this.currentTask.building;
 
@@ -760,9 +764,17 @@ export default class Settler {
     }
 
     calculateOutputQuality(baseQuality) {
-        // Simple quality calculation: baseQuality + (craftingSkill - 1) * 0.1
-        // This means a crafting skill of 1 gives baseQuality, 2 gives baseQuality + 0.1, etc.
-        const skillBonus = (this.skills.crafting - 1) * 0.1;
+        // Determine which skill to use for quality calculation
+        let skillLevel = this.skills.crafting;
+        if (
+            this.currentTask &&
+            this.currentTask.building &&
+            this.currentTask.building.type === BUILDING_TYPES.OVEN
+        ) {
+            skillLevel = this.skills.baking;
+        }
+        // Simple quality calculation: baseQuality + (skillLevel - 1) * 0.1
+        const skillBonus = (skillLevel - 1) * 0.1;
         let finalQuality = baseQuality + skillBonus;
         // Clamp quality between 0 and 2 (example range)
         if (finalQuality < 0) finalQuality = 0;

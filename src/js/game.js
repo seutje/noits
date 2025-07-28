@@ -465,27 +465,23 @@ export default class Game {
     }
 
     addCraftTask(craftingStation, recipe, quantity = 1) {
-        // Ensure required resources get delivered to the station
-        recipe.inputs.forEach(input => {
-            const existing = craftingStation.getResourceQuantity(input.resourceType);
-            const required = input.quantity * quantity;
-            const missing = required - existing;
-            if (missing > 0) {
+        // Queue hauling and crafting tasks individually so settlers
+        // only carry one set of inputs and craft one item at a time
+        for (let i = 0; i < quantity; i++) {
+            recipe.inputs.forEach(input => {
                 this.taskManager.addTask(
                     new Task(
                         TASK_TYPES.HAUL,
                         craftingStation.x,
                         craftingStation.y,
                         input.resourceType,
-                        missing,
+                        input.quantity,
                         3,
                         craftingStation,
                     ),
                 );
-            }
-        });
+            });
 
-        for (let i = 0; i < quantity; i++) {
             this.taskManager.addTask(
                 new Task(
                     TASK_TYPES.CRAFT,

@@ -2,7 +2,7 @@ import Map from '../src/js/map.js';
 import RoomManager from '../src/js/roomManager.js';
 import ResourcePile from '../src/js/resourcePile.js';
 import TaskManager from '../src/js/taskManager.js';
-import { TASK_TYPES } from '../src/js/constants.js';
+import { TASK_TYPES, RESOURCE_TYPES, FOOD_HUNGER_VALUES } from '../src/js/constants.js';
 
 describe('RoomManager storage rules', () => {
     test('should not allow multiple piles on the same storage tile', () => {
@@ -63,5 +63,20 @@ describe('RoomManager storage rules', () => {
         roomManager.assignHaulingTasksForDroppedPiles(settlers);
 
         expect(taskManager.tasks.length).toBe(0);
+    });
+
+    test('findHighestValueFoods returns top foods excluding meals', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const roomManager = new RoomManager(map, { getSprite: jest.fn() }, 32);
+        const room = roomManager.designateRoom(0, 0, 1, 1, 'storage');
+        room.storage[RESOURCE_TYPES.BERRIES] = 1; // value 10
+        room.storage[RESOURCE_TYPES.MEAT] = 1; // value 30
+        room.storage[RESOURCE_TYPES.BREAD] = 1; // value 20
+        room.storage[RESOURCE_TYPES.MEAL] = 1; // should be ignored
+
+        const foods = roomManager.findHighestValueFoods(2);
+        expect(foods.length).toBe(2);
+        expect(foods[0].type).toBe(RESOURCE_TYPES.MEAT);
+        expect(foods[1].type).toBe(RESOURCE_TYPES.BREAD);
     });
 });

@@ -399,6 +399,21 @@ describe('Game', () => {
         expect(game.taskManager.addTask).not.toHaveBeenCalled();
     });
 
+    test('addPrepareMealTask queues prepare meal task', () => {
+        const oven = { x: 1, y: 1, buildProgress: 100 };
+        game.addPrepareMealTask(oven);
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(1);
+        const task = game.taskManager.addTask.mock.calls[0][0];
+        expect(task.type).toBe(TASK_TYPES.PREPARE_MEAL);
+        expect(task.building).toBe(oven);
+    });
+
+    test('addPrepareMealTask does not queue when oven not built', () => {
+        const oven = { x: 1, y: 1, buildProgress: 20 };
+        game.addPrepareMealTask(oven);
+        expect(game.taskManager.addTask).not.toHaveBeenCalled();
+    });
+
     test('handleClick marks dead enemy for butchering', () => {
         game.map.tileSize = 32;
         const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);

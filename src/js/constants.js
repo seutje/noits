@@ -49,7 +49,8 @@ export const RESOURCE_TYPES = {
   PLANK: 'plank',
   BUCKET: 'bucket',
   BLOCK: 'block',
-  BUCKET_WATER: 'bucket_water'
+  BUCKET_WATER: 'bucket_water',
+  MEAL: 'meal'
 };
 
 // Categories assigned to each resource. Resources can belong to multiple
@@ -69,7 +70,8 @@ export const RESOURCE_CATEGORIES = {
   [RESOURCE_TYPES.PLANK]: ['material'],
   [RESOURCE_TYPES.BUCKET]: ['material'],
   [RESOURCE_TYPES.BLOCK]: ['material'],
-  [RESOURCE_TYPES.BUCKET_WATER]: ['material']
+  [RESOURCE_TYPES.BUCKET_WATER]: ['material'],
+  [RESOURCE_TYPES.MEAL]: ['food']
 };
 
 // Hunger restored when consuming one unit of each food resource
@@ -78,7 +80,8 @@ export const FOOD_HUNGER_VALUES = {
   [RESOURCE_TYPES.BERRIES]: 10,
   [RESOURCE_TYPES.MUSHROOMS]: 8,
   [RESOURCE_TYPES.MEAT]: 30,
-  [RESOURCE_TYPES.BREAD]: 20
+  [RESOURCE_TYPES.BREAD]: 20,
+  [RESOURCE_TYPES.MEAL]: 0
 };
 
 // Individual task type constants
@@ -93,6 +96,7 @@ export const TASK_TYPES = {
   BUILD: 'build',
   CRAFT: 'craft',
   BAKING: 'baking',
+  PREPARE_MEAL: 'prepare_meal',
   SOW_CROP: 'sow_crop',
   HARVEST_CROP: 'harvest_crop',
   TEND_ANIMALS: 'tend_animals',

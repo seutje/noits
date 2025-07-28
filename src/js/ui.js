@@ -323,6 +323,16 @@ export default class UI {
         };
         this.craftingStationMenu.appendChild(this.craftButton);
 
+        this.prepareMealButton = document.createElement('button');
+        this.prepareMealButton.textContent = 'Prepare Meal';
+        this.prepareMealButton.onclick = () => {
+            if (this.gameInstance && this.selectedCraftingStation) {
+                this.gameInstance.addPrepareMealTask(this.selectedCraftingStation);
+            }
+            this.hideCraftingStationMenu();
+        };
+        this.craftingStationMenu.appendChild(this.prepareMealButton);
+
         this.autoCraftCheckbox.addEventListener('change', () => {
             if (this.selectedCraftingStation) {
                 this.selectedCraftingStation.autoCraft = this.autoCraftCheckbox.checked;
@@ -636,6 +646,11 @@ export default class UI {
         this.recipeSelect.selectedIndex = 0;
         this.quantityInput.value = '1';
         this.autoCraftCheckbox.checked = station.autoCraft;
+        if (station.type === BUILDING_TYPES.OVEN) {
+            this.prepareMealButton.style.display = 'inline-block';
+        } else {
+            this.prepareMealButton.style.display = 'none';
+        }
         this.craftingStationMenu.style.left = `${screenX}px`;
         this.craftingStationMenu.style.top = `${screenY}px`;
         this.craftingStationMenu.style.display = 'block';

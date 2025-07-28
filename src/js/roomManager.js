@@ -1,7 +1,7 @@
 import { debugLog } from './debug.js';
 import ResourcePile from './resourcePile.js';
 import Task from './task.js';
-import { TASK_TYPES } from './constants.js';
+import { TASK_TYPES, FOOD_HUNGER_VALUES, RESOURCE_TYPES } from './constants.js';
 
 export default class RoomManager {
     constructor(map, spriteManager, tileSize, taskManager = null, settlers = []) {
@@ -172,6 +172,21 @@ export default class RoomManager {
         }
         console.warn(`Room ${room.id} is not a storage room.`);
         return false;
+    }
+
+    findHighestValueFoods(count = 2) {
+        const foods = [];
+        for (const room of this.rooms) {
+            if (room.type !== 'storage') continue;
+            for (const food in FOOD_HUNGER_VALUES) {
+                if (food === RESOURCE_TYPES.MEAL) continue;
+                if (room.storage[food] && room.storage[food] > 0) {
+                    foods.push({ room, type: food, value: FOOD_HUNGER_VALUES[food] });
+                }
+            }
+        }
+        foods.sort((a, b) => b.value - a.value);
+        return foods.slice(0, count);
     }
 
     assignHaulingTasksForDroppedPiles(settlers = this.settlers) {

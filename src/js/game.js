@@ -103,6 +103,7 @@ export default class Game {
                 [BUILDING_TYPES.CRAFTING_STATION, 'src/assets/crafting_station.png'],
                 [BUILDING_TYPES.OVEN, 'src/assets/oven.png'],
                 [RESOURCE_TYPES.BREAD, 'src/assets/bread.png'],
+                [RESOURCE_TYPES.MEAL, 'src/assets/meal.png'],
                 [BUILDING_TYPES.TABLE, 'src/assets/table.png'],
                 [BUILDING_TYPES.BED, 'src/assets/bed.png'],
                 [BUILDING_TYPES.WELL, 'src/assets/well.png'],
@@ -516,6 +517,21 @@ export default class Game {
                 ),
             );
         }
+    }
+
+    addPrepareMealTask(oven) {
+        if (oven.buildProgress < 100) return;
+        this.taskManager.addTask(
+            new Task(
+                TASK_TYPES.PREPARE_MEAL,
+                oven.x,
+                oven.y,
+                null,
+                0,
+                2,
+                oven,
+            ),
+        );
     }
 
     unassignTask(task) {

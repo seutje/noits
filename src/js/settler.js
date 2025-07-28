@@ -524,6 +524,56 @@ export default class Settler {
                             this.path = null;
                         }
                     } else if (
+                        this.currentTask.type === TASK_TYPES.PREPARE_MEAL &&
+                        this.currentTask.building
+                    ) {
+                        const oven = this.currentTask.building;
+                        if (oven.buildProgress < 100) return;
+                        if (oven.occupant && oven.occupant !== this) return;
+                        if (!oven.occupant) {
+                            oven.occupant = this;
+                            this.currentBuilding = oven;
+                        }
+                        if (!this.currentTask.ingredients) {
+                            const foods = this.roomManager.findHighestValueFoods(2);
+                            if (foods.length < 2) {
+                                debugLog(`${this.name} found insufficient food to prepare meal.`);
+                                this.currentTask = null;
+                                this.path = null;
+                                if (oven.occupant === this) {
+                                    oven.occupant = null;
+                                    this.currentBuilding = null;
+                                }
+                                return;
+                            }
+                            foods.forEach(f => {
+                                this.roomManager.removeResourceFromStorage(f.room, f.type, 1);
+                            });
+                            this.currentTask.ingredients = foods;
+                            this.currentTask.hungerValue = foods[0].value + foods[1].value;
+                        }
+
+                        this.currentTask.craftingProgress = (this.currentTask.craftingProgress || 0) + (deltaTime / 1000);
+                        if (this.currentTask.craftingProgress >= 2) {
+                            const pile = new ResourcePile(
+                                RESOURCE_TYPES.MEAL,
+                                1,
+                                oven.x,
+                                oven.y,
+                                this.map.tileSize,
+                                this.spriteManager,
+                            );
+                            pile.hungerRestoration = this.currentTask.hungerValue;
+                            this.map.addResourcePile(pile);
+                            debugLog(`${this.name} prepared a meal.`);
+                            if (oven.occupant === this) {
+                                oven.occupant = null;
+                                this.currentBuilding = null;
+                            }
+                            this.currentTask = null;
+                            this.path = null;
+                        }
+                    } else if (
                         this.currentTask.type === TASK_TYPES.MINE_STONE ||
                         this.currentTask.type === TASK_TYPES.MINE_IRON_ORE ||
                         this.currentTask.type === TASK_TYPES.DIG_DIRT

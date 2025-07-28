@@ -534,23 +534,21 @@ export default class Settler {
                             oven.occupant = this;
                             this.currentBuilding = oven;
                         }
-                        if (!this.currentTask.ingredients) {
-                            const foods = this.roomManager.findHighestValueFoods(2);
-                            if (foods.length < 2) {
-                                debugLog(`${this.name} found insufficient food to prepare meal.`);
-                                this.currentTask = null;
-                                this.path = null;
-                                if (oven.occupant === this) {
-                                    oven.occupant = null;
-                                    this.currentBuilding = null;
-                                }
-                                return;
-                            }
-                            foods.forEach(f => {
-                                this.roomManager.removeResourceFromStorage(f.room, f.type, 1);
+                        if (!this.currentTask.ingredients) return; // Should be set when task was created
+
+                        const ready = this.currentTask.ingredients.every(
+                            type => oven.getResourceQuantity(type) >= 1,
+                        );
+                        if (!ready) {
+                            debugLog(`${this.name} is waiting for ingredients to prepare meal.`);
+                            return;
+                        }
+
+                        if (!this.currentTask.inputsConsumed) {
+                            this.currentTask.ingredients.forEach(type => {
+                                oven.removeFromInventory(type, 1);
                             });
-                            this.currentTask.ingredients = foods;
-                            this.currentTask.hungerValue = foods[0].value + foods[1].value;
+                            this.currentTask.inputsConsumed = true;
                         }
 
                         this.currentTask.craftingProgress = (this.currentTask.craftingProgress || 0) + (deltaTime / 1000);
@@ -708,6 +706,10 @@ export default class Settler {
                                     if (pile.quantity <= 0) {
                                         this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                                     }
+                                    const room = this.roomManager.getRoomAt(pile.x, pile.y);
+                                    if (room && room.type === "storage") {
+                                        room.storage[pile.type] -= this.currentTask.quantity;
+                                    }
                                     this.pickUpPile(
                                         this.currentTask.resourceType,
                                         this.currentTask.quantity,
@@ -742,6 +744,10 @@ export default class Settler {
                             if (pile && pile.remove(this.currentTask.quantity)) {
                                 if (pile.quantity <= 0) {
                                     this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                                }
+                                const room = this.roomManager.getRoomAt(pile.x, pile.y);
+                                if (room && room.type === "storage") {
+                                    room.storage[pile.type] -= this.currentTask.quantity;
                                 }
                                 this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
                                 this.currentTask.resource = this.carrying;

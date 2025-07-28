@@ -521,17 +521,35 @@ export default class Game {
 
     addPrepareMealTask(oven) {
         if (oven.buildProgress < 100) return;
-        this.taskManager.addTask(
-            new Task(
-                TASK_TYPES.PREPARE_MEAL,
-                oven.x,
-                oven.y,
-                null,
-                0,
-                2,
-                oven,
-            ),
+        const foods = this.roomManager.findHighestValueFoods(2);
+        if (foods.length < 2) return;
+
+        foods.forEach(food => {
+            this.taskManager.addTask(
+                new Task(
+                    TASK_TYPES.HAUL,
+                    oven.x,
+                    oven.y,
+                    food.type,
+                    1,
+                    3,
+                    oven,
+                ),
+            );
+        });
+
+        const mealTask = new Task(
+            TASK_TYPES.PREPARE_MEAL,
+            oven.x,
+            oven.y,
+            null,
+            0,
+            2,
+            oven,
         );
+        mealTask.ingredients = foods.map(f => f.type);
+        mealTask.hungerValue = foods.reduce((sum, f) => sum + f.value, 0);
+        this.taskManager.addTask(mealTask);
     }
 
     unassignTask(task) {

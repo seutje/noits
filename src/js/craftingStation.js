@@ -13,7 +13,23 @@ export default class CraftingStation extends Building {
         this.autoCraft = false;
         this.desiredRecipe = null;
 
-        // Default recipe: Bandage from cotton
+        // 2 planks from 1 wood
+        this.addRecipe(
+            new Recipe(
+                "plank",
+                [{ resourceType: RESOURCE_TYPES.WOOD, quantity: 1 }],
+                [
+                    {
+                        resourceType: RESOURCE_TYPES.PLANK,
+                        quantity: 2,
+                        quality: 1,
+                    },
+                ],
+                2,
+            ),
+        );
+
+        // 1 bandage from 1 cotton
         this.addRecipe(
             new Recipe(
                 "bandage",
@@ -26,22 +42,6 @@ export default class CraftingStation extends Building {
                     },
                 ],
                 3,
-            ),
-        );
-
-        // New recipe: Plank from wood
-        this.addRecipe(
-            new Recipe(
-                "plank",
-                [{ resourceType: RESOURCE_TYPES.WOOD, quantity: 1 }],
-                [
-                    {
-                        resourceType: RESOURCE_TYPES.PLANK,
-                        quantity: 1,
-                        quality: 1,
-                    },
-                ],
-                2,
             ),
         );
 

@@ -189,6 +189,7 @@ export default class UI {
 
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';
+        this.helpOverlay.style.display = 'none';
         const helpContent = document.createElement('div');
         helpContent.innerHTML = `
             <h2>How to Play</h2>
@@ -208,6 +209,7 @@ export default class UI {
 
         this.priorityOverlay = document.createElement('div');
         this.priorityOverlay.id = 'priority-overlay';
+        this.priorityOverlay.style.display = 'none';
         // Prevent clicks inside the overlay from reaching the game canvas
         this.priorityOverlay.addEventListener('mousedown', (event) => {
             event.stopPropagation();
@@ -219,6 +221,7 @@ export default class UI {
 
         this.taskOverlay = document.createElement('div');
         this.taskOverlay.id = 'task-overlay';
+        this.taskOverlay.style.display = 'none';
         this.taskOverlay.addEventListener('mousedown', (event) => {
             event.stopPropagation();
         });

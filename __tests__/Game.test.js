@@ -16,9 +16,33 @@ jest.mock('../src/js/resourceManager.js');
 jest.mock('../src/js/settler.js');
 jest.mock('../src/js/taskManager.js');
 jest.mock('../src/js/building.js', () => {
-    return jest.fn().mockImplementation((type, x, y, width, height, material, buildProgress, resourcesRequired = 1) => {
-        return { type, x, y, width, height, material, buildProgress, resourcesRequired };
+    return jest.fn().mockImplementation((type, x, y, width, height, material, buildProgress, resourcesRequired = 1, constructionMaterials = null) => {
+        return {
+            type,
+            x,
+            y,
+            width,
+            height,
+            material,
+            buildProgress,
+            resourcesRequired,
+            constructionMaterials: constructionMaterials || { [material]: resourcesRequired },
+        };
     });
+});
+jest.mock('../src/js/well.js', () => {
+    const { BUILDING_TYPES } = require('../src/js/constants.js');
+    return jest.fn().mockImplementation((x, y) => ({
+        type: BUILDING_TYPES.WELL,
+        x,
+        y,
+        width: 1,
+        height: 1,
+        material: 'plank',
+        buildProgress: 0,
+        constructionMaterials: { plank: 1, stone: 1, bucket: 1 },
+        resourcesRequired: 3,
+    }));
 });
 jest.mock('../src/js/task.js', () => {
     return jest.fn().mockImplementation((type, targetX, targetY, resourceType, quantity, priority, building, recipe, cropType, targetLocation, carrying, targetSettler, targetEnemy) => {
@@ -206,6 +230,31 @@ describe('Game', () => {
         game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
 
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
+    });
+
+    test('handleClick should allow well building on water tile', () => {
+        const expectedTileX = Math.floor(
+            ((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) /
+                game.map.tileSize,
+        );
+        const expectedTileY = Math.floor(
+            ((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) /
+                game.map.tileSize,
+        );
+        game.map.getTile.mockReturnValue(8); // Water tile
+        game.map.findAdjacentFreeTile = jest.fn().mockReturnValue({ x: expectedTileX + 1, y: expectedTileY });
+        game.toggleBuildMode(BUILDING_TYPES.WELL);
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+
+        expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
+    });
+
+    test('handleClick should not allow well building on land tile', () => {
+        game.map.getTile.mockReturnValue(0); // Grass tile
+        game.toggleBuildMode(BUILDING_TYPES.WELL);
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+
+        expect(game.map.addBuilding).not.toHaveBeenCalled();
     });
 
     test('handleClick should allow building on floor over water tile', () => {

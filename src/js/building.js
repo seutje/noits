@@ -2,7 +2,17 @@ import ResourcePile from './resourcePile.js';
 import { RESOURCE_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
 
 export default class Building {
-    constructor(type, x, y, width, height, material, buildProgress, resourcesRequired = 1) {
+    constructor(
+        type,
+        x,
+        y,
+        width,
+        height,
+        material,
+        buildProgress,
+        resourcesRequired = 1,
+        constructionMaterials = null,
+    ) {
         this.type = type; // e.g., "wall", "floor", "house"
         this.x = x;
         this.y = y;
@@ -15,7 +25,12 @@ export default class Building {
         this.passable = BUILDING_TYPE_PROPERTIES[this.type]?.passable ?? true;
 
         // New properties for resource delivery
-        this.resourcesRequired = resourcesRequired;
+        this.constructionMaterials =
+            constructionMaterials || { [material]: resourcesRequired };
+        this.resourcesRequired = Object.values(this.constructionMaterials).reduce(
+            (a, b) => a + b,
+            0,
+        );
         this.resourcesDelivered = 0;
 
         // Inventory to hold delivered materials
@@ -28,25 +43,42 @@ export default class Building {
         this.spriteManager = null;
     }
 
+    updateResourcesDelivered() {
+        let total = 0;
+        for (const mat in this.constructionMaterials) {
+            const delivered = Math.min(
+                this.inventory[mat] || 0,
+                this.constructionMaterials[mat],
+            );
+            total += delivered;
+        }
+        this.resourcesDelivered = total;
+    }
+
     addToInventory(type, quantity) {
         if (!this.inventory[type]) {
             this.inventory[type] = 0;
         }
         this.inventory[type] += quantity;
-        if (type === this.material) {
-            this.resourcesDelivered = this.inventory[type];
-        }
+        this.updateResourcesDelivered();
     }
 
     removeFromInventory(type, quantity) {
         if (this.inventory[type] && this.inventory[type] >= quantity) {
             this.inventory[type] -= quantity;
-            if (type === this.material) {
-                this.resourcesDelivered = this.inventory[type];
-            }
+            this.updateResourcesDelivered();
             return true;
         }
         return false;
+    }
+
+    hasAllMaterials() {
+        for (const mat in this.constructionMaterials) {
+            if ((this.inventory[mat] || 0) < this.constructionMaterials[mat]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     getResourceQuantity(type) {
@@ -115,6 +147,7 @@ export default class Building {
             buildProgress: this.buildProgress,
             resourcesRequired: this.resourcesRequired,
             resourcesDelivered: this.resourcesDelivered,
+            constructionMaterials: this.constructionMaterials,
             maxHealth: this.maxHealth,
             health: this.health,
             inventory: this.inventory,
@@ -130,11 +163,18 @@ export default class Building {
         this.height = data.height;
         this.material = data.material;
         this.buildProgress = data.buildProgress;
-        this.resourcesRequired = data.resourcesRequired ?? 10;
+        this.constructionMaterials = data.constructionMaterials || {
+            [this.material]: data.resourcesRequired ?? 1,
+        };
+        this.resourcesRequired = Object.values(this.constructionMaterials).reduce(
+            (a, b) => a + b,
+            0,
+        );
         this.resourcesDelivered = data.resourcesDelivered ?? 0;
         this.maxHealth = data.maxHealth;
         this.health = data.health;
         this.inventory = data.inventory || {};
         this.passable = data.passable ?? BUILDING_TYPE_PROPERTIES[this.type]?.passable ?? true;
+        this.updateResourcesDelivered();
     }
 }

@@ -4,8 +4,18 @@ import Recipe from './recipe.js';
 import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
 
 export default class CraftingStation extends Building {
-    constructor(x, y, spriteManager = null) {
-        super(BUILDING_TYPES.CRAFTING_STATION, x, y, 1, 1, RESOURCE_TYPES.WOOD, 0);
+    constructor(x, y, spriteManager = null, constructionMaterials = null) {
+        super(
+            BUILDING_TYPES.CRAFTING_STATION,
+            x,
+            y,
+            1,
+            1,
+            RESOURCE_TYPES.WOOD,
+            0,
+            1,
+            constructionMaterials,
+        );
         this.drawBase = false;
         this.spriteManager = spriteManager;
         this.stationSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.CRAFTING_STATION) : null;

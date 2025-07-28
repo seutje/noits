@@ -1,6 +1,6 @@
 import Settler from '../src/js/settler.js';
 import Task from '../src/js/task.js';
-import { TASK_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES } from '../src/js/constants.js';
+import { TASK_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES, FOOD_HUNGER_VALUES, RESOURCE_TYPES } from '../src/js/constants.js';
 import ResourcePile from '../src/js/resourcePile.js';
 
 jest.mock('../src/js/resourceManager.js');
@@ -372,7 +372,8 @@ describe('Settler', () => {
 
         expect(mockRoomManager.removeResourceFromStorage).toHaveBeenCalledWith(storageRoom, 'berries', 1);
         expect(settler.state).toBe('idle');
-        expect(settler.hunger).toBeGreaterThan(10);
+        const expectedHunger = 10 - 0.01 + FOOD_HUNGER_VALUES[RESOURCE_TYPES.BERRIES];
+        expect(settler.hunger).toBeCloseTo(expectedHunger, 2);
     });
 
     test('should butcher dead enemy', () => {

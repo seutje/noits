@@ -49,7 +49,8 @@ export default class ResourceManager {
                 resourceData.type,
                 resourceData.quantity,
                 resourceData.quality,
-                resourceData.categories
+                resourceData.categories,
+                resourceData.hungerRestoration
             );
             this.resources[type] = resource;
         }

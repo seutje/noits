@@ -2,6 +2,24 @@ import { debugLog } from './debug.js';
 import Task from './task.js';
 import { TASK_TYPES } from './constants.js';
 
+// Map task types to the settler skill that should be considered when assigning
+// that task. Only tasks that benefit from a particular skill are listed.
+export const TASK_SKILL_MAP = {
+    [TASK_TYPES.BUILD]: 'building',
+    [TASK_TYPES.CRAFT]: 'crafting',
+    [TASK_TYPES.BAKING]: 'baking',
+    [TASK_TYPES.SOW_CROP]: 'farming',
+    [TASK_TYPES.HARVEST_CROP]: 'farming',
+    [TASK_TYPES.TEND_ANIMALS]: 'farming',
+    [TASK_TYPES.CHOP_WOOD]: 'farming',
+    [TASK_TYPES.MINE_STONE]: 'mining',
+    [TASK_TYPES.MINE_IRON_ORE]: 'mining',
+    [TASK_TYPES.DIG_DIRT]: 'mining',
+    [TASK_TYPES.BUTCHER]: 'farming',
+    [TASK_TYPES.TREATMENT]: 'medical',
+    [TASK_TYPES.HUNT_ANIMAL]: 'combat',
+};
+
 export default class TaskManager {
     constructor() {
         this.tasks = [];
@@ -55,6 +73,8 @@ export default class TaskManager {
             if (task.assigned || task.paused) continue;
             let bestSettler = null;
             let bestPriority = -1;
+            let bestSkill = -1;
+            let bestDistance = Infinity;
 
             settlers.forEach(settler => {
                 if (settler.currentTask) return;
@@ -66,16 +86,27 @@ export default class TaskManager {
                 const isSelfTreatment = task.type === TASK_TYPES.TREATMENT && task.targetSettler === settler;
                 if (settler.state !== 'idle' && !(isSelfTreatment && settler.state === 'seeking_treatment')) return;
 
-                const basePriority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
-                if (basePriority <= 0 || (filterFn && !filterFn(task, settler))) return;
+                const taskPriority = settler.taskPriorities ? settler.taskPriorities[task.type] : 0;
+                if (taskPriority <= 0 || (filterFn && !filterFn(task, settler))) return;
 
-                let priority = basePriority;
-                if (task.building && settler.x === task.building.x && settler.y === task.building.y) {
-                    priority += 0.1; // prefer settlers already at location
+                const skillName = TASK_SKILL_MAP[task.type];
+                const skillLevel = skillName ? ((settler.skills && settler.skills[skillName]) || 0) : 0;
+
+                let distance = Infinity;
+                if (task.building) {
+                    distance = Math.abs(settler.x - task.building.x) + Math.abs(settler.y - task.building.y);
+                } else if (typeof task.targetX === 'number' && typeof task.targetY === 'number') {
+                    distance = Math.abs(settler.x - task.targetX) + Math.abs(settler.y - task.targetY);
                 }
 
-                if (priority > bestPriority) {
-                    bestPriority = priority;
+                if (
+                    taskPriority > bestPriority ||
+                    (taskPriority === bestPriority && skillLevel > bestSkill) ||
+                    (taskPriority === bestPriority && skillLevel === bestSkill && distance < bestDistance)
+                ) {
+                    bestPriority = taskPriority;
+                    bestSkill = skillLevel;
+                    bestDistance = distance;
                     bestSettler = settler;
                 }
             });

@@ -72,8 +72,8 @@ describe('TaskManager', () => {
     });
 
     test('assignTasks chooses idle settler with highest priority', () => {
-        const settlerA = { name: 'A', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 2 } };
-        const settlerB = { name: 'B', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 5 } };
+        const settlerA = { name: 'A', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 2 }, skills: { building: 1 } };
+        const settlerB = { name: 'B', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 5 }, skills: { building: 1 } };
         const buildTask = new Task(TASK_TYPES.BUILD, 1, 1);
         taskManager.addTask(buildTask);
 
@@ -83,6 +83,30 @@ describe('TaskManager', () => {
         expect(settlerA.currentTask).toBeNull();
         expect(taskManager.tasks.length).toBe(1);
         expect(buildTask.assigned).toBe('B');
+    });
+
+    test('assignTasks uses settler skill when priorities equal', () => {
+        const settlerA = { name: 'A', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 5 }, skills: { building: 1 } };
+        const settlerB = { name: 'B', state: 'idle', currentTask: null, taskPriorities: { [TASK_TYPES.BUILD]: 5 }, skills: { building: 3 } };
+        const buildTask = new Task(TASK_TYPES.BUILD, 1, 1);
+        taskManager.addTask(buildTask);
+
+        taskManager.assignTasks([settlerA, settlerB]);
+
+        expect(settlerB.currentTask).toBe(buildTask);
+        expect(settlerA.currentTask).toBeNull();
+    });
+
+    test('assignTasks uses proximity when priority and skill equal', () => {
+        const settlerA = { name: 'A', state: 'idle', currentTask: null, x: 5, y: 5, taskPriorities: { [TASK_TYPES.BUILD]: 5 }, skills: { building: 1 } };
+        const settlerB = { name: 'B', state: 'idle', currentTask: null, x: 1, y: 1, taskPriorities: { [TASK_TYPES.BUILD]: 5 }, skills: { building: 1 } };
+        const buildTask = new Task(TASK_TYPES.BUILD, 0, 0);
+        taskManager.addTask(buildTask);
+
+        taskManager.assignTasks([settlerA, settlerB]);
+
+        expect(settlerB.currentTask).toBe(buildTask);
+        expect(settlerA.currentTask).toBeNull();
     });
 
     test('removeTask deletes a task', () => {

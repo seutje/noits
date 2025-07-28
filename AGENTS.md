@@ -10,6 +10,7 @@ This document provides instructions for AI agents contributing to the developmen
   * **Purpose:** This allows the user to review, test, and provide feedback on incremental progress.  
   * **Message Content:** Clearly state which task has been completed, a brief summary of the implemented functionality, and confirm that the changes are committed.  
   * **Example:** "Task 1.1 (Initialize HTML5 Canvas and JavaScript environment) is complete and committed. The index.html now sets up the canvas. Please review and test."
+* **Documentation:** When creating new features or adding crafting recipes, also update the README.md accordingly.
 
 ## **2\. Project Structure & Execution**
 

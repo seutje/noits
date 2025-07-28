@@ -110,46 +110,12 @@ export default class UI {
         this.buildMenuContent.id = 'build-menu-content';
         this.buildMenu.appendChild(this.buildMenuContent);
 
+        this.devMenu = document.createElement('div');
+        this.devMenu.id = 'dev-menu-content';
+        this.buildMenu.appendChild(this.devMenu);
+
         this.createBuildMenuTabs();
         this.showBuildCategory('buildings'); // Default category
-
-        const exploreButton = document.createElement('button');
-        exploreButton.textContent = 'Explore';
-        exploreButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.startExploration();
-            }
-        };
-        this.buildMenu.appendChild(exploreButton);
-
-        const merchantButton = document.createElement('button');
-        merchantButton.textContent = 'Traveling Merchant';
-        merchantButton.onclick = (event) => {
-            event.stopPropagation();
-            if (this.gameInstance) {
-                this.gameInstance.spawnTravelingMerchant();
-            }
-        };
-        this.buildMenu.appendChild(merchantButton);
-
-        const addBandageButton = document.createElement('button');
-        addBandageButton.textContent = 'Add Bandage';
-        addBandageButton.onclick = () => {
-            if (this.gameInstance) {
-                this.gameInstance.resourceManager.addResource(RESOURCE_TYPES.BANDAGE, 1);
-            }
-        };
-        this.buildMenu.appendChild(addBandageButton);
-
-        const injureSettlerButton = document.createElement('button');
-        injureSettlerButton.textContent = 'Injure Settler';
-        injureSettlerButton.onclick = () => {
-            if (this.gameInstance && this.gameInstance.settlers.length > 0) {
-                this.gameInstance.settlers[0].takeDamage('torso', 20, true);
-            }
-        };
-        this.buildMenu.appendChild(injureSettlerButton);
 
         const saveGameButton = document.createElement('button');
         saveGameButton.textContent = 'Save Game';
@@ -159,7 +125,7 @@ export default class UI {
                 this.gameInstance.saveGame();
             }
         };
-        this.buildMenu.appendChild(saveGameButton);
+        this.devMenu.appendChild(saveGameButton);
 
         const loadGameButton = document.createElement('button');
         loadGameButton.textContent = 'Load Game';
@@ -169,7 +135,7 @@ export default class UI {
                 this.gameInstance.loadGame();
             }
         };
-        this.buildMenu.appendChild(loadGameButton);
+        this.devMenu.appendChild(loadGameButton);
 
         // Help button
         this.helpButton = document.createElement('button');
@@ -180,12 +146,12 @@ export default class UI {
         this.priorityButton = document.createElement('button');
         this.priorityButton.textContent = 'Task Priorities';
         this.priorityButton.onclick = () => this.togglePriorityManager();
-        this.buildMenu.appendChild(this.priorityButton);
+        this.devMenu.appendChild(this.priorityButton);
 
         this.taskManagerButton = document.createElement('button');
         this.taskManagerButton.textContent = 'Task Manager';
         this.taskManagerButton.onclick = () => this.toggleTaskManager();
-        this.buildMenu.appendChild(this.taskManagerButton);
+        this.devMenu.appendChild(this.taskManagerButton);
 
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';

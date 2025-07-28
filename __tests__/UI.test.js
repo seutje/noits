@@ -34,7 +34,7 @@ describe('UI tooltips', () => {
 
     test('priority button is placed in build menu', () => {
         const ui = new UI({});
-        expect(ui.priorityButton.parentElement).toBe(ui.buildMenu);
+        expect(ui.priorityButton.parentElement).toBe(ui.devMenu);
     });
 
     test('farm plot menu shows with correct controls', () => {
@@ -77,7 +77,7 @@ describe('UI tooltips', () => {
 
     test('task manager button is placed in build menu', () => {
         const ui = new UI({});
-        expect(ui.taskManagerButton.parentElement).toBe(ui.buildMenu);
+        expect(ui.taskManagerButton.parentElement).toBe(ui.devMenu);
     });
 
     test('showTaskManager displays tasks and allows deletion', () => {

@@ -66,6 +66,15 @@ export const RESOURCE_CATEGORIES = {
   [RESOURCE_TYPES.BLOCK]: ['material']
 };
 
+// Hunger restored when consuming one unit of each food resource
+export const FOOD_HUNGER_VALUES = {
+  [RESOURCE_TYPES.WHEAT]: 5,
+  [RESOURCE_TYPES.BERRIES]: 10,
+  [RESOURCE_TYPES.MUSHROOMS]: 8,
+  [RESOURCE_TYPES.MEAT]: 30,
+  [RESOURCE_TYPES.BREAD]: 20
+};
+
 // Individual task type constants
 export const TASK_TYPES = {
   CHOP_WOOD: 'chop_wood',

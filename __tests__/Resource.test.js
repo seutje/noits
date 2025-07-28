@@ -42,4 +42,11 @@ describe('Resource', () => {
         expect(custom.categories).toContain('material');
         expect(custom.categories).toContain('food');
     });
+
+    test('food resources should set hungerRestoration', () => {
+        const berries = new Resource('berries', 5);
+        expect(berries.hungerRestoration).toBeGreaterThan(0);
+        const wood = new Resource('wood', 5);
+        expect(wood.hungerRestoration).toBe(0);
+    });
 });

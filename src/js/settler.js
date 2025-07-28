@@ -3,7 +3,7 @@ import { debugLog } from './debug.js';
 import Task from './task.js';
 import ResourcePile from './resourcePile.js';
 import { findPath } from './pathfinding.js';
-import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES } from './constants.js';
+import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES, FOOD_HUNGER_VALUES } from './constants.js';
 
 export default class Settler {
     constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
@@ -533,7 +533,7 @@ export default class Settler {
                     } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
                         const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                         if (room && room.type === "storage" && this.roomManager.removeResourceFromStorage(room, this.currentTask.foodType, 1)) {
-                            this.hunger += 30;
+                            this.hunger += FOOD_HUNGER_VALUES[this.currentTask.foodType] ?? 0;
                             if (this.hunger > 100) this.hunger = 100;
                             this.state = "idle";
                             debugLog(`${this.name} ate ${this.currentTask.foodType} from storage.`);

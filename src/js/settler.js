@@ -531,29 +531,39 @@ export default class Settler {
                         if (oven.buildProgress < 100) return;
                         if (!this.currentTask.ingredients) return; // Should be set when task was created
 
-                        const ready = this.currentTask.ingredients.every(
-                            type => oven.getResourceQuantity(type) >= 1,
-                        );
-                        if (!ready) {
-                            if (oven.occupant === this) {
-                                oven.occupant = null;
-                                this.currentBuilding = null;
-                            }
-                            debugLog(`${this.name} is waiting for ingredients to prepare meal.`);
-                            return;
-                        }
-
-                        if (oven.occupant && oven.occupant !== this) return;
-                        if (!oven.occupant) {
-                            oven.occupant = this;
-                            this.currentBuilding = oven;
-                        }
-
                         if (!this.currentTask.inputsConsumed) {
+                            const ingredientCounts = {};
+                            for (const type of this.currentTask.ingredients) {
+                                ingredientCounts[type] = (ingredientCounts[type] || 0) + 1;
+                            }
+                            const ready = Object.entries(ingredientCounts).every(
+                                ([type, count]) => oven.getResourceQuantity(type) >= count,
+                            );
+                            if (!ready) {
+                                if (oven.occupant === this) {
+                                    oven.occupant = null;
+                                    this.currentBuilding = null;
+                                }
+                                debugLog(`${this.name} is waiting for ingredients to prepare meal.`);
+                                return;
+                            }
+
+                            if (oven.occupant && oven.occupant !== this) return;
+                            if (!oven.occupant) {
+                                oven.occupant = this;
+                                this.currentBuilding = oven;
+                            }
+
                             this.currentTask.ingredients.forEach(type => {
                                 oven.removeFromInventory(type, 1);
                             });
                             this.currentTask.inputsConsumed = true;
+                        } else {
+                            if (oven.occupant && oven.occupant !== this) return;
+                            if (!oven.occupant) {
+                                oven.occupant = this;
+                                this.currentBuilding = oven;
+                            }
                         }
 
                         this.currentTask.craftingProgress = (this.currentTask.craftingProgress || 0) + (deltaTime / 1000);

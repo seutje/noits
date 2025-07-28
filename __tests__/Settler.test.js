@@ -554,6 +554,40 @@ describe('Settler', () => {
         expect(settler.state).toBe('combat');
     });
 
+    test('prepare_meal task consumes ingredients and creates meal pile', () => {
+        const oven = {
+            buildProgress: 100,
+            x: 0,
+            y: 0,
+            inventory: { meat: 1, bread: 1 },
+            getResourceQuantity(type) { return this.inventory[type] || 0; },
+            removeFromInventory(type, qty) {
+                if ((this.inventory[type] || 0) >= qty) {
+                    this.inventory[type] -= qty;
+                    return true;
+                }
+                return false;
+            }
+        };
+        settler.spriteManager = { getSprite: jest.fn() };
+        const task = new Task(TASK_TYPES.PREPARE_MEAL, 0, 0, null, 0, 2, oven);
+        task.ingredients = ['meat', 'bread'];
+        task.hungerValue = 50;
+        settler.currentTask = task;
+        settler.x = 0;
+        settler.y = 0;
+
+        settler.updateNeeds(1000);
+        settler.updateNeeds(1100);
+
+        expect(settler.map.addResourcePile).toHaveBeenCalled();
+        const mealPile = settler.map.addResourcePile.mock.calls[0][0];
+        expect(mealPile.type).toBe(RESOURCE_TYPES.MEAL);
+        expect(mealPile.hungerRestoration).toBe(50);
+        expect(oven.inventory.meat).toBe(0);
+        expect(oven.inventory.bread).toBe(0);
+    });
+
     test('health regenerates based on hunger level', () => {
         settler.bodyParts.head.health = 50;
         settler.hunger = 100;

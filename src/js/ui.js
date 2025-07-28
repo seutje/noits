@@ -225,6 +225,9 @@ export default class UI {
         this.taskOverlay.addEventListener('click', (event) => {
             event.stopPropagation();
         });
+        this.taskOverlay.addEventListener('wheel', (event) => {
+            event.stopPropagation();
+        });
         document.body.appendChild(this.taskOverlay);
 
         this.farmPlotMenu = document.createElement('div');

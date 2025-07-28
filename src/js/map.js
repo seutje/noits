@@ -123,7 +123,20 @@ export default class Map {
     }
 
     getBuildingAt(x, y) {
-        return this.buildings.find(building => building.x === x && building.y === y);
+        const buildingsAtTile = this.buildings.filter(
+            building => building.x === x && building.y === y,
+        );
+        if (buildingsAtTile.length === 0) {
+            return undefined;
+        }
+        // Prefer non-floor buildings when multiple occupy the same tile
+        for (let i = buildingsAtTile.length - 1; i >= 0; i--) {
+            if (buildingsAtTile[i].type !== BUILDING_TYPES.FLOOR) {
+                return buildingsAtTile[i];
+            }
+        }
+        // If only floors exist, return the last one
+        return buildingsAtTile[buildingsAtTile.length - 1];
     }
 
     removeBuilding(buildingToRemove) {

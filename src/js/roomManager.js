@@ -235,6 +235,41 @@ export default class RoomManager {
         }
     }
 
+    serialize() {
+        return {
+            rooms: this.rooms.map(room => ({
+                id: room.id,
+                type: room.type,
+                tiles: room.tiles,
+                storage: room.storage
+            }))
+        };
+    }
+
+    deserialize(data) {
+        this.rooms = data.rooms.map(roomData => ({
+            id: roomData.id,
+            type: roomData.type,
+            tiles: roomData.tiles,
+            storage: roomData.storage || {}
+        }));
+        this.roomGrid = Array(this.map.height)
+            .fill(0)
+            .map(() => Array(this.map.width).fill(null));
+        this.rooms.forEach(room => {
+            room.tiles.forEach(tile => {
+                if (
+                    tile.x >= 0 &&
+                    tile.x < this.map.width &&
+                    tile.y >= 0 &&
+                    tile.y < this.map.height
+                ) {
+                    this.roomGrid[tile.y][tile.x] = room;
+                }
+            });
+        });
+    }
+
     // Future: removeRoom, getRoomsByType, etc.
 
     render(ctx, tileSize) {

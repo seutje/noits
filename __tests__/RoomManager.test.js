@@ -103,4 +103,23 @@ describe('RoomManager storage rules', () => {
         expect(room.storage[RESOURCE_TYPES.BREAD]).toBe(0);
         expect(map.resourcePiles.length).toBe(0);
     });
+
+    test('serialize and deserialize restore rooms and grid', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const rm1 = new RoomManager(map, { getSprite: jest.fn() }, 32);
+        const room = rm1.designateRoom(0, 0, 1, 1, 'storage');
+        room.storage[RESOURCE_TYPES.WOOD] = 10;
+
+        const data = rm1.serialize();
+
+        const rm2 = new RoomManager(map, { getSprite: jest.fn() }, 32);
+        rm2.deserialize(data);
+
+        expect(rm2.rooms.length).toBe(1);
+        const loadedRoom = rm2.rooms[0];
+        expect(loadedRoom.type).toBe('storage');
+        expect(loadedRoom.storage[RESOURCE_TYPES.WOOD]).toBe(10);
+        expect(rm2.getRoomAt(0, 0)).toBe(loadedRoom);
+        expect(rm2.getRoomAt(1, 1)).toBe(loadedRoom);
+    });
 });

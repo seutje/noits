@@ -28,6 +28,22 @@ export default class CraftingStation extends Building {
                 3,
             ),
         );
+
+        // New recipe: Plank from wood
+        this.addRecipe(
+            new Recipe(
+                "plank",
+                [{ resourceType: RESOURCE_TYPES.WOOD, quantity: 1 }],
+                [
+                    {
+                        resourceType: RESOURCE_TYPES.PLANK,
+                        quantity: 1,
+                        quality: 1,
+                    },
+                ],
+                2,
+            ),
+        );
     }
 
     addRecipe(recipe) {

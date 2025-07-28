@@ -45,6 +45,7 @@ export const RESOURCE_TYPES = {
   BREAD: 'bread',
   BANDAGE: 'bandage',
   PLANK: 'plank',
+  BUCKET: 'bucket',
   BLOCK: 'block'
 };
 
@@ -63,6 +64,7 @@ export const RESOURCE_CATEGORIES = {
   [RESOURCE_TYPES.BREAD]: ['food'],
   [RESOURCE_TYPES.BANDAGE]: ['medical'],
   [RESOURCE_TYPES.PLANK]: ['material'],
+  [RESOURCE_TYPES.BUCKET]: ['material'],
   [RESOURCE_TYPES.BLOCK]: ['material']
 };
 

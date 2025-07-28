@@ -44,6 +44,22 @@ export default class CraftingStation extends Building {
                 2,
             ),
         );
+
+        // New recipe: Bucket from plank
+        this.addRecipe(
+            new Recipe(
+                "bucket",
+                [{ resourceType: RESOURCE_TYPES.PLANK, quantity: 1 }],
+                [
+                    {
+                        resourceType: RESOURCE_TYPES.BUCKET,
+                        quantity: 1,
+                        quality: 1,
+                    },
+                ],
+                2,
+            ),
+        );
     }
 
     addRecipe(recipe) {

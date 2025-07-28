@@ -65,30 +65,24 @@ function getNeighbors(node, map) {
 
     const currentTile = map.getTile ? map.getTile(x, y) : 0;
     const currentBuilding = map.getBuildingAt ? map.getBuildingAt(x, y) : null;
+    const currentBuildingPassable = currentBuilding
+        ? BUILDING_TYPE_PROPERTIES[currentBuilding.type]?.passable !== false
+        : false;
     const isUnpassable =
-        currentTile === 8 ||
-        (currentBuilding &&
-            BUILDING_TYPE_PROPERTIES[currentBuilding.type] &&
-            BUILDING_TYPE_PROPERTIES[currentBuilding.type].passable === false);
+        (currentTile === 8 && !currentBuildingPassable) ||
+        (currentBuilding && !currentBuildingPassable);
 
     const checkAndAdd = (nx, ny) => {
-        if (
-            nx >= 0 &&
-            nx < map.width &&
-            ny >= 0 &&
-            ny < map.height &&
-            (map.getTile ? map.getTile(nx, ny) : 0) !== 8
-        ) {
+        if (nx >= 0 && nx < map.width && ny >= 0 && ny < map.height) {
+            const tile = map.getTile ? map.getTile(nx, ny) : 0;
             const b = map.getBuildingAt ? map.getBuildingAt(nx, ny) : null;
-            if (
-                !b ||
-                !(
-                    BUILDING_TYPE_PROPERTIES[b.type] &&
-                    BUILDING_TYPE_PROPERTIES[b.type].passable === false
-                )
-            ) {
-                neighbors.push({ x: nx, y: ny });
-            }
+            const buildingPassable = b
+                ? BUILDING_TYPE_PROPERTIES[b.type]?.passable !== false
+                : true;
+
+            if (tile === 8 && (!b || !buildingPassable)) return;
+            if (b && !buildingPassable) return;
+            neighbors.push({ x: nx, y: ny });
         }
     };
 

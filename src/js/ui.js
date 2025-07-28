@@ -554,6 +554,9 @@ export default class UI {
             const typeCell = document.createElement('td');
             typeCell.textContent = task.type;
 
+            const assignedCell = document.createElement('td');
+            assignedCell.textContent = task.assigned || '';
+
             const actionCell = document.createElement('td');
             const delBtn = document.createElement('button');
             delBtn.textContent = 'Delete';
@@ -563,6 +566,7 @@ export default class UI {
             actionCell.appendChild(delBtn);
 
             row.appendChild(typeCell);
+            row.appendChild(assignedCell);
             row.appendChild(actionCell);
             tbody.appendChild(row);
         });

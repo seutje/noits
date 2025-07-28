@@ -183,6 +183,7 @@ export default class Game {
             }
 
         });
+        this.taskManager.cleanupCompletedTasks(this.settlers);
         // Task assignment handled after all settlers update
         this.taskManager.assignTasks(
             this.settlers,
@@ -579,6 +580,10 @@ export default class Game {
                 }
                 if (task.assignedSettler) {
                     task.assignedSettler = this.settlers.find(s => s.name === task.assignedSettler);
+                }
+                if (task.assigned) {
+                    const settler = this.settlers.find(s => s.name === task.assigned);
+                    if (settler) task.assigned = settler.name;
                 }
                 if (task.targetLocation) {
                     task.targetLocation = this.worldMap.getLocation(task.targetLocation.id);

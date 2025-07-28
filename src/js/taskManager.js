@@ -25,20 +25,12 @@ export default class TaskManager {
     }
 
     getTask(filterFn = null) {
-        if (filterFn) {
-            for (let i = 0; i < this.tasks.length; i++) {
-                if (filterFn(this.tasks[i])) {
-                    const result = this.tasks.splice(i, 1)[0];
-                    this.notifyChange();
-                    return result;
-                }
+        for (let i = 0; i < this.tasks.length; i++) {
+            const task = this.tasks[i];
+            if (task.assigned) continue;
+            if (!filterFn || filterFn(task)) {
+                return task;
             }
-            return null;
-        }
-        if (this.tasks.length > 0) {
-            const result = this.tasks.shift(); // Get the first task in the queue
-            this.notifyChange();
-            return result;
         }
         return null;
     }
@@ -46,10 +38,9 @@ export default class TaskManager {
     getTaskForSettler(settler, filterFn = null) {
         for (let i = 0; i < this.tasks.length; i++) {
             const task = this.tasks[i];
+            if (task.assigned) continue;
             if (settler.taskPriorities && settler.taskPriorities[task.type] > 0) {
                 if (!filterFn || filterFn(task)) {
-                    this.tasks.splice(i, 1);
-                    this.notifyChange();
                     return task;
                 }
             }
@@ -59,8 +50,9 @@ export default class TaskManager {
 
     assignTasks(settlers, filterFn = null) {
         let changed = false;
-        for (let i = 0; i < this.tasks.length; ) {
+        for (let i = 0; i < this.tasks.length; i++) {
             const task = this.tasks[i];
+            if (task.assigned) continue;
             let bestSettler = null;
             let bestPriority = -1;
 
@@ -105,16 +97,13 @@ export default class TaskManager {
                 }
 
                 bestSettler.currentTask = task;
+                task.assigned = bestSettler.name;
                 if (task.building) {
                     task.building.occupant = bestSettler;
                     bestSettler.currentBuilding = task.building;
                 }
-
-                this.tasks.splice(i, 1);
                 changed = true;
                 debugLog(`${bestSettler.name} picked up task: ${task.type}`);
-            } else {
-                i++;
             }
         }
         if (changed) {
@@ -130,6 +119,18 @@ export default class TaskManager {
         const index = this.tasks.indexOf(task);
         if (index !== -1) {
             this.tasks.splice(index, 1);
+            this.notifyChange();
+        }
+    }
+
+    cleanupCompletedTasks(settlers) {
+        const originalLength = this.tasks.length;
+        this.tasks = this.tasks.filter(task => {
+            if (!task.assigned) return true;
+            const settler = settlers.find(s => s.name === task.assigned);
+            return settler && settler.currentTask === task;
+        });
+        if (this.tasks.length !== originalLength) {
             this.notifyChange();
         }
     }

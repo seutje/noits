@@ -51,9 +51,20 @@ export default class EventManager {
                     const resourceTypes = [RESOURCE_TYPES.WOOD, RESOURCE_TYPES.STONE, RESOURCE_TYPES.IRON_ORE];
                     const randomResource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
                     const quantity = Math.floor(Math.random() * 50) + 20; // 20-70 units
-                    this.game.resourceManager.addResource(randomResource, quantity);
-                    debugLog(`Discovered ${quantity} units of ${randomResource}!`);
-                    this.game.notificationManager.addNotification(`Discovered ${quantity} units of ${randomResource}!`, 'info');
+                    const pile = new ResourcePile(
+                        randomResource,
+                        quantity,
+                        0,
+                        0,
+                        this.game.map.tileSize,
+                        this.game.spriteManager
+                    );
+                    this.game.map.addResourcePile(pile);
+                    debugLog(`Discovered ${quantity} units of ${randomResource} at (0,0)!`);
+                    this.game.notificationManager.addNotification(
+                        `Discovered ${quantity} units of ${randomResource}!`,
+                        'info'
+                    );
                 }
             },
             {

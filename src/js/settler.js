@@ -283,6 +283,36 @@ export default class Settler {
 
         // Execute current task
         if (this.currentTask) {
+            // Ensure hauling tasks head to the resource pile first
+            if (
+                this.currentTask.type === TASK_TYPES.HAUL &&
+                !this.carrying &&
+                !this.currentTask.resource
+            ) {
+                if (
+                    this.currentTask.sourceX === undefined ||
+                    this.currentTask.sourceY === undefined
+                ) {
+                    const pile = this.map.resourcePiles.find(
+                        p => p.type === this.currentTask.resourceType && p.quantity > 0,
+                    );
+                    if (pile) {
+                        this.currentTask.sourceX = pile.x;
+                        this.currentTask.sourceY = pile.y;
+                    }
+                }
+
+                if (
+                    this.currentTask.sourceX !== undefined &&
+                    (this.currentTask.targetX !== this.currentTask.sourceX ||
+                        this.currentTask.targetY !== this.currentTask.sourceY)
+                ) {
+                    this.currentTask.targetX = this.currentTask.sourceX;
+                    this.currentTask.targetY = this.currentTask.sourceY;
+                    this.path = null; // Recalculate path to the pile
+                }
+            }
+
             if (!this.path) {
                 if (Math.floor(this.x) === this.currentTask.targetX && Math.floor(this.y) === this.currentTask.targetY) {
                     this.path = [];
@@ -583,6 +613,7 @@ export default class Settler {
                                     this.currentTask.resource = this.carrying;
                                     this.currentTask.targetX = building.x;
                                     this.currentTask.targetY = building.y;
+                                    this.path = null;
                                 } else {
                                     debugLog(`${this.name} failed to pick up ${this.currentTask.resourceType}.`);
                                     this.currentTask = null;
@@ -610,6 +641,7 @@ export default class Settler {
                                 if (target) {
                                     this.currentTask.targetX = target.tile.x;
                                     this.currentTask.targetY = target.tile.y;
+                                    this.path = null;
                                 } else {
                                     debugLog(`${this.name} couldn't find storage for ${this.currentTask.resourceType}.`);
                                     this.currentTask = null;

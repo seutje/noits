@@ -110,11 +110,11 @@ describe('UI tooltips', () => {
         ui.showTaskManager();
         expect(ui.taskOverlay.style.display).toBe('block');
         expect(ui.taskOverlay.querySelector('table')).not.toBeNull();
-        expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(2);
+        expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(3);
         const deleteButtons = ui.taskOverlay.querySelectorAll('table button');
         deleteButtons[0].dispatchEvent(new Event('click'));
         expect(mockGame.deleteTask).toHaveBeenCalledWith(task1);
-        expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(1);
+        expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(2);
         const pauseButtons = Array.from(ui.taskOverlay.querySelectorAll('table button')).filter(b => b.textContent === 'Pause');
         expect(pauseButtons.length).toBe(1);
         pauseButtons[0].dispatchEvent(new Event('click'));

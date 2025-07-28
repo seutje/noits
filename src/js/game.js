@@ -211,14 +211,14 @@ export default class Game {
 
             if (building.type === BUILDING_TYPES.FARM_PLOT) {
                 const farmPlot = building;
-                if (farmPlot.autoSow && farmPlot.crop === null) {
+                if (farmPlot.buildProgress === 100 && farmPlot.autoSow && farmPlot.crop === null) {
                     const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.SOW_CROP && t.building === farmPlot);
                     const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.SOW_CROP && s.currentTask.building === farmPlot);
                     if (!hasTask && !inProgress) {
                         this.addSowCropTask(farmPlot, farmPlot.desiredCrop);
                     }
                 }
-                if (farmPlot.autoHarvest && farmPlot.growthStage === 3) {
+                if (farmPlot.buildProgress === 100 && farmPlot.autoHarvest && farmPlot.growthStage === 3) {
                     const hasTask = this.taskManager.tasks.some(t => t.type === TASK_TYPES.HARVEST_CROP && t.building === farmPlot);
                     const inProgress = this.settlers.some(s => s.currentTask && s.currentTask.type === TASK_TYPES.HARVEST_CROP && s.currentTask.building === farmPlot);
                     if (!hasTask && !inProgress) {
@@ -228,7 +228,7 @@ export default class Game {
             }
             if (building.type === BUILDING_TYPES.CRAFTING_STATION) {
                 const station = building;
-                if (station.autoCraft && station.desiredRecipe) {
+                if (station.buildProgress === 100 && station.autoCraft && station.desiredRecipe) {
                     const hasTask = this.taskManager.tasks.some(
                         t => t.type === TASK_TYPES.CRAFT && t.building === station,
                     );
@@ -444,6 +444,7 @@ export default class Game {
     }
 
     addSowCropTask(farmPlot, cropType = RESOURCE_TYPES.WHEAT) {
+        if (farmPlot.buildProgress < 100) return;
         this.taskManager.addTask(
             new Task(
                 TASK_TYPES.SOW_CROP,
@@ -460,12 +461,14 @@ export default class Game {
     }
 
     addHarvestCropTask(farmPlot) {
+        if (farmPlot.buildProgress < 100) return;
         this.taskManager.addTask(
             new Task(TASK_TYPES.HARVEST_CROP, farmPlot.x, farmPlot.y, null, 0, 3, farmPlot)
         );
     }
 
     addCraftTask(craftingStation, recipe, quantity = 1) {
+        if (craftingStation.buildProgress < 100) return;
         // Queue hauling and crafting tasks individually so settlers
         // only carry one set of inputs and craft one item at a time
         for (let i = 0; i < quantity; i++) {

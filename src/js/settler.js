@@ -366,6 +366,10 @@ export default class Settler {
                     } else if (this.currentTask.type === TASK_TYPES.CRAFT && this.currentTask.recipe) {
                         const recipe = this.currentTask.recipe;
                         const station = this.currentTask.building;
+
+                        if (station && station.buildProgress < 100) {
+                            return; // Wait until building is completed
+                        }
     
                         if (station) {
                             if (station.occupant && station.occupant !== this) {
@@ -492,6 +496,9 @@ export default class Settler {
                         }
                     } else if (this.currentTask.type === TASK_TYPES.SOW_CROP && this.currentTask.building) {
                         const farmPlot = this.currentTask.building;
+                        if (farmPlot.buildProgress < 100) {
+                            return; // Wait until farm plot is built
+                        }
                         if (farmPlot.plant(this.currentTask.cropType)) {
                             debugLog(`${this.name} planted ${this.currentTask.cropType} at ${farmPlot.x},${farmPlot.y}.`);
                         } else {
@@ -501,6 +508,9 @@ export default class Settler {
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === TASK_TYPES.HARVEST_CROP && this.currentTask.building) {
                         const farmPlot = this.currentTask.building;
+                        if (farmPlot.buildProgress < 100) {
+                            return; // Wait until farm plot is built
+                        }
                         const harvestedCrop = farmPlot.harvest();
                         if (harvestedCrop) {
                             const pile = new ResourcePile(harvestedCrop, 1, farmPlot.x, farmPlot.y, this.map.tileSize, this.spriteManager);
@@ -513,6 +523,9 @@ export default class Settler {
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === TASK_TYPES.TEND_ANIMALS && this.currentTask.building) {
                         const animalPen = this.currentTask.building;
+                        if (animalPen.buildProgress < 100) {
+                            return; // Wait until animal pen is built
+                        }
                         // Simulate tending animals - perhaps increases animal health/reproduction rate
                         debugLog(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                         this.currentTask = null;

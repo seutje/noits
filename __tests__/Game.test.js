@@ -265,7 +265,7 @@ describe('Game', () => {
     });
 
     test('auto sow and harvest create tasks', () => {
-        const farmPlot = { type: BUILDING_TYPES.FARM_PLOT, x: 1, y: 2, crop: null, growthStage: 0, autoSow: true, autoHarvest: true, desiredCrop: 'wheat' };
+        const farmPlot = { type: BUILDING_TYPES.FARM_PLOT, x: 1, y: 2, crop: null, growthStage: 0, autoSow: true, autoHarvest: true, desiredCrop: 'wheat', buildProgress: 100 };
         game.map.getAllBuildings.mockReturnValue([farmPlot]);
         game.taskManager.tasks = [];
         game.update(16);
@@ -278,8 +278,16 @@ describe('Game', () => {
         expect(game.taskManager.addTask).toHaveBeenCalledWith(expect.objectContaining({ type: TASK_TYPES.HARVEST_CROP }));
     });
 
+    test('auto sow does not create task when farm plot not built', () => {
+        const farmPlot = { type: BUILDING_TYPES.FARM_PLOT, x: 1, y: 2, crop: null, growthStage: 0, autoSow: true, autoHarvest: false, desiredCrop: 'wheat', buildProgress: 50 };
+        game.map.getAllBuildings.mockReturnValue([farmPlot]);
+        game.taskManager.tasks = [];
+        game.update(16);
+        expect(game.taskManager.addTask).not.toHaveBeenCalled();
+    });
+
     test('addCraftTask queues haul and craft tasks', () => {
-        const station = { x: 2, y: 3, getResourceQuantity: jest.fn().mockReturnValue(0) };
+        const station = { x: 2, y: 3, getResourceQuantity: jest.fn().mockReturnValue(0), buildProgress: 100 };
         const recipe = { inputs: [{ resourceType: 'cotton', quantity: 1 }], outputs: [], time: 1, name: 'bandage' };
         game.addCraftTask(station, recipe);
         expect(game.taskManager.addTask).toHaveBeenCalledTimes(2);
@@ -291,6 +299,13 @@ describe('Game', () => {
         expect(craftTask.type).toBe(TASK_TYPES.CRAFT);
         expect(craftTask.recipe).toBe(recipe);
         expect(haulTask.priority).toBeGreaterThan(craftTask.priority);
+    });
+
+    test('addCraftTask does not queue tasks if station not built', () => {
+        const station = { x: 2, y: 3, getResourceQuantity: jest.fn(), buildProgress: 50 };
+        const recipe = { inputs: [], outputs: [], time: 1, name: 'bandage' };
+        game.addCraftTask(station, recipe);
+        expect(game.taskManager.addTask).not.toHaveBeenCalled();
     });
 
     test('handleClick marks dead enemy for butchering', () => {

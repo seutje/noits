@@ -32,7 +32,7 @@ describe('UI tooltips', () => {
         expect(ui.helpOverlay.style.display).toBe('none');
     });
 
-    test('priority button is placed in build menu', () => {
+    test('priority button is placed in dev menu', () => {
         const ui = new UI({});
         expect(ui.priorityButton.parentElement).toBe(ui.devMenu);
     });
@@ -75,7 +75,7 @@ describe('UI tooltips', () => {
         expect(ui.loadingScreen.style.display).toBe('none');
     });
 
-    test('task manager button is placed in build menu', () => {
+    test('task manager button is placed in dev menu', () => {
         const ui = new UI({});
         expect(ui.taskManagerButton.parentElement).toBe(ui.devMenu);
     });

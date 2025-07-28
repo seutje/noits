@@ -301,6 +301,14 @@ describe('Game', () => {
         expect(haulTask.priority).toBeGreaterThan(craftTask.priority);
     });
 
+    test('addCraftTask uses baking task type for ovens', () => {
+        const station = { x: 2, y: 3, type: BUILDING_TYPES.OVEN, getResourceQuantity: jest.fn().mockReturnValue(0), buildProgress: 100 };
+        const recipe = { inputs: [], outputs: [], time: 1, name: 'bread' };
+        game.addCraftTask(station, recipe);
+        const craftTask = game.taskManager.addTask.mock.calls.find(c => c[0].type !== TASK_TYPES.HAUL)[0];
+        expect(craftTask.type).toBe(TASK_TYPES.BAKING);
+    });
+
     test('addCraftTask does not queue tasks if station not built', () => {
         const station = { x: 2, y: 3, getResourceQuantity: jest.fn(), buildProgress: 50 };
         const recipe = { inputs: [], outputs: [], time: 1, name: 'bandage' };

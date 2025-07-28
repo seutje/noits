@@ -493,9 +493,13 @@ export default class Game {
                 );
             });
 
+            const taskType =
+                craftingStation.type === BUILDING_TYPES.OVEN
+                    ? TASK_TYPES.BAKING
+                    : TASK_TYPES.CRAFT;
             this.taskManager.addTask(
                 new Task(
-                    TASK_TYPES.CRAFT,
+                    taskType,
                     craftingStation.x,
                     craftingStation.y,
                     null,

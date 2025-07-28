@@ -59,6 +59,7 @@ describe('Settler', () => {
             mining: 1,
             building: 1,
             crafting: 1,
+            baking: 1,
             combat: 1,
             medical: 1
         });
@@ -180,6 +181,13 @@ describe('Settler', () => {
         expect(settler.calculateOutputQuality(-1)).toBe(0);
         settler.skills.crafting = 100;
         expect(settler.calculateOutputQuality(1)).toBe(2);
+    });
+
+    test('calculateOutputQuality uses baking skill when crafting at an oven', () => {
+        const ovenBuilding = { type: BUILDING_TYPES.OVEN };
+        settler.currentTask = new Task(TASK_TYPES.CRAFT, 0, 0, null, 0, 3, ovenBuilding);
+        settler.skills.baking = 3;
+        expect(settler.calculateOutputQuality(1)).toBeCloseTo(1.2);
     });
 
     test('should produce crafted items with correct quality', () => {

@@ -742,6 +742,14 @@ export default class Game {
                 debugLog('Cannot build here. Only floors or wells can be built on water tiles.');
                 return;
             }
+            if (this.selectedBuilding === BUILDING_TYPES.WELL && clickedTile !== 8) {
+                debugLog('Wells can only be built on water tiles.');
+                return;
+            }
+            if (this.selectedBuilding === BUILDING_TYPES.WELL && existingBuilding) {
+                debugLog('Wells must be built on an empty water tile.');
+                return;
+            }
             // Place the selected building
             let newBuilding;
             if (this.selectedBuilding === BUILDING_TYPES.CRAFTING_STATION) {

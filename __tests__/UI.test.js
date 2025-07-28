@@ -99,7 +99,10 @@ describe('UI tooltips', () => {
                 }
             }),
         };
-        const mockGame = { taskManager: mockTaskManager };
+        const mockGame = { 
+            taskManager: mockTaskManager,
+            deleteTask: jest.fn(task => mockTaskManager.removeTask(task)),
+        };
         ui.setGameInstance(mockGame);
         ui.showTaskManager();
         expect(ui.taskOverlay.style.display).toBe('block');
@@ -107,7 +110,7 @@ describe('UI tooltips', () => {
         expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(2);
         const deleteButtons = ui.taskOverlay.querySelectorAll('table button');
         deleteButtons[0].dispatchEvent(new Event('click'));
-        expect(mockTaskManager.removeTask).toHaveBeenCalledWith(task1);
+        expect(mockGame.deleteTask).toHaveBeenCalledWith(task1);
         expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(1);
         ui.hideTaskManager();
         expect(ui.taskOverlay.style.display).toBe('none');

@@ -1,4 +1,4 @@
-import { debugLog } from './debug.js';
+import { debugLog, debugWarn } from './debug.js';
 
 import Map from './map.js';
 import Camera from './camera.js';
@@ -837,7 +837,7 @@ export default class Game {
                         //     debugLog(`Building at ${tileX},${tileY} destroyed.`);
                         // }
                     } else {
-                        console.warn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
+                        debugWarn("Clicked object is not a valid Building instance or missing takeDamage method:", clickedBuilding);
                     }
                 } else if (clickedTile === 2) { // If a tree is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.CHOP_WOOD, tileX, tileY, RESOURCE_TYPES.WOOD, 2.5, 2));

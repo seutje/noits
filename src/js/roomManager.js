@@ -1,4 +1,4 @@
-import { debugLog } from './debug.js';
+import { debugLog, debugWarn } from './debug.js';
 import ResourcePile from './resourcePile.js';
 import Task from './task.js';
 import { TASK_TYPES, FOOD_HUNGER_VALUES, RESOURCE_TYPES } from './constants.js';
@@ -48,7 +48,7 @@ export default class RoomManager {
                         this.roomGrid[y][x] = newRoom;
                         newRoom.tiles.push({ x, y });
                     } else {
-                        console.warn(`Tile ${x},${y} is already part of a room. Skipping.`);
+                        debugWarn(`Tile ${x},${y} is already part of a room. Skipping.`);
                     }
                 }
             }
@@ -107,7 +107,7 @@ export default class RoomManager {
 
     addResourceToStorage(room, resourceType, quantity) {
         if (room.type !== "storage") {
-            console.warn(`Room ${room.id} is not a storage room.`);
+            debugWarn(`Room ${room.id} is not a storage room.`);
             return false;
         }
 
@@ -146,10 +146,10 @@ export default class RoomManager {
                 const newPile = new ResourcePile(resourceType, quantity, emptyTile.x, emptyTile.y, this.tileSize, this.spriteManager);
                 const added = this.map.addResourcePile(newPile);
                 if (!added) {
-                    console.warn('Failed to add resource pile to map.');
+                    debugWarn('Failed to add resource pile to map.');
                 }
             } else {
-                console.warn('No available storage tile for resource pile.');
+                debugWarn('No available storage tile for resource pile.');
                 return false;
             }
         }
@@ -159,12 +159,12 @@ export default class RoomManager {
 
     removeResourceFromStorage(room, resourceType, quantity) {
         if (room.type !== "storage") {
-            console.warn(`Room ${room.id} is not a storage room.`);
+            debugWarn(`Room ${room.id} is not a storage room.`);
             return false;
         }
 
         if (!room.storage[resourceType] || room.storage[resourceType] < quantity) {
-            console.warn(`Not enough ${resourceType} in storage room ${room.id}.`);
+            debugWarn(`Not enough ${resourceType} in storage room ${room.id}.`);
             return false;
         }
 
@@ -180,7 +180,7 @@ export default class RoomManager {
         }
 
         if (remaining > 0) {
-            console.warn(`Storage room ${room.id} missing piles for ${resourceType}.`);
+            debugWarn(`Storage room ${room.id} missing piles for ${resourceType}.`);
             return false;
         }
 

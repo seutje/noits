@@ -38,6 +38,7 @@ export default class ResourcePile extends Resource {
         const wheatPileSprite = this.spriteManager.getSprite('wheat_pile');
         const cottonPileSprite = this.spriteManager.getSprite('cotton_pile');
         const ironOrePileSprite = this.spriteManager.getSprite('iron_ore_pile');
+        const plankSprite = this.spriteManager.getSprite(RESOURCE_TYPES.PLANK);
         if (this.type === RESOURCE_TYPES.WOOD && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.STONE && stonePileSprite) {
@@ -60,6 +61,8 @@ export default class ResourcePile extends Resource {
             ctx.drawImage(cottonPileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.IRON_ORE && ironOrePileSprite) {
             ctx.drawImage(ironOrePileSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else if (this.type === RESOURCE_TYPES.PLANK && plankSprite) {
+            ctx.drawImage(plankSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
         else {
             ctx.fillStyle = 'brown'; // Placeholder color for wood piles

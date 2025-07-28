@@ -95,7 +95,8 @@ describe('UI tooltips', () => {
         ui.setGameInstance(mockGame);
         ui.showTaskManager();
         expect(ui.taskOverlay.style.display).toBe('block');
-        const deleteButtons = ui.taskOverlay.querySelectorAll('button');
+        expect(ui.taskOverlay.querySelector('table')).not.toBeNull();
+        const deleteButtons = ui.taskOverlay.querySelectorAll('table button');
         deleteButtons[0].dispatchEvent(new Event('click'));
         expect(mockTaskManager.removeTask).toHaveBeenCalledWith(task1);
         ui.hideTaskManager();

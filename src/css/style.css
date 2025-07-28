@@ -68,8 +68,7 @@ canvas {
 }
 
 #help-overlay,
-#priority-overlay,
-#task-overlay {
+#priority-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -82,6 +81,36 @@ canvas {
     display: none;
     overflow: auto;
     z-index: 1001;
+}
+
+#task-overlay {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 250px;
+    height: 400px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    box-sizing: border-box;
+    display: none;
+    overflow-y: auto;
+    z-index: 1001;
+}
+
+#task-overlay table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#task-overlay .task-row td {
+    padding: 5px;
+}
+
+#task-overlay .close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
 
 #tooltip {

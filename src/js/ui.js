@@ -538,22 +538,38 @@ export default class UI {
     showTaskManager() {
         if (!this.gameInstance) return;
         this.taskOverlay.innerHTML = '';
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'X';
+        closeBtn.className = 'close-button';
+        closeBtn.onclick = () => this.hideTaskManager();
+        this.taskOverlay.appendChild(closeBtn);
+
+        const table = document.createElement('table');
+        const tbody = document.createElement('tbody');
+
         this.gameInstance.taskManager.tasks.forEach(task => {
-            const taskDiv = document.createElement('div');
-            taskDiv.textContent = task.type;
+            const row = document.createElement('tr');
+            row.className = 'task-row';
+
+            const typeCell = document.createElement('td');
+            typeCell.textContent = task.type;
+
+            const actionCell = document.createElement('td');
             const delBtn = document.createElement('button');
             delBtn.textContent = 'Delete';
             delBtn.onclick = () => {
                 this.gameInstance.taskManager.removeTask(task);
                 this.showTaskManager();
             };
-            taskDiv.appendChild(delBtn);
-            this.taskOverlay.appendChild(taskDiv);
+            actionCell.appendChild(delBtn);
+
+            row.appendChild(typeCell);
+            row.appendChild(actionCell);
+            tbody.appendChild(row);
         });
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = 'Close';
-        closeBtn.onclick = () => this.hideTaskManager();
-        this.taskOverlay.appendChild(closeBtn);
+
+        table.appendChild(tbody);
+        this.taskOverlay.appendChild(table);
         this.taskOverlay.style.display = 'block';
     }
 

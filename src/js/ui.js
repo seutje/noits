@@ -535,7 +535,7 @@ export default class UI {
         }
     }
 
-    showTaskManager() {
+    renderTaskManager() {
         if (!this.gameInstance) return;
         this.taskOverlay.innerHTML = '';
         const closeBtn = document.createElement('button');
@@ -559,7 +559,6 @@ export default class UI {
             delBtn.textContent = 'Delete';
             delBtn.onclick = () => {
                 this.gameInstance.taskManager.removeTask(task);
-                this.showTaskManager();
             };
             actionCell.appendChild(delBtn);
 
@@ -570,11 +569,22 @@ export default class UI {
 
         table.appendChild(tbody);
         this.taskOverlay.appendChild(table);
+    }
+
+    showTaskManager() {
+        if (!this.gameInstance) return;
+        this.renderTaskManager();
         this.taskOverlay.style.display = 'block';
+        this.taskListChangeHandler = () => this.renderTaskManager();
+        this.gameInstance.taskManager.addChangeListener(this.taskListChangeHandler);
     }
 
     hideTaskManager() {
         this.taskOverlay.style.display = 'none';
+        if (this.taskListChangeHandler && this.gameInstance) {
+            this.gameInstance.taskManager.removeChangeListener(this.taskListChangeHandler);
+            this.taskListChangeHandler = null;
+        }
     }
 
     toggleTaskManager() {

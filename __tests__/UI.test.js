@@ -86,9 +86,17 @@ describe('UI tooltips', () => {
         const task2 = { type: 'haul' };
         const mockTaskManager = {
             tasks: [task1, task2],
+            changeListeners: [],
+            addChangeListener: jest.fn(function (fn) { this.changeListeners.push(fn); }),
+            removeChangeListener: jest.fn(function (fn) {
+                this.changeListeners = this.changeListeners.filter(l => l !== fn);
+            }),
             removeTask: jest.fn(function (task) {
                 const idx = this.tasks.indexOf(task);
-                if (idx !== -1) this.tasks.splice(idx, 1);
+                if (idx !== -1) {
+                    this.tasks.splice(idx, 1);
+                    this.changeListeners.forEach(cb => cb());
+                }
             }),
         };
         const mockGame = { taskManager: mockTaskManager };
@@ -96,10 +104,13 @@ describe('UI tooltips', () => {
         ui.showTaskManager();
         expect(ui.taskOverlay.style.display).toBe('block');
         expect(ui.taskOverlay.querySelector('table')).not.toBeNull();
+        expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(2);
         const deleteButtons = ui.taskOverlay.querySelectorAll('table button');
         deleteButtons[0].dispatchEvent(new Event('click'));
         expect(mockTaskManager.removeTask).toHaveBeenCalledWith(task1);
+        expect(ui.taskOverlay.querySelectorAll('table tr').length).toBe(1);
         ui.hideTaskManager();
         expect(ui.taskOverlay.style.display).toBe('none');
+        expect(mockTaskManager.removeChangeListener).toHaveBeenCalled();
     });
 });

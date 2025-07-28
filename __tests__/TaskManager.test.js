@@ -93,4 +93,17 @@ describe('TaskManager', () => {
         expect(taskManager.tasks).not.toContain(t1);
         expect(taskManager.tasks.length).toBe(1);
     });
+
+    test('change listeners fire when tasks change', () => {
+        const t1 = new Task(TASK_TYPES.HAUL, 1, 1);
+        const listener = jest.fn();
+        taskManager.addChangeListener(listener);
+        taskManager.addTask(t1);
+        expect(listener).toHaveBeenCalledTimes(1);
+        taskManager.removeTask(t1);
+        expect(listener).toHaveBeenCalledTimes(2);
+        taskManager.removeChangeListener(listener);
+        taskManager.addTask(t1);
+        expect(listener).toHaveBeenCalledTimes(2);
+    });
 });

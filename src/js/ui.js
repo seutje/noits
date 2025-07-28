@@ -545,6 +545,17 @@ export default class UI {
         this.taskOverlay.appendChild(closeBtn);
 
         const table = document.createElement('table');
+
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['Type', 'Assigned', 'Paused', 'Actions'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
         const tbody = document.createElement('tbody');
 
         this.gameInstance.taskManager.tasks.forEach(task => {

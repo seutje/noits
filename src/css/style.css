@@ -103,6 +103,12 @@ canvas {
     border-collapse: collapse;
 }
 
+#task-overlay th {
+    text-align: left;
+    padding: 5px;
+    border-bottom: 1px solid #444;
+}
+
 #task-overlay .task-row td {
     padding: 5px;
 }

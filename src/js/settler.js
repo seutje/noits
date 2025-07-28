@@ -994,7 +994,11 @@ export default class Settler {
             sleep: this.sleep,
             mood: this.mood,
             state: this.state,
-            currentTask: this.currentTask ? this.currentTask.serialize() : null,
+            currentTask: this.currentTask
+                ? typeof this.currentTask.serialize === 'function'
+                    ? this.currentTask.serialize()
+                    : { ...this.currentTask }
+                : null,
             carrying: this.carrying,
             skills: this.skills,
             equippedWeapon: this.equippedWeapon ? this.equippedWeapon.serialize() : null,
@@ -1031,23 +1035,29 @@ export default class Settler {
             this.equippedArmor = data.equippedArmor;
         }
         if (data.currentTask) {
-            const task = new Task(
-                data.currentTask.type,
-                data.currentTask.targetX,
-                data.currentTask.targetY,
-                data.currentTask.resourceType,
-                data.currentTask.quantity,
-                data.currentTask.priority,
-                data.currentTask.building,
-                data.currentTask.recipe,
-                data.currentTask.cropType,
-                data.currentTask.targetLocation,
-                data.currentTask.carrying,
-                data.currentTask.targetSettler,
-                data.currentTask.targetEnemy
-            );
-            task.deserialize(data.currentTask);
-            this.currentTask = task;
+            if (data.currentTask.priority !== undefined) {
+                const task = new Task(
+                    data.currentTask.type,
+                    data.currentTask.targetX,
+                    data.currentTask.targetY,
+                    data.currentTask.resourceType,
+                    data.currentTask.quantity,
+                    data.currentTask.priority,
+                    data.currentTask.building,
+                    data.currentTask.recipe,
+                    data.currentTask.cropType,
+                    data.currentTask.targetLocation,
+                    data.currentTask.carrying,
+                    data.currentTask.targetSettler,
+                    data.currentTask.targetEnemy,
+                    data.currentTask.sourceX,
+                    data.currentTask.sourceY
+                );
+                task.deserialize(data.currentTask);
+                this.currentTask = task;
+            } else {
+                this.currentTask = { ...data.currentTask };
+            }
         }
         // targetEnemy will need to be re-linked by the Game class after all entities are deserialized
         this.targetEnemy = null;

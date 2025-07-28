@@ -208,6 +208,18 @@ describe('Game', () => {
         expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
     });
 
+    test('handleClick should allow building on floor over water tile', () => {
+        const expectedTileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
+        const expectedTileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);
+        game.map.getTile.mockReturnValue(8); // Water tile
+        game.map.getBuildingAt.mockReturnValue({ type: BUILDING_TYPES.FLOOR });
+        game.map.findAdjacentFreeTile = jest.fn().mockReturnValue({ x: expectedTileX + 1, y: expectedTileY });
+        game.toggleBuildMode(BUILDING_TYPES.WALL);
+        game.handleClick({ clientX: 100, clientY: 100, target: { closest: () => null } });
+
+        expect(game.map.addBuilding).toHaveBeenCalledTimes(1);
+    });
+
     test('handleClick on farm plot shows menu', () => {
         const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);
         const tileY = Math.floor(((100 - mockCtx.canvas.height / 2) / game.camera.zoom + game.camera.y) / game.map.tileSize);

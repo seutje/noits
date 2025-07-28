@@ -728,6 +728,10 @@ export default class Game {
         }
 
         if (this.buildMode && this.selectedBuilding) {
+            if (clickedTile === 8 && this.selectedBuilding !== BUILDING_TYPES.FLOOR) {
+                debugLog('Cannot build here. Only floors can be built on water tiles.');
+                return;
+            }
             // Place the selected building
             let newBuilding;
             if (this.selectedBuilding === BUILDING_TYPES.CRAFTING_STATION) {

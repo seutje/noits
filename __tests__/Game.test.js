@@ -399,6 +399,27 @@ describe('Game', () => {
         expect(game.taskManager.addTask).not.toHaveBeenCalled();
     });
 
+    test('addPrepareMealTask queues haul and prepare tasks', () => {
+        const oven = { x: 1, y: 1, buildProgress: 100 };
+        game.roomManager.findHighestValueFoods = jest.fn().mockReturnValue([
+            { type: 'meat', value: 30 },
+            { type: 'bread', value: 20 },
+        ]);
+        game.addPrepareMealTask(oven);
+        expect(game.taskManager.addTask).toHaveBeenCalledTimes(3);
+        const haulTask = game.taskManager.addTask.mock.calls[0][0];
+        expect(haulTask.type).toBe(TASK_TYPES.HAUL);
+        const mealTask = game.taskManager.addTask.mock.calls[2][0];
+        expect(mealTask.type).toBe(TASK_TYPES.PREPARE_MEAL);
+        expect(mealTask.building).toBe(oven);
+    });
+
+    test('addPrepareMealTask does not queue when oven not built', () => {
+        const oven = { x: 1, y: 1, buildProgress: 20 };
+        game.addPrepareMealTask(oven);
+        expect(game.taskManager.addTask).not.toHaveBeenCalled();
+    });
+
     test('handleClick marks dead enemy for butchering', () => {
         game.map.tileSize = 32;
         const tileX = Math.floor(((100 - mockCtx.canvas.width / 2) / game.camera.zoom + game.camera.x) / game.map.tileSize);

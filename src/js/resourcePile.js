@@ -41,6 +41,7 @@ export default class ResourcePile extends Resource {
         const plankSprite = this.spriteManager.getSprite(RESOURCE_TYPES.PLANK);
         const bucketSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BUCKET);
         const bucketWaterSprite = this.spriteManager.getSprite(RESOURCE_TYPES.BUCKET_WATER);
+        const mealSprite = this.spriteManager.getSprite(RESOURCE_TYPES.MEAL);
         if (this.type === RESOURCE_TYPES.WOOD && woodSprite) {
             ctx.drawImage(woodSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.STONE && stonePileSprite) {
@@ -69,6 +70,8 @@ export default class ResourcePile extends Resource {
             ctx.drawImage(bucketSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         } else if (this.type === RESOURCE_TYPES.BUCKET_WATER && bucketWaterSprite) {
             ctx.drawImage(bucketWaterSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
+        } else if (this.type === RESOURCE_TYPES.MEAL && mealSprite) {
+            ctx.drawImage(mealSprite, this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
         else {
             ctx.fillStyle = 'brown'; // Placeholder color for wood piles

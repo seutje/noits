@@ -524,6 +524,69 @@ export default class Settler {
                             this.path = null;
                         }
                     } else if (
+                        this.currentTask.type === TASK_TYPES.PREPARE_MEAL &&
+                        this.currentTask.building
+                    ) {
+                        const oven = this.currentTask.building;
+                        if (oven.buildProgress < 100) return;
+                        if (!this.currentTask.ingredients) return; // Should be set when task was created
+
+                        if (!this.currentTask.inputsConsumed) {
+                            const ingredientCounts = {};
+                            for (const type of this.currentTask.ingredients) {
+                                ingredientCounts[type] = (ingredientCounts[type] || 0) + 1;
+                            }
+                            const ready = Object.entries(ingredientCounts).every(
+                                ([type, count]) => oven.getResourceQuantity(type) >= count,
+                            );
+                            if (!ready) {
+                                if (oven.occupant === this) {
+                                    oven.occupant = null;
+                                    this.currentBuilding = null;
+                                }
+                                debugLog(`${this.name} is waiting for ingredients to prepare meal.`);
+                                return;
+                            }
+
+                            if (oven.occupant && oven.occupant !== this) return;
+                            if (!oven.occupant) {
+                                oven.occupant = this;
+                                this.currentBuilding = oven;
+                            }
+
+                            this.currentTask.ingredients.forEach(type => {
+                                oven.removeFromInventory(type, 1);
+                            });
+                            this.currentTask.inputsConsumed = true;
+                        } else {
+                            if (oven.occupant && oven.occupant !== this) return;
+                            if (!oven.occupant) {
+                                oven.occupant = this;
+                                this.currentBuilding = oven;
+                            }
+                        }
+
+                        this.currentTask.craftingProgress = (this.currentTask.craftingProgress || 0) + (deltaTime / 1000);
+                        if (this.currentTask.craftingProgress >= 2) {
+                            const pile = new ResourcePile(
+                                RESOURCE_TYPES.MEAL,
+                                1,
+                                oven.x,
+                                oven.y,
+                                this.map.tileSize,
+                                this.spriteManager,
+                            );
+                            pile.hungerRestoration = this.currentTask.hungerValue;
+                            this.map.addResourcePile(pile);
+                            debugLog(`${this.name} prepared a meal.`);
+                            if (oven.occupant === this) {
+                                oven.occupant = null;
+                                this.currentBuilding = null;
+                            }
+                            this.currentTask = null;
+                            this.path = null;
+                        }
+                    } else if (
                         this.currentTask.type === TASK_TYPES.MINE_STONE ||
                         this.currentTask.type === TASK_TYPES.MINE_IRON_ORE ||
                         this.currentTask.type === TASK_TYPES.DIG_DIRT
@@ -658,6 +721,10 @@ export default class Settler {
                                     if (pile.quantity <= 0) {
                                         this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
                                     }
+                                    const room = this.roomManager.getRoomAt(pile.x, pile.y);
+                                    if (room && room.type === "storage") {
+                                        room.storage[pile.type] -= this.currentTask.quantity;
+                                    }
                                     this.pickUpPile(
                                         this.currentTask.resourceType,
                                         this.currentTask.quantity,
@@ -692,6 +759,10 @@ export default class Settler {
                             if (pile && pile.remove(this.currentTask.quantity)) {
                                 if (pile.quantity <= 0) {
                                     this.map.resourcePiles = this.map.resourcePiles.filter(p => p !== pile);
+                                }
+                                const room = this.roomManager.getRoomAt(pile.x, pile.y);
+                                if (room && room.type === "storage") {
+                                    room.storage[pile.type] -= this.currentTask.quantity;
                                 }
                                 this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
                                 this.currentTask.resource = this.carrying;

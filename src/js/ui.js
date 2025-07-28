@@ -311,12 +311,20 @@ export default class UI {
         this.craftButton.textContent = 'Craft';
         this.craftButton.onclick = () => {
             if (this.gameInstance && this.selectedCraftingStation) {
-                const recipe = this.selectedCraftingStation.recipes[this.recipeSelect.selectedIndex];
-                this.selectedCraftingStation.desiredRecipe = recipe;
-                const qty = parseInt(this.quantityInput.value, 10) || 1;
-                this.gameInstance.addCraftTask(this.selectedCraftingStation, recipe, qty);
-                if (this.autoCraftCheckbox.checked) {
-                    this.selectedCraftingStation.autoCraft = true;
+                const selectedValue = this.recipeSelect.value;
+                if (
+                    this.selectedCraftingStation.type === BUILDING_TYPES.OVEN &&
+                    selectedValue === 'prepare_meal'
+                ) {
+                    this.gameInstance.addPrepareMealTask(this.selectedCraftingStation);
+                } else {
+                    const recipe = this.selectedCraftingStation.recipes[parseInt(selectedValue, 10)];
+                    this.selectedCraftingStation.desiredRecipe = recipe;
+                    const qty = parseInt(this.quantityInput.value, 10) || 1;
+                    this.gameInstance.addCraftTask(this.selectedCraftingStation, recipe, qty);
+                    if (this.autoCraftCheckbox.checked) {
+                        this.selectedCraftingStation.autoCraft = true;
+                    }
                 }
             }
             this.hideCraftingStationMenu();
@@ -326,8 +334,9 @@ export default class UI {
         this.autoCraftCheckbox.addEventListener('change', () => {
             if (this.selectedCraftingStation) {
                 this.selectedCraftingStation.autoCraft = this.autoCraftCheckbox.checked;
-                if (this.autoCraftCheckbox.checked) {
-                    this.selectedCraftingStation.desiredRecipe = this.selectedCraftingStation.recipes[this.recipeSelect.selectedIndex];
+                const val = this.recipeSelect.value;
+                if (this.autoCraftCheckbox.checked && val !== 'prepare_meal') {
+                    this.selectedCraftingStation.desiredRecipe = this.selectedCraftingStation.recipes[parseInt(val, 10)];
                 }
             }
         });
@@ -633,6 +642,12 @@ export default class UI {
             option.textContent = recipe.name;
             this.recipeSelect.appendChild(option);
         });
+        if (station.type === BUILDING_TYPES.OVEN) {
+            const mealOption = document.createElement('option');
+            mealOption.value = 'prepare_meal';
+            mealOption.textContent = 'Prepare Meal';
+            this.recipeSelect.appendChild(mealOption);
+        }
         this.recipeSelect.selectedIndex = 0;
         this.quantityInput.value = '1';
         this.autoCraftCheckbox.checked = station.autoCraft;

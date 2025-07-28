@@ -523,6 +523,26 @@ export default class Game {
         );
     }
 
+    pauseTask(task) {
+        if (task.paused) return;
+        task.paused = true;
+        this.unassignTask(task);
+        this.taskManager.notifyChange();
+    }
+
+    unpauseTask(task) {
+        if (!task.paused) return;
+        task.paused = false;
+        this.taskManager.assignTasks(
+            this.settlers,
+            (t, s) => !(
+                s.carrying &&
+                (t.type === TASK_TYPES.HAUL || GATHER_TASK_TYPES.has(t.type))
+            )
+        );
+        this.taskManager.notifyChange();
+    }
+
     deleteTask(task) {
         this.taskManager.removeTask(task);
         this.unassignTask(task);

@@ -557,6 +557,9 @@ export default class UI {
             const assignedCell = document.createElement('td');
             assignedCell.textContent = task.assigned || '';
 
+            const pausedCell = document.createElement('td');
+            pausedCell.textContent = task.paused ? 'Yes' : 'No';
+
             const actionCell = document.createElement('td');
             const delBtn = document.createElement('button');
             delBtn.textContent = 'Delete';
@@ -572,8 +575,20 @@ export default class UI {
             };
             actionCell.appendChild(unassignBtn);
 
+            const pauseBtn = document.createElement('button');
+            pauseBtn.textContent = task.paused ? 'Unpause' : 'Pause';
+            pauseBtn.onclick = () => {
+                if (task.paused) {
+                    this.gameInstance.unpauseTask(task);
+                } else {
+                    this.gameInstance.pauseTask(task);
+                }
+            };
+            actionCell.appendChild(pauseBtn);
+
             row.appendChild(typeCell);
             row.appendChild(assignedCell);
+            row.appendChild(pausedCell);
             row.appendChild(actionCell);
             tbody.appendChild(row);
         });

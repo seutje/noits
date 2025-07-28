@@ -46,4 +46,19 @@ describe('findPath with buildings', () => {
         expect(path).not.toBeNull();
         expect(path.some(p => p.x === 1 && p.y === 1)).toBe(false);
     });
+
+    test('floor on water becomes passable', () => {
+        const tiles = [
+            [0, 0, 0],
+            [0, 8, 0],
+            [0, 0, 0],
+        ];
+        const buildings = [{ x: 1, y: 1, type: BUILDING_TYPES.FLOOR }];
+        const map = new MockMap(tiles, buildings);
+        const path = findPath({ x: 0, y: 1 }, { x: 2, y: 1 }, map);
+        expect(path).toEqual([
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+        ]);
+    });
 });

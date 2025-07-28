@@ -5,7 +5,7 @@ import Oven from './oven.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import Furniture from './furniture.js';
-import { BUILDING_TYPES } from './constants.js';
+import { BUILDING_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
 
 export default class Map {
     constructor(width, height, tileSize, spriteManager) {
@@ -148,22 +148,25 @@ export default class Map {
         for (const { dx, dy } of directions) {
             const nx = x + dx;
             const ny = y + dy;
-            if (
-                nx >= 0 &&
-                nx < this.width &&
-                ny >= 0 &&
-                ny < this.height &&
-                this.getTile(nx, ny) !== 8 &&
-                !this.getBuildingAt(nx, ny)
-            ) {
-                if (fromX !== null && fromY !== null) {
-                    const dist = (fromX - nx) ** 2 + (fromY - ny) ** 2;
-                    if (dist < bestDist) {
-                        bestDist = dist;
-                        best = { x: nx, y: ny };
+            if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
+                const tile = this.getTile(nx, ny);
+                const b = this.getBuildingAt(nx, ny);
+                const buildingPassable = b
+                    ? BUILDING_TYPE_PROPERTIES[b.type]?.passable !== false
+                    : true;
+
+                if (tile !== 8 || buildingPassable) {
+                    if (!b || buildingPassable) {
+                        if (fromX !== null && fromY !== null) {
+                            const dist = (fromX - nx) ** 2 + (fromY - ny) ** 2;
+                            if (dist < bestDist) {
+                                bestDist = dist;
+                                best = { x: nx, y: ny };
+                            }
+                        } else {
+                            return { x: nx, y: ny };
+                        }
                     }
-                } else {
-                    return { x: nx, y: ny };
                 }
             }
         }

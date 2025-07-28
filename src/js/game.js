@@ -107,7 +107,8 @@ export default class Game {
                 ['cotton_2', 'src/assets/cotton_2.png'],
                 ['cotton_3', 'src/assets/cotton_3.png'],
                 ['cotton_pile', 'src/assets/cotton_pile.png'],
-                ['iron_ore_pile', 'src/assets/iron_ore_pile.png']
+                ['iron_ore_pile', 'src/assets/iron_ore_pile.png'],
+                ['construction', 'src/assets/construction.png']
             ];
             for (let i = 0; i < sprites.length; i++) {
                 const [name, src] = sprites[i];

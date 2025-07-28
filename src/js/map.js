@@ -98,6 +98,7 @@ export default class Map {
     }
 
     addBuilding(building) {
+        building.spriteManager = this.spriteManager;
         this.buildings.push(building);
     }
 
@@ -280,6 +281,7 @@ export default class Map {
                 building.width = 1;
                 building.height = 1;
             }
+            building.spriteManager = this.spriteManager;
             return building;
         });
     }

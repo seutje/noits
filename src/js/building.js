@@ -23,6 +23,9 @@ export default class Building {
 
         // Settler currently using this building (e.g., crafting station)
         this.occupant = null;
+
+        // Sprite manager assigned by the map
+        this.spriteManager = null;
     }
 
     addToInventory(type, quantity) {
@@ -74,8 +77,16 @@ export default class Building {
         const height = this.height * tileSize;
 
         if (this.buildProgress < 100) {
-            ctx.fillStyle = `rgba(169, 169, 169, ${this.buildProgress / 100})`;
-            ctx.fillRect(x, y, width, height);
+            const constructionSprite = this.spriteManager?.getSprite('construction');
+            if (constructionSprite) {
+                ctx.save();
+                ctx.globalAlpha = this.buildProgress / 100;
+                ctx.drawImage(constructionSprite, x, y, width, height);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = `rgba(169, 169, 169, ${this.buildProgress / 100})`;
+                ctx.fillRect(x, y, width, height);
+            }
             ctx.strokeStyle = 'black';
             ctx.strokeRect(x, y, width, height);
             return;

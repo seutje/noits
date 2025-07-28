@@ -16,7 +16,7 @@ describe('EventManager', () => {
         game = {
             settlers: [{ name: 'Alice', x: 1, y: 1, takeDamage: jest.fn() }],
             enemies: [],
-            map: { buildings: [] },
+            map: { buildings: [], addResourcePile: jest.fn(), tileSize: 1 },
             resourceManager: { addResource: jest.fn() },
             notificationManager: { addNotification: jest.fn() }
         };
@@ -42,7 +42,7 @@ describe('EventManager', () => {
         );
     });
 
-    test('Resource Discovery adds resource and notification', () => {
+    test('Resource Discovery creates pile and adds notification', () => {
         const manager = new EventManager(game, EnemyStub);
         jest.spyOn(Math, 'random')
             .mockReturnValueOnce(0.3) // pick Resource Discovery event
@@ -50,7 +50,12 @@ describe('EventManager', () => {
             .mockReturnValueOnce(0);    // quantity -> 20
         manager.triggerRandomEvent();
         Math.random.mockRestore();
-        expect(game.resourceManager.addResource).toHaveBeenCalledWith('wood', 20);
+        expect(game.map.addResourcePile).toHaveBeenCalled();
+        const createdPile = game.map.addResourcePile.mock.calls[0][0];
+        expect(createdPile.type).toBe('wood');
+        expect(createdPile.quantity).toBe(20);
+        expect(createdPile.x).toBe(0);
+        expect(createdPile.y).toBe(0);
         expect(game.notificationManager.addNotification).toHaveBeenCalledWith(
             'You discovered a new resource node!',
             'info'

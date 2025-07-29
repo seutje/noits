@@ -20,6 +20,7 @@ import WorldMap from './worldMap.js';
 import Faction from './faction.js';
 import TradeManager from './tradeManager.js';
 import Furniture from './furniture.js';
+import Wall from './wall.js';
 import Enemy from './enemy.js';
 import EventManager from './eventManager.js';
 import NotificationManager from './notificationManager.js';
@@ -767,7 +768,7 @@ export default class Game {
             } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE) {
                 newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === BUILDING_TYPES.WALL) {
-                newBuilding = new Building(BUILDING_TYPES.WALL, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, 1); // Walls require 1 wood
+                newBuilding = new Wall(tileX, tileY, this.spriteManager); // Walls require 1 wood
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Start with 0 health
             }

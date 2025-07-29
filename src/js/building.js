@@ -128,7 +128,7 @@ export default class Building {
         }
 
         if (this.type === BUILDING_TYPES.FLOOR && this.spriteManager) {
-            const floorSprite = this.spriteManager.getSprite(BUILDING_TYPES.FLOOR);
+            const floorSprite = this.spriteManager.getSprite('wood_texture');
             if (!this.floorPattern && floorSprite) {
                 this.floorPattern = ctx.createPattern(floorSprite, 'repeat');
             }

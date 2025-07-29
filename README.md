@@ -8,6 +8,7 @@ Noits is a 2D medieval colony management game built entirely with vanilla JavaSc
 - **Resource System**: Storage room system with piles for resources. Settlers gather wood, stone, ores and forage for berries or mushrooms.
 - **Settlers with Needs**: Hunger and sleep drive behaviour. Settlers pursue tasks through a simple AI and mood system.
 - **Task Queue**: Prioritised tasks for chopping trees, mining, hauling, farming and more.
+- **Automatic Task Pausing**: Tasks that get unassigned repeatedly are paused to prevent infinite reassignment.
 - **Building Construction**: Place walls, floors and furniture. Buildings require materials and have health.
 - **Crafting & Production**: Crafting stations, ovens and wells convert resources into useful items.
 - **Farming & Husbandry**: Farm plots grow crops like wheat or cotton. Animal pens hold livestock.

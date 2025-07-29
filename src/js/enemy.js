@@ -164,7 +164,9 @@ export default class Enemy {
         }
         ctx.fillStyle = 'white';
         ctx.font = '10px Arial';
-        ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);
+        ctx.textAlign = 'center';
+        ctx.fillText(this.name, this.x * 32 + 16, this.y * 32 - 5);
+        ctx.textAlign = 'start';
     }
 
     serialize() {

@@ -50,7 +50,5 @@ export default class Wall extends Building {
         if (this.connections.e) {
             ctx.fillRect(x + half, y + half - thickness / 2, half, thickness);
         }
-        ctx.strokeStyle = 'black';
-        ctx.strokeRect(x, y, tileSize, tileSize);
     }
 }

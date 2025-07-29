@@ -17,6 +17,7 @@ export const BUILDING_TYPES = {
   BARRICADE: 'barricade',
   BED: 'bed',
   TABLE: 'table',
+  DOOR: 'door',
   WELL: 'well'
 };
 
@@ -31,6 +32,7 @@ export const BUILDING_TYPE_PROPERTIES = {
   [BUILDING_TYPES.BARRICADE]: { passable: true },
   [BUILDING_TYPES.BED]: { passable: true },
   [BUILDING_TYPES.TABLE]: { passable: true },
+  [BUILDING_TYPES.DOOR]: { passable: true, enemyPassable: false },
   [BUILDING_TYPES.WELL]: { passable: true }
 };
 
@@ -155,6 +157,7 @@ export const SPRITES = [
   [RESOURCE_TYPES.MEAL, 'src/assets/meal.png'],
   [BUILDING_TYPES.TABLE, 'src/assets/table.png'],
   [BUILDING_TYPES.BED, 'src/assets/bed.png'],
+  [BUILDING_TYPES.DOOR, 'src/assets/door.png'],
   [BUILDING_TYPES.WELL, 'src/assets/well.png'],
   [RESOURCE_TYPES.BUCKET_WATER, 'src/assets/bucket_water.png'],
   ['wheat_1', 'src/assets/wheat_1.png'],

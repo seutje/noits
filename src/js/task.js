@@ -19,6 +19,7 @@ export default class Task {
         this.targetEnemy = targetEnemy; // For butcher tasks
         this.sourceX = sourceX; // For haul tasks from a source tile
         this.sourceY = sourceY; // For haul tasks from a source tile
+        this.unassignTimestamps = []; // Track when the task was unassigned
     }
 
     serialize() {
@@ -42,6 +43,7 @@ export default class Task {
             targetEnemy: this.targetEnemy ? { id: this.targetEnemy.id } : null,
             sourceX: this.sourceX,
             sourceY: this.sourceY,
+            unassignTimestamps: this.unassignTimestamps,
         };
     }
 
@@ -66,5 +68,6 @@ export default class Task {
         this.targetEnemy = data.targetEnemy; // Store raw data for now
         this.sourceX = data.sourceX;
         this.sourceY = data.sourceY;
+        this.unassignTimestamps = data.unassignTimestamps || [];
     }
 }

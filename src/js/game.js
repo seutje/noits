@@ -511,6 +511,12 @@ export default class Game {
     }
 
     unassignTask(task) {
+        const now = Date.now();
+        task.unassignTimestamps = task.unassignTimestamps.filter(t => now - t < 1000);
+        task.unassignTimestamps.push(now);
+        if (task.unassignTimestamps.length > 5) {
+            task.paused = true;
+        }
         if (!task.assigned) return;
         const settler = this.settlers.find(s => s.name === task.assigned);
         if (settler && settler.currentTask === task) {

@@ -1,6 +1,7 @@
 import Map from '../src/js/map.js';
 import ResourcePile from '../src/js/resourcePile.js';
 import Building from '../src/js/building.js';
+import Furniture from '../src/js/furniture.js';
 import { BUILDING_TYPES } from '../src/js/constants.js';
 
 describe('Map resource piles', () => {
@@ -94,12 +95,21 @@ describe('building placement rules', () => {
         expect(map.buildings.length).toBe(2);
     });
 
-    test('cannot place floor on existing building', () => {
+    test('cannot place floor on non-furniture building', () => {
         const map = new Map(5, 5, 32, { getSprite: jest.fn() });
         const wall = new Building(BUILDING_TYPES.WALL, 0, 0, 1, 1, 'stone', 0);
         const floor = new Building(BUILDING_TYPES.FLOOR, 0, 0, 1, 1, 'wood', 100);
         expect(map.addBuilding(wall)).toBe(true);
         expect(map.addBuilding(floor)).toBe(false);
         expect(map.buildings.length).toBe(1);
+    });
+
+    test('can place floor under furniture', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const bed = new Furniture(BUILDING_TYPES.BED, 2, 2, 1, 1, 'wood', 0);
+        const floor = new Building(BUILDING_TYPES.FLOOR, 2, 2, 1, 1, 'wood', 100);
+        expect(map.addBuilding(bed)).toBe(true);
+        expect(map.addBuilding(floor)).toBe(true);
+        expect(map.buildings.length).toBe(2);
     });
 });

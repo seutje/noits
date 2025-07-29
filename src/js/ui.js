@@ -646,25 +646,33 @@ export default class UI {
 
     renderSettlerOverview(settlers) {
         if (!this.gameInstance) return;
-        this.settlerOverlay.innerHTML = '';
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = 'X';
-        closeBtn.className = 'close-button';
-        closeBtn.onclick = () => this.hideSettlerOverview();
-        this.settlerOverlay.appendChild(closeBtn);
 
-        const table = document.createElement('table');
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        ['Name', 'Task', 'Health', 'Hunger', 'Sleep', 'Mood', 'Inventory'].forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
+        if (!this.settlerTable) {
+            this.settlerOverlay.innerHTML = '';
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'X';
+            closeBtn.className = 'close-button';
+            closeBtn.onclick = () => this.hideSettlerOverview();
+            this.settlerOverlay.appendChild(closeBtn);
 
-        const tbody = document.createElement('tbody');
+            this.settlerTable = document.createElement('table');
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            ['Name', 'Task', 'Health', 'Hunger', 'Sleep', 'Mood', 'Inventory'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            this.settlerTable.appendChild(thead);
+
+            this.settlerTbody = document.createElement('tbody');
+            this.settlerTable.appendChild(this.settlerTbody);
+            this.settlerOverlay.appendChild(this.settlerTable);
+        }
+
+        const tbody = this.settlerTbody;
+        tbody.innerHTML = '';
         settlers.forEach(settler => {
             const row = document.createElement('tr');
             const cells = [
@@ -683,8 +691,6 @@ export default class UI {
             });
             tbody.appendChild(row);
         });
-        table.appendChild(tbody);
-        this.settlerOverlay.appendChild(table);
     }
 
     showSettlerOverview() {

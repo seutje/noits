@@ -6,6 +6,7 @@ import Well from './well.js';
 import FarmPlot from './farmPlot.js';
 import AnimalPen from './animalPen.js';
 import Furniture from './furniture.js';
+import Wall from './wall.js';
 import { BUILDING_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
 import { debugWarn } from './debug.js';
 
@@ -100,7 +101,23 @@ export default class Map {
 
     addBuilding(building) {
         building.spriteManager = this.spriteManager;
+        building.map = this;
         this.buildings.push(building);
+        if (building.type === BUILDING_TYPES.WALL && typeof building.updateConnections === 'function') {
+            this.updateWallConnections(building.x, building.y);
+            const dirs = [
+                { dx: 0, dy: -1 },
+                { dx: 1, dy: 0 },
+                { dx: 0, dy: 1 },
+                { dx: -1, dy: 0 },
+            ];
+            for (const { dx, dy } of dirs) {
+                const neighbor = this.getBuildingAt(building.x + dx, building.y + dy);
+                if (neighbor && neighbor.type === BUILDING_TYPES.WALL) {
+                    this.updateWallConnections(neighbor.x, neighbor.y);
+                }
+            }
+        }
     }
 
     getTile(x, y) {
@@ -141,6 +158,20 @@ export default class Map {
 
     removeBuilding(buildingToRemove) {
         this.buildings = this.buildings.filter(building => building !== buildingToRemove);
+        if (buildingToRemove.type === BUILDING_TYPES.WALL) {
+            const dirs = [
+                { dx: 0, dy: -1 },
+                { dx: 1, dy: 0 },
+                { dx: 0, dy: 1 },
+                { dx: -1, dy: 0 },
+            ];
+            for (const { dx, dy } of dirs) {
+                const neighbor = this.getBuildingAt(buildingToRemove.x + dx, buildingToRemove.y + dy);
+                if (neighbor && neighbor.type === BUILDING_TYPES.WALL && typeof neighbor.updateConnections === 'function') {
+                    this.updateWallConnections(neighbor.x, neighbor.y);
+                }
+            }
+        }
     }
 
     getAllBuildings() {
@@ -292,6 +323,8 @@ export default class Map {
                 building = new FarmPlot(buildingData.x, buildingData.y, this.spriteManager);
             } else if (buildingData.type === BUILDING_TYPES.ANIMAL_PEN) {
                 building = new AnimalPen(buildingData.x, buildingData.y);
+            } else if (buildingData.type === BUILDING_TYPES.WALL) {
+                building = new Wall(buildingData.x, buildingData.y, this.spriteManager);
             } else if (buildingData.type === BUILDING_TYPES.BED || buildingData.type === BUILDING_TYPES.TABLE) {
                 building = new Furniture(buildingData.type, buildingData.x, buildingData.y, 1, 1, buildingData.material, buildingData.health, this.spriteManager);
             } else {
@@ -303,7 +336,23 @@ export default class Map {
                 building.height = 1;
             }
             building.spriteManager = this.spriteManager;
+            building.map = this;
             return building;
         });
+        this.updateAllWallConnections();
+    }
+
+    updateWallConnections(x, y) {
+        const wall = this.getBuildingAt(x, y);
+        if (!wall || wall.type !== BUILDING_TYPES.WALL || typeof wall.updateConnections !== 'function') return;
+        wall.updateConnections();
+    }
+
+    updateAllWallConnections() {
+        for (const building of this.buildings) {
+            if (building.type === BUILDING_TYPES.WALL) {
+                this.updateWallConnections(building.x, building.y);
+            }
+        }
     }
 }

@@ -104,8 +104,18 @@ export default class Map {
         building.map = this;
 
         const existing = this.getBuildingsAt(building.x, building.y);
+        const hasFloor = existing.some(b => b.type === BUILDING_TYPES.FLOOR);
         const hasNonFloor = existing.some(b => b.type !== BUILDING_TYPES.FLOOR);
-        if (hasNonFloor || (existing.length > 0 && building.type === BUILDING_TYPES.FLOOR)) {
+        const hasNonFurniture = existing.some(
+            b => b.type !== BUILDING_TYPES.FLOOR && !b.isFurniture,
+        );
+
+        if (building.type === BUILDING_TYPES.FLOOR) {
+            if (hasFloor || hasNonFurniture) {
+                debugWarn(`Tile ${building.x},${building.y} already has a building.`);
+                return false;
+            }
+        } else if (hasNonFloor) {
             debugWarn(`Tile ${building.x},${building.y} already has a building.`);
             return false;
         }

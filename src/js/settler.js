@@ -991,9 +991,6 @@ export default class Settler {
         ctx.fillStyle = 'white';
         ctx.font = '10px Arial';
         ctx.fillText(this.name, this.x * 32, this.y * 32 - 5);
-        ctx.fillText(this.state, this.x * 32, this.y * 32 + 40);
-        ctx.fillText(this.getStatus(), this.x * 32, this.y * 32 + 50);
-        ctx.fillText(`Health: ${this.health.toFixed(1)}`, this.x * 32, this.y * 32 + 60);
     }
 
     getStatus() {

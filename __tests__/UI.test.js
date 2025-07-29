@@ -103,6 +103,18 @@ describe('UI tooltips', () => {
         expect(ui.settlerOverlay.style.display).toBe('none');
     });
 
+    test('wheel on settler overlay does not bubble to window', () => {
+        const ui = new UI({});
+        ui.setGameInstance({ settlers: [] });
+        ui.showSettlerOverview();
+        const handler = jest.fn();
+        window.addEventListener('wheel', handler);
+        ui.settlerOverlay.dispatchEvent(new Event('wheel', { bubbles: true }));
+        expect(handler).not.toHaveBeenCalled();
+        window.removeEventListener('wheel', handler);
+        ui.hideSettlerOverview();
+    });
+
     test('trigger event button triggers event manager', () => {
         const ui = new UI({});
         const mockGame = { eventManager: { triggerRandomEvent: jest.fn() } };

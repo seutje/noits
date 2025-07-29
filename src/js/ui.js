@@ -223,6 +223,9 @@ export default class UI {
         this.settlerOverlay.addEventListener('click', (event) => {
             event.stopPropagation();
         });
+        this.settlerOverlay.addEventListener('wheel', (event) => {
+            event.stopPropagation();
+        });
         document.body.appendChild(this.settlerOverlay);
 
         this.farmPlotMenu = document.createElement('div');

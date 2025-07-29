@@ -25,13 +25,6 @@ export default class UI {
         this.timeElement.id = 'time-display';
         this.uiContainer.appendChild(this.timeElement);
 
-        this.resourcesElement = document.createElement('span');
-        this.resourcesElement.id = 'resources-display';
-        this.uiContainer.appendChild(this.resourcesElement);
-
-        this.settlersElement = document.createElement('div');
-        this.settlersElement.id = 'settlers-display';
-        this.uiContainer.appendChild(this.settlersElement);
 
         this.temperatureElement = document.createElement('span');
         this.temperatureElement.id = 'temperature-display';
@@ -460,29 +453,11 @@ export default class UI {
         this.gameInstance = gameInstance;
     }
 
-    update(gameTime, resourceString, settlers, temperature) {
+    update(gameTime, temperature) {
         this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
-        this.resourcesElement.textContent = `Resources: ${resourceString}`;
         this.temperatureElement.textContent = `Temperature: ${temperature.toFixed(1)}°C`;
-        this.settlersElement.innerHTML = '';
-        settlers.forEach(settler => {
-            const settlerDiv = document.createElement('div');
-            settlerDiv.innerHTML = `<strong>${settler.name}</strong> -
-                Health: <span class="tooltip-trigger" data-tooltip-text="Current Health: ${settler.health.toFixed(1)} / 100">${settler.health.toFixed(1)}</span> |
-                Hunger: <span class="tooltip-trigger" data-tooltip-text="Hunger: ${settler.hunger.toFixed(1)}%">${settler.hunger.toFixed(1)}</span> |
-                Sleep: <span class="tooltip-trigger" data-tooltip-text="Sleep: ${settler.sleep.toFixed(1)}%">${settler.sleep.toFixed(1)}</span> |
-                Mood: <span class="tooltip-trigger" data-tooltip-text="Mood: ${settler.mood.toFixed(1)}%">${settler.mood.toFixed(1)}</span> |
-                Status: <span class="tooltip-trigger" data-tooltip-text="Current Status: ${settler.getStatus()}">${settler.getStatus()}</span>`;
-            
-            // Attach event listeners to tooltip triggers
-            settlerDiv.querySelectorAll('.tooltip-trigger').forEach(span => {
-                span.addEventListener('mouseover', (event) => this.showTooltip(event.target.dataset.tooltipText));
-                span.addEventListener('mouseout', () => this.hideTooltip());
-            });
-            this.settlersElement.appendChild(settlerDiv);
-        });
-        if (this.settlerOverlay.style.display === 'block') {
-            this.renderSettlerOverview(settlers);
+        if (this.settlerOverlay.style.display === 'block' && this.gameInstance) {
+            this.renderSettlerOverview(this.gameInstance.settlers);
         }
     }
 

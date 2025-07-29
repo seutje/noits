@@ -565,6 +565,7 @@ export default class Game {
             settlers: this.settlers.map(settler => settler.serialize()),
             resources: this.resourceManager.serialize(),
             map: this.map.serialize(),
+            rooms: this.roomManager.serialize(),
             gameTime: this.gameTime,
             gameSpeed: this.gameSpeed,
             temperature: this.temperature,
@@ -614,6 +615,7 @@ export default class Game {
 
             // Restore map (buildings, resource piles)
             this.map.deserialize(gameState.map);
+            this.roomManager.deserialize(gameState.rooms);
 
             this.gameTime = gameState.gameTime;
             this.gameSpeed = gameState.gameSpeed;

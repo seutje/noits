@@ -18,6 +18,7 @@ Noits is a 2D medieval colony management game built entirely with vanilla JavaSc
 - **Rooms & Storage**: Designate rooms (bedrooms, storage) and manage inventories.
 - **UI & Notifications**: Tooltips, overlays and alerts keep you informed.
 - **Save/Load**: Game state can be saved to and loaded from local storage.
+- **Development Menu**: Provides debug tools like manual event triggering.
 
 ## Buildings
 The following building types are available:

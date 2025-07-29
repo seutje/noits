@@ -162,11 +162,15 @@ export default class Enemy {
             ctx.fillStyle = 'red';
             ctx.fillRect(this.x * 32, this.y * 32, 32, 32);
         }
+        ctx.save();
         ctx.fillStyle = 'white';
         ctx.font = '10px Arial';
         ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
         ctx.fillText(this.name, this.x * 32 + 16, this.y * 32 - 5);
-        ctx.textAlign = 'start';
+        ctx.restore();
     }
 
     serialize() {

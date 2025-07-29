@@ -768,7 +768,7 @@ export default class Game {
             } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE) {
                 newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
             } else if (this.selectedBuilding === BUILDING_TYPES.WALL) {
-                newBuilding = new Wall(tileX, tileY, this.spriteManager); // Walls require 1 wood
+                newBuilding = new Wall(tileX, tileY, this.spriteManager); // Walls require 1 stone
             } else {
                 newBuilding = new Building(this.selectedBuilding, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Start with 0 health
             }

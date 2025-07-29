@@ -22,7 +22,7 @@ Noits is a 2D medieval colony management game built entirely with vanilla JavaSc
 
 ## Buildings
 The following building types are available:
-- **Wall** – Impassable barrier for defence.
+- **Wall** – Impassable barrier for defence. Costs 1 stone to build.
 - **Floor** – Basic flooring allowing passage.
 - **Crafting Station** – Produces planks, bandages and buckets.
 - **Oven** – Bakes bread from wheat and prepares meals.

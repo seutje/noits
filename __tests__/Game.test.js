@@ -156,7 +156,7 @@ describe('Game', () => {
             expectedTileY,
             1,
             1,
-            'wood',
+            'stone',
             0,
             1
         );

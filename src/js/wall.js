@@ -3,7 +3,7 @@ import { BUILDING_TYPES, RESOURCE_TYPES } from './constants.js';
 
 export default class Wall extends Building {
     constructor(x, y, spriteManager = null) {
-        super(BUILDING_TYPES.WALL, x, y, 1, 1, RESOURCE_TYPES.WOOD, 0, 1);
+        super(BUILDING_TYPES.WALL, x, y, 1, 1, RESOURCE_TYPES.STONE, 0, 1);
         this.drawBase = false;
         this.spriteManager = spriteManager;
         this.wallSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.WALL) : null;

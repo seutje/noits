@@ -3,9 +3,10 @@ import { BUILDING_TYPES, RESOURCE_TYPES } from './constants.js';
 
 export default class Wall extends Building {
     constructor(x, y, spriteManager = null) {
-        super(BUILDING_TYPES.WALL, x, y, 1, 1, RESOURCE_TYPES.WOOD, 0, 1);
+        super(BUILDING_TYPES.WALL, x, y, 1, 1, RESOURCE_TYPES.STONE, 0, 1);
         this.drawBase = false;
         this.spriteManager = spriteManager;
+        this.wallSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.WALL) : null;
         this.connections = { n: false, e: false, s: false, w: false };
     }
 
@@ -32,11 +33,17 @@ export default class Wall extends Building {
         }
         const x = this.x * tileSize;
         const y = this.y * tileSize;
+        const wallColor = this.material === RESOURCE_TYPES.WOOD ? '#8b4513' : '#808080';
+        if (this.wallSprite) {
+            ctx.drawImage(this.wallSprite, x, y, tileSize, tileSize);
+        } else {
+            ctx.fillStyle = wallColor;
+            ctx.fillRect(x, y, tileSize, tileSize);
+        }
+
         const half = tileSize / 2;
         const thickness = tileSize * 0.6;
-        const color = this.material === RESOURCE_TYPES.WOOD ? '#8b4513' : '#808080';
-
-        ctx.fillStyle = color;
+        ctx.fillStyle = wallColor;
         ctx.fillRect(x + half - thickness / 2, y + half - thickness / 2, thickness, thickness);
         if (this.connections.n) {
             ctx.fillRect(x + half - thickness / 2, y, thickness, half);

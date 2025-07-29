@@ -153,6 +153,7 @@ export const SPRITES = [
   [BUILDING_TYPES.TABLE, 'src/assets/table.png'],
   [BUILDING_TYPES.BED, 'src/assets/bed.png'],
   [BUILDING_TYPES.WELL, 'src/assets/well.png'],
+  [BUILDING_TYPES.WALL, 'src/assets/wall.png'],
   [RESOURCE_TYPES.BUCKET_WATER, 'src/assets/bucket_water.png'],
   ['wheat_1', 'src/assets/wheat_1.png'],
   ['wheat_2', 'src/assets/wheat_2.png'],

@@ -732,6 +732,16 @@ export default class Game {
 
         if (this.buildMode && this.selectedBuilding) {
             const existingBuilding = this.map.getBuildingAt(tileX, tileY);
+            const buildingsHere = this.map.getBuildingsAt(tileX, tileY);
+            const hasNonFloor = buildingsHere.some(b => b.type !== BUILDING_TYPES.FLOOR);
+
+            if (
+                (this.selectedBuilding === BUILDING_TYPES.FLOOR && buildingsHere.length > 0) ||
+                (this.selectedBuilding !== BUILDING_TYPES.FLOOR && hasNonFloor)
+            ) {
+                debugLog('Cannot build on top of an existing building.');
+                return;
+            }
             if (
                 clickedTile === 8 &&
                 this.selectedBuilding !== BUILDING_TYPES.FLOOR &&

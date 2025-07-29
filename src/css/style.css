@@ -122,6 +122,43 @@ input[type="range"] {
     z-index: 1001;
 }
 
+#settler-overlay {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    max-height: 400px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: none;
+    overflow-y: auto;
+    z-index: 1001;
+}
+#settler-overlay table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#settler-overlay th {
+    text-align: left;
+    padding: 5px;
+    border-bottom: 1px solid #444;
+}
+
+#settler-overlay td {
+    padding: 5px;
+}
+
+#settler-overlay .close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
 #task-overlay table {
     width: 100%;
     border-collapse: collapse;

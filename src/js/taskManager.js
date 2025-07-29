@@ -129,6 +129,7 @@ export default class TaskManager {
                 }
 
                 bestSettler.currentTask = task;
+                bestSettler.state = task.type;
                 task.assigned = bestSettler.name;
                 if (task.building) {
                     task.building.occupant = bestSettler;

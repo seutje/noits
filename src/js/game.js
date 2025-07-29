@@ -525,6 +525,9 @@ export default class Game {
                 settler.currentBuilding = null;
             }
             settler.currentTask = null;
+            if (settler.state === task.type) {
+                settler.state = 'idle';
+            }
         }
         if (task.building && task.building.occupant === settler) {
             task.building.occupant = null;

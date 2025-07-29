@@ -340,7 +340,12 @@ describe('Settler', () => {
 
         settler.updateNeeds(1000); // Simulate enough time for task to complete
         expect(mockRoomManager.getRoomAt).toHaveBeenCalledWith(1, 1);
-        expect(mockRoomManager.addResourceToStorage).toHaveBeenCalledWith({ type: 'storage' }, 'wood', 1);
+        expect(mockRoomManager.addResourceToStorage).toHaveBeenCalledWith(
+            { type: 'storage' },
+            'wood',
+            1,
+            undefined
+        );
         expect(settler.carrying).toBe(null);
         expect(settler.currentTask).toBe(null);
     });
@@ -357,7 +362,11 @@ describe('Settler', () => {
         settler.y = 0;
 
         settler.updateNeeds(1000); // pick up pile
-        expect(settler.carrying).toEqual({ type: 'wood', quantity: 1 });
+        expect(settler.carrying).toEqual({
+            type: 'wood',
+            quantity: 1,
+            hungerRestoration: 0
+        });
         expect(settler.currentTask.targetX).toBe(1);
         expect(settler.currentTask.targetY).toBe(1);
 
@@ -375,7 +384,7 @@ describe('Settler', () => {
         mockRoomManager.getRoomAt = jest.fn().mockReturnValue(storageRoom);
         mockRoomManager.removeResourceFromStorage = jest.fn((room, type, qty) => {
             room.storage[type] -= qty;
-            return true;
+            return { type, quantity: qty, hungerRestoration: FOOD_HUNGER_VALUES[type] };
         });
         settler.hunger = 10;
 
@@ -385,6 +394,28 @@ describe('Settler', () => {
         expect(settler.state).toBe('idle');
         const expectedHunger = 10 - 0.01 + FOOD_HUNGER_VALUES[RESOURCE_TYPES.BERRIES];
         expect(settler.hunger).toBeCloseTo(expectedHunger, 2);
+    });
+
+    test('settlers prefer meals based on hunger value', () => {
+        const storageRoom = { id: 1, type: 'storage', tiles: [{ x: 0, y: 0 }], storage: { meal: 1 } };
+        const mealPile = new ResourcePile(RESOURCE_TYPES.MEAL, 1, 0, 0, 1, { getSprite: jest.fn() });
+        mealPile.hungerRestoration = 50;
+        mockMap.resourcePiles.push(mealPile);
+        mockRoomManager.rooms = [storageRoom];
+        mockRoomManager.getRoomAt = jest.fn().mockReturnValue(storageRoom);
+        mockRoomManager.removeResourceFromStorage = jest.fn((room, type, qty) => {
+            room.storage[type] -= qty;
+            mealPile.remove(1);
+            return { type, quantity: qty, hungerRestoration: mealPile.hungerRestoration };
+        });
+        settler.hunger = 10;
+
+        settler.updateNeeds(1000);
+
+        expect(mockRoomManager.removeResourceFromStorage).toHaveBeenCalledWith(storageRoom, 'meal', 1);
+        expect(settler.state).toBe('idle');
+        const expected = 10 - 0.01 + 50;
+        expect(settler.hunger).toBeCloseTo(expected, 2);
     });
 
     test('should butcher dead enemy', () => {
@@ -448,7 +479,11 @@ describe('Settler', () => {
         const dropped = settler.map.addResourcePile.mock.calls[0][0];
         expect(dropped.type).toBe('wood');
         expect(dropped.quantity).toBe(1);
-        expect(settler.carrying).toEqual({ type: 'stone', quantity: 1 });
+        expect(settler.carrying).toEqual({
+            type: 'stone',
+            quantity: 1,
+            hungerRestoration: FOOD_HUNGER_VALUES[RESOURCE_TYPES.STONE] ?? 0
+        });
     });
 
     test('should drop carried resource when hauling priority is 0', () => {
@@ -502,7 +537,11 @@ describe('Settler', () => {
         // Arrive at pile and pick up bandage
         settler.x = 1;
         settler.updateNeeds(1000);
-        expect(settler.carrying).toEqual({ type: 'bandage', quantity: 1 });
+        expect(settler.carrying).toEqual({
+            type: 'bandage',
+            quantity: 1,
+            hungerRestoration: FOOD_HUNGER_VALUES[RESOURCE_TYPES.BANDAGE] ?? 0
+        });
         expect(settler.currentTask.stage).toBe('treat');
         expect(settler.currentTask.targetX).toBe(0);
 

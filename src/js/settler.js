@@ -83,7 +83,7 @@ export default class Settler {
         }
     }
 
-    pickUpPile(type, quantity) {
+    pickUpPile(type, quantity, hungerRestoration = FOOD_HUNGER_VALUES[type] ?? 0) {
         if (this.carrying) {
             const dropX = Math.floor(this.x);
             const dropY = Math.floor(this.y);
@@ -95,7 +95,7 @@ export default class Settler {
                 this.map.addResourcePile(newPile);
             }
         }
-        this.carrying = { type, quantity };
+        this.carrying = { type, quantity, hungerRestoration };
     }
 
     dropCarriedResource() {
@@ -224,15 +224,30 @@ export default class Settler {
             let bestFood = null;
             let bestRoom = null;
             let bestValue = -Infinity;
+            let bestHunger = 0;
 
             for (const room of storageRooms) {
                 for (const food of Object.keys(FOOD_HUNGER_VALUES)) {
+                    if (food === RESOURCE_TYPES.MEAL) continue;
                     if (room.storage[food] && room.storage[food] > 0) {
                         const value = FOOD_HUNGER_VALUES[food] ?? 0;
                         if (value > bestValue) {
                             bestValue = value;
                             bestFood = food;
                             bestRoom = room;
+                            bestHunger = value;
+                        }
+                    }
+                }
+                for (const tile of room.tiles) {
+                    const pile = this.map.resourcePiles.find(p => p.x === tile.x && p.y === tile.y && p.type === RESOURCE_TYPES.MEAL);
+                    if (pile && pile.quantity > 0) {
+                        const value = pile.hungerRestoration ?? 0;
+                        if (value > bestValue) {
+                            bestValue = value;
+                            bestFood = RESOURCE_TYPES.MEAL;
+                            bestRoom = room;
+                            bestHunger = value;
                         }
                     }
                 }
@@ -245,7 +260,8 @@ export default class Settler {
                     targetX: targetTile.x,
                     targetY: targetTile.y,
                     foodType: bestFood,
-                    room: bestRoom
+                    room: bestRoom,
+                    hungerValue: bestHunger,
                 };
                 debugLog(`${this.name} is moving to eat ${bestFood} from storage.`);
             }
@@ -687,8 +703,12 @@ export default class Settler {
                         this.path = null; // Task completed immediately after action
                     } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
                         const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
-                        if (room && room.type === "storage" && this.roomManager.removeResourceFromStorage(room, this.currentTask.foodType, 1)) {
-                            this.hunger += FOOD_HUNGER_VALUES[this.currentTask.foodType] ?? 0;
+                        const consumed = room && room.type === "storage"
+                            ? this.roomManager.removeResourceFromStorage(room, this.currentTask.foodType, 1)
+                            : null;
+                        if (consumed) {
+                            const value = consumed.hungerRestoration ?? this.currentTask.hungerValue ?? FOOD_HUNGER_VALUES[this.currentTask.foodType] ?? 0;
+                            this.hunger += value;
                             if (this.hunger > 100) this.hunger = 100;
                             this.state = "idle";
                             debugLog(`${this.name} ate ${this.currentTask.foodType} from storage.`);
@@ -728,6 +748,7 @@ export default class Settler {
                                     this.pickUpPile(
                                         this.currentTask.resourceType,
                                         this.currentTask.quantity,
+                                        pile.hungerRestoration,
                                     );
                                     this.currentTask.resource = this.carrying;
                                     const pos = this.map.findAdjacentFreeTile(
@@ -764,7 +785,11 @@ export default class Settler {
                                 if (room && room.type === "storage") {
                                     room.storage[pile.type] -= this.currentTask.quantity;
                                 }
-                                this.pickUpPile(this.currentTask.resourceType, this.currentTask.quantity);
+                                this.pickUpPile(
+                                    this.currentTask.resourceType,
+                                    this.currentTask.quantity,
+                                    pile.hungerRestoration,
+                                );
                                 this.currentTask.resource = this.carrying;
                                 const target = this.roomManager.findStorageRoomAndTile(this.currentTask.resourceType);
                                 if (target) {
@@ -785,7 +810,12 @@ export default class Settler {
                     } else if (this.currentTask.type === TASK_TYPES.HAUL && this.currentTask.resource) {
                         const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                         if (room && room.type === "storage") {
-                            const success = this.roomManager.addResourceToStorage(room, this.currentTask.resource.type, this.currentTask.resource.quantity);
+                            const success = this.roomManager.addResourceToStorage(
+                                room,
+                                this.currentTask.resource.type,
+                                this.currentTask.resource.quantity,
+                                this.currentTask.resource.hungerRestoration,
+                            );
                             if (success) {
                                 debugLog(`${this.name} deposited ${this.currentTask.resource.type} into storage.`);
                             } else {

@@ -6,7 +6,7 @@ export default class Wall extends Building {
         super(BUILDING_TYPES.WALL, x, y, 1, 1, RESOURCE_TYPES.STONE, 0, 1);
         this.drawBase = false;
         this.spriteManager = spriteManager;
-        this.wallSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.WALL) : null;
+        this.wallSprite = spriteManager ? spriteManager.getSprite('stone_texture') : null;
         this.wallPattern = null;
         this.connections = { n: false, e: false, s: false, w: false };
     }

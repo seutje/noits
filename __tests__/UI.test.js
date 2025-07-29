@@ -80,6 +80,29 @@ describe('UI tooltips', () => {
         expect(ui.taskManagerButton.parentElement).toBe(ui.devMenu);
     });
 
+    test('settlers button is placed in dev menu', () => {
+        const ui = new UI({});
+        const button = Array.from(ui.devMenu.querySelectorAll('button')).find(b => b.textContent === 'Settlers');
+        expect(button).not.toBeNull();
+        expect(button.parentElement).toBe(ui.devMenu);
+    });
+
+    test('showSettlerOverview displays settlers', () => {
+        const ui = new UI({});
+        const settlers = [
+            { name: 'Alice', currentTask: { type: 'build' }, health: 90, hunger: 50, sleep: 60, mood: 80, carrying: { type: 'wood', quantity: 1 } },
+            { name: 'Bob', currentTask: null, health: 100, hunger: 100, sleep: 100, mood: 100, carrying: null }
+        ];
+        const mockGame = { settlers };
+        ui.setGameInstance(mockGame);
+        ui.showSettlerOverview();
+        expect(ui.settlerOverlay.style.display).toBe('block');
+        expect(ui.settlerOverlay.querySelector('table')).not.toBeNull();
+        expect(ui.settlerOverlay.querySelectorAll('tbody tr').length).toBe(2);
+        ui.hideSettlerOverview();
+        expect(ui.settlerOverlay.style.display).toBe('none');
+    });
+
     test('trigger event button triggers event manager', () => {
         const ui = new UI({});
         const mockGame = { eventManager: { triggerRandomEvent: jest.fn() } };

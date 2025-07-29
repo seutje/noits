@@ -153,6 +153,11 @@ export default class UI {
         this.taskManagerButton.onclick = () => this.toggleTaskManager();
         this.devMenu.appendChild(this.taskManagerButton);
 
+        this.settlersButton = document.createElement('button');
+        this.settlersButton.textContent = 'Settlers';
+        this.settlersButton.onclick = () => this.toggleSettlerOverview();
+        this.devMenu.appendChild(this.settlersButton);
+
         this.triggerEventButton = document.createElement('button');
         this.triggerEventButton.textContent = 'Trigger Event';
         this.triggerEventButton.onclick = (event) => {
@@ -208,6 +213,17 @@ export default class UI {
             event.stopPropagation();
         });
         document.body.appendChild(this.taskOverlay);
+
+        this.settlerOverlay = document.createElement('div');
+        this.settlerOverlay.id = 'settler-overlay';
+        this.settlerOverlay.style.display = 'none';
+        this.settlerOverlay.addEventListener('mousedown', (event) => {
+            event.stopPropagation();
+        });
+        this.settlerOverlay.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+        document.body.appendChild(this.settlerOverlay);
 
         this.farmPlotMenu = document.createElement('div');
         this.farmPlotMenu.id = 'farm-plot-menu';
@@ -448,11 +464,11 @@ export default class UI {
         this.settlersElement.innerHTML = '';
         settlers.forEach(settler => {
             const settlerDiv = document.createElement('div');
-            settlerDiv.innerHTML = `<strong>${settler.name}</strong> - 
-                Health: <span class="tooltip-trigger" data-tooltip-text="Current Health: ${settler.health.toFixed(1)} / 100">${settler.health.toFixed(1)}</span> | 
-                Hunger: <span class="tooltip-trigger" data-tooltip-text="Hunger: ${settler.hunger.toFixed(1)}%">${settler.hunger.toFixed(1)}</span> | 
-                Sleep: <span class="tooltip-trigger" data-tooltip-text="Sleep: ${settler.sleep.toFixed(1)}%">${settler.sleep.toFixed(1)}</span> | 
-                Mood: <span class="tooltip-trigger" data-tooltip-text="Mood: ${settler.mood.toFixed(1)}%">${settler.mood.toFixed(1)}</span> | 
+            settlerDiv.innerHTML = `<strong>${settler.name}</strong> -
+                Health: <span class="tooltip-trigger" data-tooltip-text="Current Health: ${settler.health.toFixed(1)} / 100">${settler.health.toFixed(1)}</span> |
+                Hunger: <span class="tooltip-trigger" data-tooltip-text="Hunger: ${settler.hunger.toFixed(1)}%">${settler.hunger.toFixed(1)}</span> |
+                Sleep: <span class="tooltip-trigger" data-tooltip-text="Sleep: ${settler.sleep.toFixed(1)}%">${settler.sleep.toFixed(1)}</span> |
+                Mood: <span class="tooltip-trigger" data-tooltip-text="Mood: ${settler.mood.toFixed(1)}%">${settler.mood.toFixed(1)}</span> |
                 Status: <span class="tooltip-trigger" data-tooltip-text="Current Status: ${settler.getStatus()}">${settler.getStatus()}</span>`;
             
             // Attach event listeners to tooltip triggers
@@ -462,6 +478,9 @@ export default class UI {
             });
             this.settlersElement.appendChild(settlerDiv);
         });
+        if (this.settlerOverlay.style.display === 'block') {
+            this.renderSettlerOverview(settlers);
+        }
     }
 
     showHelp() {
@@ -622,6 +641,67 @@ export default class UI {
             this.showTaskManager();
         } else {
             this.hideTaskManager();
+        }
+    }
+
+    renderSettlerOverview(settlers) {
+        if (!this.gameInstance) return;
+        this.settlerOverlay.innerHTML = '';
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'X';
+        closeBtn.className = 'close-button';
+        closeBtn.onclick = () => this.hideSettlerOverview();
+        this.settlerOverlay.appendChild(closeBtn);
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['Name', 'Task', 'Health', 'Hunger', 'Sleep', 'Mood', 'Inventory'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        settlers.forEach(settler => {
+            const row = document.createElement('tr');
+            const cells = [
+                settler.name,
+                settler.currentTask ? settler.currentTask.type : '',
+                settler.health.toFixed(1),
+                settler.hunger.toFixed(1),
+                settler.sleep.toFixed(1),
+                settler.mood.toFixed(1),
+                settler.carrying ? `${settler.carrying.quantity} ${settler.carrying.type}` : ''
+            ];
+            cells.forEach(text => {
+                const td = document.createElement('td');
+                td.textContent = text;
+                row.appendChild(td);
+            });
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        this.settlerOverlay.appendChild(table);
+    }
+
+    showSettlerOverview() {
+        if (!this.gameInstance) return;
+        this.renderSettlerOverview(this.gameInstance.settlers);
+        this.settlerOverlay.style.display = 'block';
+    }
+
+    hideSettlerOverview() {
+        this.settlerOverlay.style.display = 'none';
+    }
+
+    toggleSettlerOverview() {
+        if (this.settlerOverlay.style.display === 'none') {
+            this.showSettlerOverview();
+        } else {
+            this.hideSettlerOverview();
         }
     }
 

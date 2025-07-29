@@ -142,6 +142,8 @@ export default class Enemy {
         let enemySprite;
         if (this.name === "Wild Boar") {
             enemySprite = this.spriteManager.getSprite('wild_boar');
+        } else if (this.name === "Deer") {
+            enemySprite = this.spriteManager.getSprite('deer');
         } else {
             enemySprite = this.spriteManager.getSprite('goblin'); // Default to goblin sprite for other enemies
         }

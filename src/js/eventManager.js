@@ -2,6 +2,7 @@ import { debugLog } from './debug.js';
 
 import ResourcePile from './resourcePile.js';
 import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
+import Deer from './deer.js';
 export default class EventManager {
     constructor(game, EnemyClass) {
         this.EnemyClass = EnemyClass;
@@ -123,6 +124,17 @@ export default class EventManager {
                         debugLog("A goblin has appeared!");
                         this.game.notificationManager.addNotification("A goblin has appeared!", 'warning');
                     }
+                }
+            },
+            {
+                name: "Wild Deer",
+                description: "A wild deer has appeared!",
+                condition: () => true,
+                action: () => {
+                    debugLog("Event: Wild Deer!");
+                    this.game.notificationManager.addNotification("A wild deer has appeared!", 'info');
+                    this.game.enemies.push(new Deer(49, 29, this.game.map, this.game.spriteManager));
+                    debugLog("A wild deer has appeared!");
                 }
             }
         ];

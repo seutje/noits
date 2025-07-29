@@ -13,6 +13,7 @@ Noits is a 2D medieval colony management game built entirely with vanilla JavaSc
 - **Crafting & Production**: Crafting stations, ovens and wells convert resources into useful items.
 - **Farming & Husbandry**: Farm plots grow crops like wheat or cotton. Animal pens hold livestock.
 - **Exploration & Events**: Send settlers to new locations and face random events such as wild animal attacks or resource discoveries.
+- **Wild Deer Encounters**: Non-aggressive deer occasionally appear and wander the map, eating mushrooms or berries if they find them.
 - **Combat & Health**: Settlers equip weapons and armour, suffer injuries and can be treated.
 - **Rooms & Storage**: Designate rooms (bedrooms, storage) and manage inventories.
 - **UI & Notifications**: Tooltips, overlays and alerts keep you informed.

@@ -333,6 +333,7 @@ export default class Settler {
 
         // Execute current task
         if (this.currentTask) {
+            this.state = this.currentTask.type;
             // Ensure hauling tasks head to the resource pile first
             if (
                 this.currentTask.type === TASK_TYPES.HAUL &&
@@ -1200,6 +1201,7 @@ export default class Settler {
             } else {
                 this.currentTask = { ...data.currentTask };
             }
+            this.state = this.currentTask ? this.currentTask.type : this.state;
         }
         // targetEnemy will need to be re-linked by the Game class after all entities are deserialized
         this.targetEnemy = null;

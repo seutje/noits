@@ -6,6 +6,8 @@ export default class Wall extends Building {
         super(BUILDING_TYPES.WALL, x, y, 1, 1, RESOURCE_TYPES.WOOD, 0, 1);
         this.drawBase = false;
         this.spriteManager = spriteManager;
+        this.wallSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.WALL) : null;
+        this.wallPattern = null;
         this.connections = { n: false, e: false, s: false, w: false };
     }
 
@@ -34,9 +36,11 @@ export default class Wall extends Building {
         const y = this.y * tileSize;
         const half = tileSize / 2;
         const thickness = tileSize * 0.6;
-        const color = this.material === RESOURCE_TYPES.WOOD ? '#8b4513' : '#808080';
+        if (!this.wallPattern && this.wallSprite) {
+            this.wallPattern = ctx.createPattern(this.wallSprite, 'repeat');
+        }
 
-        ctx.fillStyle = color;
+        ctx.fillStyle = this.wallPattern || (this.material === RESOURCE_TYPES.WOOD ? '#8b4513' : '#808080');
         ctx.fillRect(x + half - thickness / 2, y + half - thickness / 2, thickness, thickness);
         if (this.connections.n) {
             ctx.fillRect(x + half - thickness / 2, y, thickness, half);

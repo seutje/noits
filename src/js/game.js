@@ -862,9 +862,12 @@ export default class Game {
                 } else if (clickedTile === 6) { // If wild food is clicked
                     this.taskManager.addTask(new Task(TASK_TYPES.MUSHROOM, tileX, tileY, RESOURCE_TYPES.MUSHROOMS, 1, 2));
                     debugLog(`Forage food task added at ${tileX},${tileY}`);
-                } else if (clickedTile === 7) { // If animal is clicked
-                    this.taskManager.addTask(new Task(TASK_TYPES.HUNT_ANIMAL, tileX, tileY, RESOURCE_TYPES.MEAT, 2.5, 2));
-                    debugLog(`Hunt animal task added at ${tileX},${tileY}`);
+                } else {
+                    const targetEnemy = this.enemies.find(e => Math.floor(e.x) === tileX && Math.floor(e.y) === tileY && !e.isDead && e.name === 'Deer');
+                    if (targetEnemy) {
+                        this.taskManager.addTask(new Task(TASK_TYPES.HUNT_ANIMAL, tileX, tileY, RESOURCE_TYPES.MEAT, 2.5, 2, null, null, null, null, null, null, targetEnemy));
+                        debugLog(`Hunt animal task added targeting deer at ${tileX},${tileY}`);
+                    }
                 }
             }
         }

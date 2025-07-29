@@ -363,6 +363,23 @@ export default class Settler {
                 }
             }
 
+            // Update hunt target position for moving animals
+            if (
+                this.currentTask.type === TASK_TYPES.HUNT_ANIMAL &&
+                this.currentTask.targetEnemy
+            ) {
+                const ex = Math.floor(this.currentTask.targetEnemy.x);
+                const ey = Math.floor(this.currentTask.targetEnemy.y);
+                if (
+                    this.currentTask.targetX !== ex ||
+                    this.currentTask.targetY !== ey
+                ) {
+                    this.currentTask.targetX = ex;
+                    this.currentTask.targetY = ey;
+                    this.path = null;
+                }
+            }
+
             if (!this.path) {
                 if (Math.floor(this.x) === this.currentTask.targetX && Math.floor(this.y) === this.currentTask.targetY) {
                     this.path = [];
@@ -628,19 +645,41 @@ export default class Settler {
                     } else if (
                         this.currentTask.type === TASK_TYPES.CHOP_WOOD ||
                         this.currentTask.type === TASK_TYPES.GATHER_BERRIES ||
-                        this.currentTask.type === TASK_TYPES.MUSHROOM ||
-                        this.currentTask.type === TASK_TYPES.HUNT_ANIMAL
+                        this.currentTask.type === TASK_TYPES.MUSHROOM
                     ) {
                         const resourceType = this.currentTask.resourceType;
                         const gatheringRate = 0.1; // e.g., 0.1 units of resource per second
                         const amountToGather = gatheringRate * (deltaTime / 1000);
-    
+
                         this.currentTask.quantity -= amountToGather;
     
                         if (this.currentTask.quantity <= 0) {
                             this.pickUpPile(resourceType, 1); // Settler carries the resource
                             this.map.removeResourceNode(this.currentTask.targetX, this.currentTask.targetY);
                             debugLog(`${this.name} completed ${this.currentTask.type} and is now carrying ${this.carrying.type}.`);
+                            this.currentTask = null;
+                            this.path = null;
+                        }
+                    } else if (
+                        this.currentTask.type === TASK_TYPES.HUNT_ANIMAL &&
+                        this.currentTask.targetEnemy
+                    ) {
+                        const huntingRate = 0.1;
+                        const amountToHunt = huntingRate * (deltaTime / 1000);
+                        this.currentTask.quantity -= amountToHunt;
+
+                        if (this.currentTask.quantity <= 0) {
+                            this.currentTask.targetEnemy.isDead = true;
+                            const pile = new ResourcePile(
+                                this.currentTask.resourceType,
+                                1,
+                                Math.floor(this.currentTask.targetEnemy.x),
+                                Math.floor(this.currentTask.targetEnemy.y),
+                                this.map.tileSize,
+                                this.spriteManager,
+                            );
+                            this.map.addResourcePile(pile);
+                            debugLog(`${this.name} hunted ${this.currentTask.targetEnemy.name}.`);
                             this.currentTask = null;
                             this.path = null;
                         }

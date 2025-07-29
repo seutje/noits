@@ -77,9 +77,14 @@ export default class ResourcePile extends Resource {
             ctx.fillStyle = 'brown'; // Placeholder color for wood piles
             ctx.fillRect(this.x * this.tileSize, this.y * this.tileSize, this.tileSize, this.tileSize);
         }
+        ctx.save();
         ctx.fillStyle = 'white';
         ctx.font = '10px Arial';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
         ctx.fillText(this.quantity, this.x * this.tileSize + 5, this.y * this.tileSize + this.tileSize / 2);
+        ctx.restore();
     }
 
     serialize() {

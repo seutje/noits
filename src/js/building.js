@@ -1,5 +1,5 @@
 import ResourcePile from './resourcePile.js';
-import { RESOURCE_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
+import { RESOURCE_TYPES, BUILDING_TYPE_PROPERTIES, BUILDING_TYPES } from './constants.js';
 
 export default class Building {
     constructor(
@@ -41,6 +41,9 @@ export default class Building {
 
         // Sprite manager assigned by the map
         this.spriteManager = null;
+
+        // Pattern cache for floor texture
+        this.floorPattern = null;
     }
 
     updateResourcesDelivered() {
@@ -119,6 +122,18 @@ export default class Building {
                 ctx.fillStyle = `rgba(169, 169, 169, ${this.buildProgress / 100})`;
                 ctx.fillRect(x, y, width, height);
             }
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(x, y, width, height);
+            return;
+        }
+
+        if (this.type === BUILDING_TYPES.FLOOR && this.spriteManager) {
+            const floorSprite = this.spriteManager.getSprite(BUILDING_TYPES.FLOOR);
+            if (!this.floorPattern && floorSprite) {
+                this.floorPattern = ctx.createPattern(floorSprite, 'repeat');
+            }
+            ctx.fillStyle = this.floorPattern || (this.material === RESOURCE_TYPES.WOOD ? '#8b4513' : '#808080');
+            ctx.fillRect(x, y, width, height);
             ctx.strokeStyle = 'black';
             ctx.strokeRect(x, y, width, height);
             return;

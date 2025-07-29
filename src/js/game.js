@@ -272,13 +272,8 @@ export default class Game {
             }
         });
 
-        let resourceString = "";
-        for (const type in this.resourceManager.getAllResources()) {
-            const resource = this.resourceManager.getAllResources()[type];
-            resourceString += `${type}: ${Math.floor(resource.quantity)} (Q:${resource.quality.toFixed(2)}), `;
-        }
         if (this.uiUpdateTimer >= this.uiUpdateInterval) {
-            this.ui.update(this.gameTime, resourceString.slice(0, -2), this.settlers, this.temperature); // Remove trailing comma and space
+            this.ui.update(this.gameTime, this.temperature);
             this.uiUpdateTimer = 0;
         }
     }

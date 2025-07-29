@@ -153,6 +153,16 @@ export default class UI {
         this.taskManagerButton.onclick = () => this.toggleTaskManager();
         this.devMenu.appendChild(this.taskManagerButton);
 
+        this.triggerEventButton = document.createElement('button');
+        this.triggerEventButton.textContent = 'Trigger Event';
+        this.triggerEventButton.onclick = (event) => {
+            event.stopPropagation();
+            if (this.gameInstance) {
+                this.gameInstance.eventManager.triggerRandomEvent();
+            }
+        };
+        this.devMenu.appendChild(this.triggerEventButton);
+
         this.helpOverlay = document.createElement('div');
         this.helpOverlay.id = 'help-overlay';
         this.helpOverlay.style.display = 'none';

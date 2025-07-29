@@ -80,6 +80,16 @@ describe('UI tooltips', () => {
         expect(ui.taskManagerButton.parentElement).toBe(ui.devMenu);
     });
 
+    test('trigger event button triggers event manager', () => {
+        const ui = new UI({});
+        const mockGame = { eventManager: { triggerRandomEvent: jest.fn() } };
+        ui.setGameInstance(mockGame);
+        const button = Array.from(ui.devMenu.querySelectorAll('button')).find(b => b.textContent === 'Trigger Event');
+        expect(button).not.toBeNull();
+        button.dispatchEvent(new Event('click'));
+        expect(mockGame.eventManager.triggerRandomEvent).toHaveBeenCalled();
+    });
+
     test('showTaskManager displays tasks and allows deletion', () => {
         const ui = new UI({});
         const task1 = { type: 'build' };

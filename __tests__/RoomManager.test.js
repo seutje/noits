@@ -99,7 +99,7 @@ describe('RoomManager storage rules', () => {
         roomManager.addResourceToStorage(room, RESOURCE_TYPES.BREAD, 2);
 
         const removed = roomManager.removeResourceFromStorage(room, RESOURCE_TYPES.BREAD, 2);
-        expect(removed).toBe(true);
+        expect(removed).toEqual({ type: RESOURCE_TYPES.BREAD, quantity: 2, hungerRestoration: FOOD_HUNGER_VALUES[RESOURCE_TYPES.BREAD] * 2 });
         expect(room.storage[RESOURCE_TYPES.BREAD]).toBe(0);
         expect(map.resourcePiles.length).toBe(0);
     });

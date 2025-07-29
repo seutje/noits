@@ -105,7 +105,7 @@ export default class RoomManager {
         return null;
     }
 
-    addResourceToStorage(room, resourceType, quantity) {
+    addResourceToStorage(room, resourceType, quantity, hungerRestoration = FOOD_HUNGER_VALUES[resourceType] ?? 0) {
         if (room.type !== "storage") {
             debugWarn(`Room ${room.id} is not a storage room.`);
             return false;
@@ -142,8 +142,14 @@ export default class RoomManager {
 
             if (pile) {
                 pile.add(quantity);
+                if (resourceType === RESOURCE_TYPES.MEAL) {
+                    pile.hungerRestoration = Math.max(pile.hungerRestoration, hungerRestoration);
+                }
             } else if (emptyTile) {
                 const newPile = new ResourcePile(resourceType, quantity, emptyTile.x, emptyTile.y, this.tileSize, this.spriteManager);
+                if (resourceType === RESOURCE_TYPES.MEAL) {
+                    newPile.hungerRestoration = hungerRestoration;
+                }
                 const added = this.map.addResourcePile(newPile);
                 if (!added) {
                     debugWarn('Failed to add resource pile to map.');
@@ -169,14 +175,19 @@ export default class RoomManager {
         }
 
         let remaining = quantity;
-        for (const tile of room.tiles) {
+        let hunger = 0;
+        let piles = room.tiles
+            .map(t => this.map.resourcePiles.find(p => p.x === t.x && p.y === t.y && p.type === resourceType))
+            .filter(p => p);
+        if (resourceType === RESOURCE_TYPES.MEAL) {
+            piles.sort((a, b) => (b.hungerRestoration || 0) - (a.hungerRestoration || 0));
+        }
+        for (const pile of piles) {
             if (remaining <= 0) break;
-            const pile = this.map.resourcePiles.find(p => p.x === tile.x && p.y === tile.y && p.type === resourceType);
-            if (pile) {
-                const removeAmount = Math.min(pile.quantity, remaining);
-                pile.remove(removeAmount);
-                remaining -= removeAmount;
-            }
+            const removeAmount = Math.min(pile.quantity, remaining);
+            pile.remove(removeAmount);
+            remaining -= removeAmount;
+            hunger += (pile.hungerRestoration ?? FOOD_HUNGER_VALUES[resourceType] ?? 0) * removeAmount;
         }
 
         if (remaining > 0) {
@@ -189,7 +200,7 @@ export default class RoomManager {
         if (this.taskManager) {
             this.assignHaulingTasksForDroppedPiles();
         }
-        return true;
+        return { type: resourceType, quantity, hungerRestoration: hunger };
     }
 
     findHighestValueFoods(count = 2) {

@@ -61,7 +61,8 @@ export default class Enemy {
                         this.path = findPath(
                             { x: Math.floor(this.x), y: Math.floor(this.y) },
                             { x: targetX, y: targetY },
-                            this.map
+                            this.map,
+                            true
                         );
                         if (!this.path) {
                             this.path = [{ x: targetX, y: targetY }];

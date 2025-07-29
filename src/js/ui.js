@@ -439,6 +439,7 @@ export default class UI {
                 break;
             case 'furniture':
                 createButton('Place Bed', BUILDING_TYPES.BED, false, 'Provides a place for settlers to sleep.');
+                createButton('Place Door', BUILDING_TYPES.DOOR, false, 'Doors block enemies but allow settlers through.');
                 createButton('Place Table', BUILDING_TYPES.TABLE, false, 'A surface for various activities.');
                 break;
             case 'zones':

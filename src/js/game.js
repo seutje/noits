@@ -773,6 +773,8 @@ export default class Game {
                 newBuilding = new AnimalPen(tileX, tileY);
             } else if (this.selectedBuilding === BUILDING_TYPES.BED) {
                 newBuilding = new Furniture(BUILDING_TYPES.BED, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 50, this.spriteManager);
+            } else if (this.selectedBuilding === BUILDING_TYPES.DOOR) {
+                newBuilding = new Furniture(BUILDING_TYPES.DOOR, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.TABLE) {
                 newBuilding = new Furniture(BUILDING_TYPES.TABLE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 75, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.OVEN) {

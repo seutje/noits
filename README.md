@@ -30,6 +30,7 @@ The following building types are available:
 - **Animal Pen** – Houses livestock.
 - **Barricade** – Simple defensive structure.
 - **Bed** – Lets settlers sleep to regain energy.
+- **Door** – Allows settlers to pass while blocking enemies.
 - **Table** – Furniture for rooms.
 - **Well** – Draws water when supplied with a bucket.
 - *Note*: Only floors may share a tile with another building. All other buildings require an empty tile.

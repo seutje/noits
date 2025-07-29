@@ -23,6 +23,8 @@ export default class Building {
         this.maxHealth = 100; // Max health for destruction
         this.health = this.maxHealth; // Current health
         this.passable = BUILDING_TYPE_PROPERTIES[this.type]?.passable ?? true;
+        this.enemyPassable =
+            BUILDING_TYPE_PROPERTIES[this.type]?.enemyPassable ?? this.passable;
 
         // New properties for resource delivery
         this.constructionMaterials =
@@ -166,7 +168,8 @@ export default class Building {
             maxHealth: this.maxHealth,
             health: this.health,
             inventory: this.inventory,
-            passable: this.passable
+            passable: this.passable,
+            enemyPassable: this.enemyPassable
         };
     }
 
@@ -190,6 +193,10 @@ export default class Building {
         this.health = data.health;
         this.inventory = data.inventory || {};
         this.passable = data.passable ?? BUILDING_TYPE_PROPERTIES[this.type]?.passable ?? true;
+        this.enemyPassable =
+            data.enemyPassable ??
+            BUILDING_TYPE_PROPERTIES[this.type]?.enemyPassable ??
+            this.passable;
         this.updateResourcesDelivered();
     }
 }

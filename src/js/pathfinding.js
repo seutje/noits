@@ -2,7 +2,7 @@
 import { BUILDING_TYPE_PROPERTIES } from './constants.js';
 
 // A* pathfinding algorithm
-export function findPath(start, end, map) {
+export function findPath(start, end, map, forEnemy = false) {
     if (start.x === end.x && start.y === end.y) {
         return [];
     }
@@ -31,7 +31,7 @@ export function findPath(start, end, map) {
         openSet.splice(openSet.indexOf(current), 1);
         closedSet.push(current);
 
-        const neighbors = getNeighbors(current, map);
+        const neighbors = getNeighbors(current, map, forEnemy);
         for (const neighbor of neighbors) {
             if (closedSet.some(node => node.x === neighbor.x && node.y === neighbor.y)) {
                 continue;
@@ -59,14 +59,16 @@ function heuristic(a, b) {
     return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
-function getNeighbors(node, map) {
+function getNeighbors(node, map, forEnemy = false) {
     const neighbors = [];
     const { x, y } = node;
 
     const currentTile = map.getTile ? map.getTile(x, y) : 0;
     const currentBuilding = map.getBuildingAt ? map.getBuildingAt(x, y) : null;
     const currentBuildingPassable = currentBuilding
-        ? BUILDING_TYPE_PROPERTIES[currentBuilding.type]?.passable !== false
+        ? (forEnemy
+              ? BUILDING_TYPE_PROPERTIES[currentBuilding.type]?.enemyPassable !== false
+              : BUILDING_TYPE_PROPERTIES[currentBuilding.type]?.passable !== false)
         : false;
     const isUnpassable =
         (currentTile === 8 && !currentBuildingPassable) ||
@@ -77,7 +79,9 @@ function getNeighbors(node, map) {
             const tile = map.getTile ? map.getTile(nx, ny) : 0;
             const b = map.getBuildingAt ? map.getBuildingAt(nx, ny) : null;
             const buildingPassable = b
-                ? BUILDING_TYPE_PROPERTIES[b.type]?.passable !== false
+                ? forEnemy
+                    ? BUILDING_TYPE_PROPERTIES[b.type]?.enemyPassable !== false
+                    : BUILDING_TYPE_PROPERTIES[b.type]?.passable !== false
                 : true;
 
             if (tile === 8 && (!b || !buildingPassable)) return;

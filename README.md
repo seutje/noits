@@ -4,7 +4,7 @@ Noits is a 2D medieval colony management game built entirely with vanilla JavaSc
 
 ## Features
 - **Tile-Based World**: A scrollable map rendered on an HTML5 canvas.
-- **Game Loop & Camera**: Robust update/render loop with camera panning and zoom.
+- **Game Loop & Camera**: Robust update/render loop with camera panning and zoom (use WASD or arrow keys to pan).
 - **Resource System**: Storage room system with piles for resources. Settlers gather wood, stone, ores and forage for berries or mushrooms.
 - **Settlers with Needs**: Hunger and sleep drive behaviour. Settlers pursue tasks through a simple AI and mood system.
 - **Task Queue**: Prioritised tasks for chopping trees, mining, hauling, farming and more.

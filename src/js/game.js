@@ -109,16 +109,16 @@ export default class Game {
 
     update(deltaTime) {
         const panSpeed = 200; // pixels per second
-        if (this.keys['a'] || this.keys['q']) {
+        if (this.keys['a'] || this.keys['q'] || this.keys['ArrowLeft']) {
             this.camera.x -= panSpeed * (deltaTime / 1000);
         }
-        if (this.keys['d']) {
+        if (this.keys['d'] || this.keys['ArrowRight']) {
             this.camera.x += panSpeed * (deltaTime / 1000);
         }
-        if (this.keys['w'] || this.keys['z']) {
+        if (this.keys['w'] || this.keys['z'] || this.keys['ArrowUp']) {
             this.camera.y -= panSpeed * (deltaTime / 1000);
         }
-        if (this.keys['s']) {
+        if (this.keys['s'] || this.keys['ArrowDown']) {
             this.camera.y += panSpeed * (deltaTime / 1000);
         }
 

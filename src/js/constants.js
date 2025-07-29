@@ -135,7 +135,7 @@ export const SPRITES = [
   ['deer', 'src/assets/deer.png'],
   [RESOURCE_TYPES.DIRT, 'src/assets/dirt.png'],
   ['wild_boar', 'src/assets/wild_boar.png'],
-  [BUILDING_TYPES.WALL, 'src/assets/wall.png'],
+  [BUILDING_TYPES.WALL, 'src/assets/stone_texture.png'],
   ['mushroom', 'src/assets/mushroom.png'],
   ['mushrooms', 'src/assets/mushrooms.png'],
   [RESOURCE_TYPES.WOOD, 'src/assets/wood.png'],

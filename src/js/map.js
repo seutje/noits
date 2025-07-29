@@ -47,8 +47,6 @@ export default class Map {
                     tiles[y][x] = 5; // 5 for iron_ore
                 } else if (rand < 0.13) {
                     tiles[y][x] = 6; // 6 for wild food (bush)
-                } else if (rand < 0.15) {
-                    tiles[y][x] = 7; // 7 for animal
                 } else if (rand < 0.25) {
                     tiles[y][x] = 1; // 1 for dirt
                 } else {

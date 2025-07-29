@@ -292,23 +292,36 @@ describe('Settler', () => {
         expect(settler.currentTask).toBe(null);
     });
 
-    test('should handle hunt_animal task without dropping bandage pile', () => {
-        const task = new Task(TASK_TYPES.HUNT_ANIMAL, 1, 1, 'meat', 0.2);
+    test('should handle hunt_animal task targeting enemy', () => {
+        const mockEnemy = { x: 1, y: 1, isDead: false, name: 'Deer' };
+        const task = new Task(
+            TASK_TYPES.HUNT_ANIMAL,
+            1,
+            1,
+            'meat',
+            0.2,
+            2,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            mockEnemy
+        );
         settler.currentTask = task;
         settler.x = 1;
         settler.y = 1;
-        settler.map.removeResourceNode = jest.fn();
 
         for (let i = 0; i < 5; i++) {
             settler.updateNeeds(1000);
         }
 
-        expect(mockResourceManager.addResource).not.toHaveBeenCalled();
+        expect(mockEnemy.isDead).toBe(true);
         expect(settler.map.addResourcePile).toHaveBeenCalled();
         const meatPile = settler.map.addResourcePile.mock.calls[0][0];
         expect(meatPile.type).toBe('meat');
         expect(meatPile.quantity).toBe(1);
-        expect(settler.carrying).toBe(null);
         expect(settler.currentTask).toBe(null);
     });
 

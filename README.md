@@ -32,6 +32,7 @@ The following building types are available:
 - **Bed** – Lets settlers sleep to regain energy.
 - **Table** – Furniture for rooms.
 - **Well** – Draws water when supplied with a bucket.
+- *Note*: Only floors may share a tile with another building. All other buildings require an empty tile.
 
 ## Crafting Recipes
 Crafting stations and specialised buildings provide the following recipes:

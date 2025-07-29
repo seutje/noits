@@ -99,6 +99,7 @@ describe('Game', () => {
         // Mock specific methods that are called
         game.map.getTile.mockReturnValue(0); // Default to grass tile
         game.map.addBuilding = jest.fn(); // Mock addBuilding
+        game.map.getBuildingsAt = jest.fn().mockReturnValue([]);
         game.ui.setGameInstance = jest.fn();
         game.ui.update = jest.fn();
         game.ui.showFarmPlotMenu = jest.fn();

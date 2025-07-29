@@ -102,6 +102,14 @@ export default class Map {
     addBuilding(building) {
         building.spriteManager = this.spriteManager;
         building.map = this;
+
+        const existing = this.getBuildingsAt(building.x, building.y);
+        const hasNonFloor = existing.some(b => b.type !== BUILDING_TYPES.FLOOR);
+        if (hasNonFloor || (existing.length > 0 && building.type === BUILDING_TYPES.FLOOR)) {
+            debugWarn(`Tile ${building.x},${building.y} already has a building.`);
+            return false;
+        }
+
         this.buildings.push(building);
         if (building.type === BUILDING_TYPES.WALL && typeof building.updateConnections === 'function') {
             this.updateWallConnections(building.x, building.y);
@@ -118,6 +126,7 @@ export default class Map {
                 }
             }
         }
+        return true;
     }
 
     getTile(x, y) {
@@ -154,6 +163,10 @@ export default class Map {
         }
         // If only floors exist, return the last one
         return buildingsAtTile[buildingsAtTile.length - 1];
+    }
+
+    getBuildingsAt(x, y) {
+        return this.buildings.filter(b => b.x === x && b.y === y);
     }
 
     removeBuilding(buildingToRemove) {

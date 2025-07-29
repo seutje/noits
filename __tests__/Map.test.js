@@ -74,3 +74,32 @@ describe('findAdjacentFreeTile', () => {
         expect(pos).toEqual({ x: 1, y: 1 });
     });
 });
+
+describe('building placement rules', () => {
+    test('cannot place building on top of another building', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const wall = new Building(BUILDING_TYPES.WALL, 2, 2, 1, 1, 'stone', 0);
+        const other = new Building(BUILDING_TYPES.BARRICADE, 2, 2, 1, 1, 'wood', 0);
+        expect(map.addBuilding(wall)).toBe(true);
+        expect(map.addBuilding(other)).toBe(false);
+        expect(map.buildings.length).toBe(1);
+    });
+
+    test('can place building on top of floor', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const floor = new Building(BUILDING_TYPES.FLOOR, 1, 1, 1, 1, 'wood', 100);
+        const wall = new Building(BUILDING_TYPES.WALL, 1, 1, 1, 1, 'stone', 0);
+        expect(map.addBuilding(floor)).toBe(true);
+        expect(map.addBuilding(wall)).toBe(true);
+        expect(map.buildings.length).toBe(2);
+    });
+
+    test('cannot place floor on existing building', () => {
+        const map = new Map(5, 5, 32, { getSprite: jest.fn() });
+        const wall = new Building(BUILDING_TYPES.WALL, 0, 0, 1, 1, 'stone', 0);
+        const floor = new Building(BUILDING_TYPES.FLOOR, 0, 0, 1, 1, 'wood', 100);
+        expect(map.addBuilding(wall)).toBe(true);
+        expect(map.addBuilding(floor)).toBe(false);
+        expect(map.buildings.length).toBe(1);
+    });
+});

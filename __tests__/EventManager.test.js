@@ -1,4 +1,5 @@
 import EventManager from '../src/js/eventManager.js';
+import Deer from '../src/js/deer.js';
 
 // Simple Enemy stub
 class EnemyStub {
@@ -58,6 +59,18 @@ describe('EventManager', () => {
         expect(createdPile.y).toBe(0);
         expect(game.notificationManager.addNotification).toHaveBeenCalledWith(
             'You discovered a new resource node!',
+            'info'
+        );
+    });
+
+    test('Wild Deer event spawns deer', () => {
+        const manager = new EventManager(game, EnemyStub);
+        jest.spyOn(Math, 'random').mockReturnValue(0.99); // pick last event
+        manager.triggerRandomEvent();
+        Math.random.mockRestore();
+        expect(game.enemies[0]).toBeInstanceOf(Deer);
+        expect(game.notificationManager.addNotification).toHaveBeenCalledWith(
+            'A wild deer has appeared!',
             'info'
         );
     });

@@ -33,7 +33,7 @@ export default class Wall extends Building {
         const x = this.x * tileSize;
         const y = this.y * tileSize;
         const half = tileSize / 2;
-        const thickness = tileSize * 0.4;
+        const thickness = tileSize * 0.6;
         const color = this.material === RESOURCE_TYPES.WOOD ? '#8b4513' : '#808080';
 
         ctx.fillStyle = color;

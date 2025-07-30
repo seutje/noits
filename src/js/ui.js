@@ -694,7 +694,7 @@ export default class UI {
 
             const skillRow = document.createElement('tr');
             skillRow.className = 'settler-skill-row';
-            skillRow.style.display = 'none';
+            skillRow.style.display = settler.showSkills ? 'table-row' : 'none';
             const skillCell = document.createElement('td');
             skillCell.colSpan = cells.length;
             const skills = settler.skills || {};
@@ -704,7 +704,8 @@ export default class UI {
             skillRow.appendChild(skillCell);
 
             row.addEventListener('click', () => {
-                skillRow.style.display = skillRow.style.display === 'none' ? 'table-row' : 'none';
+                settler.showSkills = !settler.showSkills;
+                skillRow.style.display = settler.showSkills ? 'table-row' : 'none';
             });
 
             tbody.appendChild(row);

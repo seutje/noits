@@ -91,8 +91,30 @@ export default class Game {
         }
 
         // Create a new settler
-        this.settlers.push(new Settler("Alice", 5, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers));
-        this.settlers.push(new Settler("Bob", 6, 5, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers));
+        this.settlers.push(
+            new Settler(
+                "Alice",
+                5,
+                5,
+                this.resourceManager,
+                this.map,
+                this.roomManager,
+                this.spriteManager,
+                this.settlers,
+            )
+        );
+        this.settlers.push(
+            new Settler(
+                "Bob",
+                6,
+                5,
+                this.resourceManager,
+                this.map,
+                this.roomManager,
+                this.spriteManager,
+                this.settlers,
+            )
+        );
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);
@@ -589,7 +611,17 @@ export default class Game {
             // Restore settlers
             this.settlers = [];
             gameState.settlers.forEach(sData => {
-                const settler = new Settler(sData.name, sData.x, sData.y, this.resourceManager, this.map, this.roomManager, this.spriteManager, this.settlers);
+                const settler = new Settler(
+                    sData.name,
+                    sData.x,
+                    sData.y,
+                    this.resourceManager,
+                    this.map,
+                    this.roomManager,
+                    this.spriteManager,
+                    this.settlers,
+                    sData.skills,
+                );
                 settler.deserialize(sData);
                 this.settlers.push(settler);
             });

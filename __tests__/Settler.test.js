@@ -37,7 +37,16 @@ describe('Settler', () => {
             addResourceToStorage: jest.fn(),
             findStorageRoomAndTile: jest.fn()
         };
-        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
     });
 
     test('should initialize with correct properties', () => {
@@ -516,7 +525,16 @@ describe('Settler', () => {
     });
 
     test('should use bandage pile for treatment', () => {
-        const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
         patient.bodyParts.head.bleeding = true;
         mockMap.resourcePiles.push(new ResourcePile('bandage', 1, 0, 0, 1, { getSprite: jest.fn() }));
         const task = new Task('treatment', 0, 0, null, 0, 5, null, null, null, null, null, patient);
@@ -534,7 +552,16 @@ describe('Settler', () => {
     });
 
     test('should haul bandage to patient before treatment', () => {
-        const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const patient = new Settler('Patient', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
         patient.bodyParts.head.bleeding = true;
         mockMap.resourcePiles.push(new ResourcePile('bandage', 1, 1, 0, 1, { getSprite: jest.fn() }));
         const task = new Task('treatment', 0, 0, null, 0, 5, null, null, null, null, null, patient);
@@ -568,7 +595,16 @@ describe('Settler', () => {
     });
 
     test('settler can treat themselves', () => {
-        const patient = new Settler('SelfHealer', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const patient = new Settler('SelfHealer', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
         patient.bodyParts.head.bleeding = true;
         mockMap.resourcePiles.push(new ResourcePile('bandage', 1, 0, 0, 1, { getSprite: jest.fn() }));
         const task = new Task('treatment', 0, 0, null, 0, 5, null, null, null, null, null, patient);

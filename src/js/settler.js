@@ -6,7 +6,17 @@ import { findPath } from './pathfinding.js';
 import { SLEEP_GAIN_RATE, SETTLER_RUN_SPEED, TASK_TYPES, RESOURCE_TYPES, HEALTH_REGEN_RATE, BUILDING_TYPES, FOOD_HUNGER_VALUES } from './constants.js';
 
 export default class Settler {
-    constructor(name, x, y, resourceManager, map, roomManager, spriteManager, allSettlers = null) {
+    constructor(
+        name,
+        x,
+        y,
+        resourceManager,
+        map,
+        roomManager,
+        spriteManager,
+        allSettlers = null,
+        skills = null,
+    ) {
         this.resourceManager = resourceManager;
         this.map = map;
         this.roomManager = roomManager;
@@ -32,15 +42,7 @@ export default class Settler {
         this.currentTask = null;
         this.path = null;
         this.carrying = null; // { type: "wood", quantity: 1 }
-        this.skills = {
-            farming: 1,
-            mining: 1,
-            building: 1,
-            crafting: 1,
-            cooking: 1,
-            combat: 1,
-            medical: 1
-        };
+        this.skills = skills || this.generateRandomSkills();
         this.taskPriorities = {};
         Object.values(TASK_TYPES).forEach(type => {
             this.taskPriorities[type] = 5;
@@ -54,6 +56,19 @@ export default class Settler {
         this.currentBed = null; // Reference to bed building when sleeping in one
         this.currentBuilding = null; // Building this settler is currently using
         this.showSkills = false; // Track whether the skills row is expanded in the UI
+    }
+
+    generateRandomSkills() {
+        const randomValue = () => Math.floor(Math.random() * 3) + 1; // 1-3
+        return {
+            farming: randomValue(),
+            mining: randomValue(),
+            building: randomValue(),
+            crafting: randomValue(),
+            cooking: randomValue(),
+            combat: randomValue(),
+            medical: randomValue(),
+        };
     }
 
     equipWeapon(weapon) {

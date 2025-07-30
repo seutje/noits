@@ -17,7 +17,16 @@ describe('Settler Health and Combat', () => {
         };
         mockMap = { removeResourceNode: jest.fn(), worldMap: { discoverLocation: jest.fn() } };
         mockRoomManager = { rooms: [], getRoomAt: jest.fn(), addResourceToStorage: jest.fn() };
-        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        settler = new Settler('TestSettler', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
     });
 
     test('takeDamage sets body part health and bleeding', () => {
@@ -49,12 +58,21 @@ describe('Settler Health and Combat', () => {
     });
 
     test('dealDamage uses weapon, combat skill and target armor', () => {
-        const attacker = new Settler('Attacker', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const attacker = new Settler('Attacker', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
         attacker.skills.combat = 2; // +1 damage
         const sword = new Weapon('Sword', 'melee', 10, 1);
         attacker.equipWeapon(sword);
 
-        const defender = new Settler('Defender', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const defender = new Settler('Defender', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, { ...defaultSkills });
         const helmet = new Armor('Helmet', 'light', 1, 'head');
         defender.equipArmor(helmet);
 
@@ -81,8 +99,37 @@ describe('Settler Health and Combat', () => {
 
     test('idle allies target attacker when settler is hit', () => {
         const settlers = [];
-        const alice = new Settler('Alice', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, settlers);
-        const bob = new Settler('Bob', 1, 1, mockResourceManager, mockMap, mockRoomManager, undefined, settlers);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const alice = new Settler(
+            'Alice',
+            0,
+            0,
+            mockResourceManager,
+            mockMap,
+            mockRoomManager,
+            undefined,
+            settlers,
+            { ...defaultSkills },
+        );
+        const bob = new Settler(
+            'Bob',
+            1,
+            1,
+            mockResourceManager,
+            mockMap,
+            mockRoomManager,
+            undefined,
+            settlers,
+            { ...defaultSkills },
+        );
         settlers.push(alice, bob);
 
         const enemy = new Enemy('Goblin', 1, 1, null, mockMap, { getSprite: jest.fn() });

@@ -10,7 +10,26 @@ describe('Game hauling behavior', () => {
     test('settler carrying resource ignores haul tasks', () => {
         const ctx = { canvas: { width: 800, height: 600 }, clearRect: jest.fn(), drawImage: jest.fn() };
         const game = new Game(ctx);
-        const settler = new Settler('Bob', 0, 0, game.resourceManager, game.map, game.roomManager, game.spriteManager, game.settlers);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const settler = new Settler(
+            'Bob',
+            0,
+            0,
+            game.resourceManager,
+            game.map,
+            game.roomManager,
+            game.spriteManager,
+            game.settlers,
+            defaultSkills,
+        );
         settler.updateNeeds = jest.fn();
         settler.carrying = { type: 'wood', quantity: 1 };
         settler.state = 'idle';

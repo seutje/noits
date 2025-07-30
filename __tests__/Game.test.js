@@ -94,7 +94,28 @@ describe('Game', () => {
         game.ui = new UI();
         game.resourceManager = new ResourceManager();
         game.taskManager = new TaskManager();
-        game.settlers = [new Settler("Alice", 5, 5, game.resourceManager)];
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        game.settlers = [
+            new Settler(
+                "Alice",
+                5,
+                5,
+                game.resourceManager,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                defaultSkills,
+            ),
+        ];
 
         // Mock specific methods that are called
         game.map.getTile.mockReturnValue(0); // Default to grass tile

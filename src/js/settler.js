@@ -53,6 +53,7 @@ export default class Settler {
         this.sleepingInBed = false; // True when sleeping in a bed
         this.currentBed = null; // Reference to bed building when sleeping in one
         this.currentBuilding = null; // Building this settler is currently using
+        this.showSkills = false; // Track whether the skills row is expanded in the UI
     }
 
     equipWeapon(weapon) {

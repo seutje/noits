@@ -29,6 +29,13 @@ canvas {
     z-index: 2000;
 }
 
+#settler-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+}
+
 #start-screen h1 {
     font-size: 48px;
     margin: 0;
@@ -38,6 +45,14 @@ canvas {
     border: 1px solid #666;
     padding: 10px;
     margin: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.settler-section .skills {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 button {

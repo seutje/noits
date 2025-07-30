@@ -423,6 +423,8 @@ export default class UI {
                 if (this.gameInstance) {
                     if (isRoomDesignation) {
                         this.gameInstance.startRoomDesignation(buildModeType);
+                    } else if (buildModeType === 'remove_building') {
+                        this.gameInstance.toggleDeconstructMode();
                     } else {
                         this.gameInstance.toggleBuildMode(buildModeType);
                     }
@@ -445,6 +447,7 @@ export default class UI {
                 createButton('Build Farm Plot', BUILDING_TYPES.FARM_PLOT, false, 'Used for growing crops.');
                 createButton('Build Animal Pen', BUILDING_TYPES.ANIMAL_PEN, false, 'Houses livestock.');
                 createButton('Build Barricade', BUILDING_TYPES.BARRICADE, false, 'A simple defensive barrier.');
+                createButton('Remove Building', 'remove_building', false, 'Deconstruct a building.');
                 break;
             case 'furniture':
                 createButton('Place Bed', BUILDING_TYPES.BED, false, 'Provides a place for settlers to sleep.');
@@ -468,7 +471,9 @@ export default class UI {
     updateBuildButtonHighlights() {
         if (!this.gameInstance) return;
         this.buildButtons.forEach((btn, type) => {
-            const active = this.gameInstance.buildMode && this.gameInstance.selectedBuilding === type;
+            const active =
+                (this.gameInstance.buildMode && this.gameInstance.selectedBuilding === type) ||
+                (type === 'remove_building' && this.gameInstance.deconstructMode);
             if (active) {
                 btn.classList.add('active');
             } else {

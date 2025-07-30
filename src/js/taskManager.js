@@ -19,6 +19,7 @@ export const TASK_SKILL_MAP = {
     [TASK_TYPES.BUTCHER]: 'farming',
     [TASK_TYPES.TREATMENT]: 'medical',
     [TASK_TYPES.HUNT_ANIMAL]: 'combat',
+    [TASK_TYPES.DECONSTRUCT]: 'building',
 };
 
 export default class TaskManager {

@@ -757,6 +757,18 @@ export default class Settler {
                         debugLog(`${this.name} tended to animals at ${animalPen.x},${animalPen.y}.`);
                         this.currentTask = null;
                         this.path = null; // Task completed immediately after action
+                    } else if (this.currentTask.type === TASK_TYPES.DECONSTRUCT && this.currentTask.building) {
+                        const building = this.currentTask.building;
+                        building.spillInventory(this.map);
+                        for (const mat in building.constructionMaterials) {
+                            const qty = building.constructionMaterials[mat];
+                            const pile = new ResourcePile(mat, qty, building.x, building.y, this.map.tileSize, this.spriteManager);
+                            this.map.addResourcePile(pile);
+                        }
+                        this.map.removeBuilding(building);
+                        debugLog(`${this.name} deconstructed building at ${building.x},${building.y}.`);
+                        this.currentTask = null;
+                        this.path = null;
                     } else if (this.currentTask.type === "eat" && this.currentTask.foodType) {
                         const room = this.roomManager.getRoomAt(this.currentTask.targetX, this.currentTask.targetY);
                         const consumed = room && room.type === "storage"

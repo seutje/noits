@@ -67,6 +67,7 @@ export default class Game {
         this.buildMode = false; // New property for build mode
         this.selectedBuilding = null; // New property to hold the selected building type
         this.diggingDirtMode = false; // New property for digging dirt mode
+        this.deconstructMode = false; // New property for deconstruct mode
 
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -390,8 +391,20 @@ export default class Game {
             // Exit room designation mode if active
             this.roomDesignationStart = null;
             this.selectedRoomType = null;
+            this.deconstructMode = false;
         }
         debugLog(`Build mode: ${this.buildMode}, Selected: ${this.selectedBuilding}`);
+    }
+
+    toggleDeconstructMode() {
+        this.deconstructMode = !this.deconstructMode;
+        if (this.deconstructMode) {
+            this.buildMode = false;
+            this.selectedBuilding = null;
+            this.roomDesignationStart = null;
+            this.selectedRoomType = null;
+        }
+        debugLog(`Deconstruct mode: ${this.deconstructMode}`);
     }
 
     startRoomDesignation(roomType) {
@@ -399,6 +412,7 @@ export default class Game {
         this.selectedBuilding = null;
         this.roomDesignationStart = { x: null, y: null };
         this.selectedRoomType = roomType;
+        this.deconstructMode = false;
         debugLog(`Room designation mode: ${roomType}. Click to select start tile.`);
     }
 
@@ -407,6 +421,7 @@ export default class Game {
         this.selectedBuilding = null;
         this.roomDesignationStart = null; // Exit room designation mode if active
         this.selectedRoomType = null;
+        this.deconstructMode = false;
         this.diggingDirtMode = true;
         debugLog("Digging dirt mode: Click on a grass tile to dig dirt.");
     }
@@ -762,7 +777,13 @@ export default class Game {
             return; // Room designation handled
         }
 
-        if (this.buildMode && this.selectedBuilding) {
+        if (this.deconstructMode) {
+            const building = this.map.getBuildingAt(tileX, tileY);
+            if (building) {
+                this.taskManager.addTask(new Task(TASK_TYPES.DECONSTRUCT, tileX, tileY, null, 0, 2, building));
+                debugLog(`Deconstruct task added at ${tileX},${tileY}`);
+            }
+        } else if (this.buildMode && this.selectedBuilding) {
             const existingBuilding = this.map.getBuildingAt(tileX, tileY);
             const buildingsHere = this.map.getBuildingsAt(tileX, tileY);
             const hasFloor = buildingsHere.some(b => b.type === BUILDING_TYPES.FLOOR);

@@ -127,6 +127,7 @@ export default class Game {
             }
             // Do not automatically resume when focus returns; player must unpause manually
         });
+        this.pause();
         this.gameLoop(0);
     }
 

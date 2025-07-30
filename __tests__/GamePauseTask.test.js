@@ -7,8 +7,37 @@ describe('Game pause task', () => {
     test('pauseTask unassigns settler and prevents reassignment until unpaused', () => {
         const ctx = { canvas: { width: 800, height: 600 }, clearRect: jest.fn(), drawImage: jest.fn() };
         const game = new Game(ctx);
-        const alice = new Settler('Alice', 0, 0, game.resourceManager, game.map, game.roomManager, game.spriteManager, game.settlers);
-        const bob = new Settler('Bob', 0, 0, game.resourceManager, game.map, game.roomManager, game.spriteManager, game.settlers);
+        const defaultSkills = {
+            farming: 1,
+            mining: 1,
+            building: 1,
+            crafting: 1,
+            cooking: 1,
+            combat: 1,
+            medical: 1,
+        };
+        const alice = new Settler(
+            'Alice',
+            0,
+            0,
+            game.resourceManager,
+            game.map,
+            game.roomManager,
+            game.spriteManager,
+            game.settlers,
+            { ...defaultSkills },
+        );
+        const bob = new Settler(
+            'Bob',
+            0,
+            0,
+            game.resourceManager,
+            game.map,
+            game.roomManager,
+            game.spriteManager,
+            game.settlers,
+            { ...defaultSkills },
+        );
         alice.updateNeeds = jest.fn();
         bob.updateNeeds = jest.fn();
         alice.state = 'idle';

@@ -6,6 +6,15 @@ describe('Enemy', () => {
     let mockResourceManager;
     let mockMap;
     let mockRoomManager;
+    const defaultSkills = {
+        farming: 1,
+        mining: 1,
+        building: 1,
+        crafting: 1,
+        cooking: 1,
+        combat: 1,
+        medical: 1,
+    };
 
     beforeEach(() => {
         mockResourceManager = {
@@ -18,7 +27,7 @@ describe('Enemy', () => {
     });
 
     test('dealDamage considers target armor', () => {
-        const target = new Settler('Target', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const target = new Settler('Target', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
         const helmet = new Armor('Helmet', 'light', 2, 'head');
         target.equipArmor(helmet);
         jest.spyOn(target, 'takeDamage');
@@ -33,7 +42,7 @@ describe('Enemy', () => {
     });
 
     test('update attacks target when in range', () => {
-        const target = new Settler('Target', 0, 0, mockResourceManager, mockMap, mockRoomManager);
+        const target = new Settler('Target', 0, 0, mockResourceManager, mockMap, mockRoomManager, undefined, undefined, defaultSkills);
         const enemy = new Enemy('Raider', 0, 0, target, mockMap);
         enemy.attackCooldown = 0;
         jest.spyOn(enemy, 'dealDamage').mockImplementation(() => {});

@@ -123,9 +123,26 @@ describe('UI tooltips', () => {
         ui.showSettlerOverview();
         expect(ui.settlerOverlay.style.display).toBe('block');
         expect(ui.settlerOverlay.querySelector('table')).not.toBeNull();
-        expect(ui.settlerOverlay.querySelectorAll('tbody tr').length).toBe(2);
+        expect(ui.settlerOverlay.querySelectorAll('tbody .settler-row').length).toBe(2);
         ui.hideSettlerOverview();
         expect(ui.settlerOverlay.style.display).toBe('none');
+    });
+
+    test('clicking settler row toggles skill display', () => {
+        const ui = new UI({});
+        const settlers = [
+            { name: 'Alice', currentTask: null, health: 100, hunger: 100, sleep: 100, mood: 100, carrying: null, skills: { farming: 1 } }
+        ];
+        const mockGame = { settlers };
+        ui.setGameInstance(mockGame);
+        ui.showSettlerOverview();
+        const row = ui.settlerTbody.querySelector('.settler-row');
+        const skillRow = row.nextSibling;
+        expect(skillRow.style.display).toBe('none');
+        row.dispatchEvent(new Event('click'));
+        expect(skillRow.style.display).toBe('table-row');
+        row.dispatchEvent(new Event('click'));
+        expect(skillRow.style.display).toBe('none');
     });
 
     test('wheel on settler overlay does not bubble to window', () => {

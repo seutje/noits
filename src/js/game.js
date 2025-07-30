@@ -29,11 +29,11 @@ import { ACTION_BEEP_URL, GATHER_TASK_TYPES, TASK_TYPES, RESOURCE_TYPES, BUILDIN
 
 
 export default class Game {
-    constructor(ctx) {
+    constructor(ctx, options = {}) {
         this.ctx = ctx;
         this.lastTime = 0;
         this.spriteManager = new SpriteManager();
-        this.map = new Map(50, 30, 32, this.spriteManager);
+        this.map = new Map(50, 30, 32, this.spriteManager, options.seed);
         this.camera = new Camera(ctx);
         // Move camera half a screen width to the right and half a screen height down
         this.camera.x += ctx.canvas.width / 2;
@@ -68,6 +68,7 @@ export default class Game {
         this.selectedBuilding = null; // New property to hold the selected building type
         this.diggingDirtMode = false; // New property for digging dirt mode
         this.deconstructMode = false; // New property for deconstruct mode
+        this.initialSettlerConfigs = options.settlers || null;
 
         this.gameLoop = this.gameLoop.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -91,31 +92,25 @@ export default class Game {
             this.ui.hideLoadingScreen();
         }
 
-        // Create a new settler
-        this.settlers.push(
-            new Settler(
-                "Alice",
-                5,
-                5,
-                this.resourceManager,
-                this.map,
-                this.roomManager,
-                this.spriteManager,
-                this.settlers,
-            )
-        );
-        this.settlers.push(
-            new Settler(
-                "Bob",
-                6,
-                5,
-                this.resourceManager,
-                this.map,
-                this.roomManager,
-                this.spriteManager,
-                this.settlers,
-            )
-        );
+        const configs = this.initialSettlerConfigs || [
+            { name: 'Alice', skills: null },
+            { name: 'Bob', skills: null },
+        ];
+        configs.forEach((cfg, idx) => {
+            this.settlers.push(
+                new Settler(
+                    cfg.name || `Settler ${idx + 1}`,
+                    5 + idx,
+                    5,
+                    this.resourceManager,
+                    this.map,
+                    this.roomManager,
+                    this.spriteManager,
+                    this.settlers,
+                    cfg.skills,
+                )
+            );
+        });
 
         window.addEventListener('keydown', this.handleKeyDown);
         window.addEventListener('keyup', this.handleKeyUp);

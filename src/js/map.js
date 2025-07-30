@@ -10,12 +10,22 @@ import Wall from './wall.js';
 import { BUILDING_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
 import { debugWarn } from './debug.js';
 
+function mulberry32(a) {
+    return function () {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
 export default class Map {
-    constructor(width, height, tileSize, spriteManager) {
+    constructor(width, height, tileSize, spriteManager, seed = null) {
         this.width = width;
         this.height = height;
         this.tileSize = tileSize;
         this.spriteManager = spriteManager;
+        this.random = seed === null ? Math.random : mulberry32(seed);
         this.tiles = this.createEmptyMap();
         this.resourcePiles = [];
         this.buildings = [];
@@ -37,7 +47,7 @@ export default class Map {
         for (let y = 0; y < this.height; y++) {
             tiles[y] = [];
             for (let x = 0; x < this.width; x++) {
-                const rand = Math.random();
+                const rand = this.random();
                 if (rand < 0.05) {
                     tiles[y][x] = 2; // 2 for tree
                 } else if (rand < 0.07) {
@@ -59,9 +69,9 @@ export default class Map {
         const puddleChance = 0.005;
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
-                if (Math.random() < puddleChance) {
-                    const patchWidth = Math.floor(Math.random() * 2) + 2; // 2-3
-                    const patchHeight = Math.floor(Math.random() * 2) + 2; // 2-3
+                if (this.random() < puddleChance) {
+                    const patchWidth = Math.floor(this.random() * 2) + 2; // 2-3
+                    const patchHeight = Math.floor(this.random() * 2) + 2; // 2-3
                     for (let py = 0; py < patchHeight; py++) {
                         for (let px = 0; px < patchWidth; px++) {
                             const nx = x + px;

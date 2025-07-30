@@ -223,6 +223,7 @@ export default class UI {
             event.stopPropagation();
         });
         document.body.appendChild(this.settlerOverlay);
+        this.lastSettlerOverviewUpdate = 0; // timestamp of last overview render
 
         this.farmPlotMenu = document.createElement('div');
         this.farmPlotMenu.id = 'farm-plot-menu';
@@ -480,7 +481,11 @@ export default class UI {
         this.timeElement.textContent = `Time: ${gameTime.toFixed(1)}s`;
         this.temperatureElement.textContent = `Temperature: ${temperature.toFixed(1)}°C`;
         if (this.settlerOverlay.style.display === 'block' && this.gameInstance) {
-            this.renderSettlerOverview(this.gameInstance.settlers);
+            const now = Date.now();
+            if (now - this.lastSettlerOverviewUpdate >= 1000) {
+                this.renderSettlerOverview(this.gameInstance.settlers);
+                this.lastSettlerOverviewUpdate = now;
+            }
         }
     }
 
@@ -706,6 +711,8 @@ export default class UI {
             row.addEventListener('click', () => {
                 settler.showSkills = !settler.showSkills;
                 skillRow.style.display = settler.showSkills ? 'table-row' : 'none';
+                this.lastSettlerOverviewUpdate = Date.now();
+                this.renderSettlerOverview(this.gameInstance.settlers);
             });
 
             tbody.appendChild(row);

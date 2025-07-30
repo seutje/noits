@@ -107,6 +107,9 @@ export default class UI {
         this.devMenu.id = 'dev-menu-content';
         this.buildMenu.appendChild(this.devMenu);
 
+        // Track build buttons for toggling
+        this.buildButtons = new Map();
+
         this.createBuildMenuTabs();
         this.showBuildCategory('buildings'); // Default category
 
@@ -407,6 +410,7 @@ export default class UI {
 
     showBuildCategory(categoryId) {
         this.buildMenuContent.innerHTML = ''; // Clear previous content
+        this.buildButtons.clear();
 
         const createButton = (text, buildModeType, isRoomDesignation = false, tooltipText = '') => {
             const button = document.createElement('button');
@@ -421,9 +425,13 @@ export default class UI {
                     } else {
                         this.gameInstance.toggleBuildMode(buildModeType);
                     }
+                    this.updateBuildButtonHighlights();
                 }
             };
             this.buildMenuContent.appendChild(button);
+            if (!isRoomDesignation) {
+                this.buildButtons.set(buildModeType, button);
+            }
         };
 
         switch (categoryId) {
@@ -448,10 +456,24 @@ export default class UI {
                 createButton('Dig Dirt', TASK_TYPES.DIG_DIRT, true, 'Designates a tile to be dug.');
                 break;
         }
+
+        this.updateBuildButtonHighlights();
     }
 
     setGameInstance(gameInstance) {
         this.gameInstance = gameInstance;
+    }
+
+    updateBuildButtonHighlights() {
+        if (!this.gameInstance) return;
+        this.buildButtons.forEach((btn, type) => {
+            const active = this.gameInstance.buildMode && this.gameInstance.selectedBuilding === type;
+            if (active) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
     }
 
     update(gameTime, temperature) {

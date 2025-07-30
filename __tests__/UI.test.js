@@ -87,6 +87,31 @@ describe('UI tooltips', () => {
         expect(button.parentElement).toBe(ui.devMenu);
     });
 
+    test('build button toggles and highlights', () => {
+        const ui = new UI({});
+        const mockGame = {
+            buildMode: false,
+            selectedBuilding: null,
+            toggleBuildMode: jest.fn(function (type) {
+                if (this.selectedBuilding === type && this.buildMode) {
+                    this.buildMode = false;
+                    this.selectedBuilding = null;
+                } else {
+                    this.buildMode = true;
+                    this.selectedBuilding = type;
+                }
+            }),
+        };
+        ui.setGameInstance(mockGame);
+        ui.showBuildCategory('buildings');
+        const button = Array.from(ui.buildMenuContent.querySelectorAll('button')).find(b => b.textContent === 'Build Wall');
+        button.dispatchEvent(new Event('click'));
+        expect(mockGame.toggleBuildMode).toHaveBeenCalledWith('wall');
+        expect(button.classList.contains('active')).toBe(true);
+        button.dispatchEvent(new Event('click'));
+        expect(button.classList.contains('active')).toBe(false);
+    });
+
     test('showSettlerOverview displays settlers', () => {
         const ui = new UI({});
         const settlers = [

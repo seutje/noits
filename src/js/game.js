@@ -822,8 +822,7 @@ export default class Game {
                 ),
             );
             this.soundManager.play('action');
-            this.buildMode = false; // Exit build mode after placing
-            this.selectedBuilding = null;
+            // Keep build mode active until toggled off
         } else {
             // Check if an enemy corpse was clicked first
             const clickedEnemy = this.enemies.find(

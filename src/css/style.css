@@ -156,6 +156,10 @@ input[type="range"] {
     padding: 5px;
 }
 
+#settler-overlay .settler-skill-row td {
+    background-color: #222;
+}
+
 #settler-overlay .close-button {
     position: absolute;
     top: 5px;

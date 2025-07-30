@@ -676,6 +676,7 @@ export default class UI {
         tbody.innerHTML = '';
         settlers.forEach(settler => {
             const row = document.createElement('tr');
+            row.className = 'settler-row';
             const cells = [
                 settler.name,
                 settler.currentTask ? settler.currentTask.type : '',
@@ -690,7 +691,24 @@ export default class UI {
                 td.textContent = text;
                 row.appendChild(td);
             });
+
+            const skillRow = document.createElement('tr');
+            skillRow.className = 'settler-skill-row';
+            skillRow.style.display = 'none';
+            const skillCell = document.createElement('td');
+            skillCell.colSpan = cells.length;
+            const skills = settler.skills || {};
+            skillCell.textContent = Object.entries(skills)
+                .map(([skill, level]) => `${skill}: ${level}`)
+                .join(', ');
+            skillRow.appendChild(skillCell);
+
+            row.addEventListener('click', () => {
+                skillRow.style.display = skillRow.style.display === 'none' ? 'table-row' : 'none';
+            });
+
             tbody.appendChild(row);
+            tbody.appendChild(skillRow);
         });
     }
 

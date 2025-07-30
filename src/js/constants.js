@@ -106,6 +106,7 @@ export const TASK_TYPES = {
   BUTCHER: 'butcher',
   EXPLORE: 'explore',
   TREATMENT: 'treatment',
+  DECONSTRUCT: 'deconstruct',
   HAUL: 'haul',
   SLEEP: 'sleep'
 };

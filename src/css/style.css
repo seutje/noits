@@ -25,6 +25,11 @@ button:hover {
     background-color: #666;
 }
 
+button.active {
+    background-color: #888;
+    border-color: #aaa;
+}
+
 input[type="range"] {
     accent-color: #4caf50;
 }

@@ -174,8 +174,8 @@ describe('Game', () => {
         const haulTask = game.taskManager.addTask.mock.calls[0][0];
         expect(haulTask.type).toBe(TASK_TYPES.HAUL);
         expect(haulTask.building).toEqual(expect.any(Object));
-        expect(game.buildMode).toBe(false);
-        expect(game.selectedBuilding).toBe(null);
+        expect(game.buildMode).toBe(true);
+        expect(game.selectedBuilding).toBe(BUILDING_TYPES.WALL);
     });
 
     test('handleClick should not create haul task for farm plot', () => {

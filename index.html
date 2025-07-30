@@ -7,6 +7,28 @@
     <link rel="stylesheet" href="src/css/style.css">
 </head>
 <body>
+    <div id="start-screen">
+        <h1><strong>NOITS!</strong></h1>
+        <button id="start-button">Start Game</button>
+    </div>
+    <div id="embark-screen" style="display:none;">
+        <h2>Embark</h2>
+        <div>
+            <label>Seed: <input type="text" id="seed-input"></label>
+            <button id="random-seed">Random</button>
+        </div>
+        <div class="settler-section" id="settler1">
+            <h3>Settler 1</h3>
+            <div>Points Left: <span class="points">10</span></div>
+            <div class="skills"></div>
+        </div>
+        <div class="settler-section" id="settler2">
+            <h3>Settler 2</h3>
+            <div>Points Left: <span class="points">10</span></div>
+            <div class="skills"></div>
+        </div>
+        <button id="embark-button">Embark</button>
+    </div>
     <canvas id="gameCanvas"></canvas>
     <script type="module" src="src/js/main.js"></script>
 </body>

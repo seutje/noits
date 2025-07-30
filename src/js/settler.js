@@ -493,6 +493,8 @@ export default class Settler {
                             building.buildProgress += workAmount; // Increase build progress
                             if (building.buildProgress >= 100) {
                                 building.buildProgress = 100;
+                                building.inventory = {};
+                                building.resourcesDelivered = building.resourcesRequired;
                                 debugLog(`${this.name} completed building task for ${building.type}`);
                                 if (building.occupant === this) {
                                     building.occupant = null;

@@ -172,3 +172,57 @@ export const SPRITES = [
   ['iron_ore_pile', 'src/assets/iron_ore_pile.png'],
   ['construction', 'src/assets/construction.png']
 ];
+
+// Definitions for all crafting recipes by building type
+export const CRAFTING_RECIPE_DEFINITIONS = {
+  [BUILDING_TYPES.CRAFTING_STATION]: [
+    {
+      name: 'plank',
+      inputs: [{ resourceType: RESOURCE_TYPES.WOOD, quantity: 1 }],
+      outputs: [
+        { resourceType: RESOURCE_TYPES.PLANK, quantity: 2, quality: 1 },
+      ],
+      time: 2,
+    },
+    {
+      name: 'bandage',
+      inputs: [{ resourceType: RESOURCE_TYPES.COTTON, quantity: 1 }],
+      outputs: [
+        { resourceType: RESOURCE_TYPES.BANDAGE, quantity: 1, quality: 1 },
+      ],
+      time: 3,
+    },
+    {
+      name: 'bucket',
+      inputs: [{ resourceType: RESOURCE_TYPES.PLANK, quantity: 1 }],
+      outputs: [
+        { resourceType: RESOURCE_TYPES.BUCKET, quantity: 1, quality: 1 },
+      ],
+      time: 2,
+    },
+  ],
+  [BUILDING_TYPES.OVEN]: [
+    {
+      name: 'bread',
+      inputs: [{ resourceType: RESOURCE_TYPES.WHEAT, quantity: 1 }],
+      outputs: [
+        { resourceType: RESOURCE_TYPES.BREAD, quantity: 1, quality: 1 },
+      ],
+      time: 3,
+    },
+  ],
+  [BUILDING_TYPES.WELL]: [
+    {
+      name: 'Water bucket',
+      inputs: [{ resourceType: RESOURCE_TYPES.BUCKET, quantity: 1 }],
+      outputs: [
+        {
+          resourceType: RESOURCE_TYPES.BUCKET_WATER,
+          quantity: 1,
+          quality: 1,
+        },
+      ],
+      time: 1,
+    },
+  ],
+};

@@ -1,7 +1,7 @@
 import { debugLog } from './debug.js';
 import Building from './building.js';
 import Recipe from './recipe.js';
-import { RESOURCE_TYPES, BUILDING_TYPES } from './constants.js';
+import { RESOURCE_TYPES, BUILDING_TYPES, CRAFTING_RECIPE_DEFINITIONS } from './constants.js';
 
 export default class CraftingStation extends Building {
     constructor(x, y, spriteManager = null, constructionMaterials = null) {
@@ -19,57 +19,11 @@ export default class CraftingStation extends Building {
         this.drawBase = false;
         this.spriteManager = spriteManager;
         this.stationSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.CRAFTING_STATION) : null;
-        this.recipes = []; // List of recipes this station can craft
+        this.recipes = CRAFTING_RECIPE_DEFINITIONS[BUILDING_TYPES.CRAFTING_STATION].map(
+            (def) => new Recipe(def.name, def.inputs, def.outputs, def.time),
+        );
         this.autoCraft = false;
         this.desiredRecipe = null;
-
-        // 2 planks from 1 wood
-        this.addRecipe(
-            new Recipe(
-                "plank",
-                [{ resourceType: RESOURCE_TYPES.WOOD, quantity: 1 }],
-                [
-                    {
-                        resourceType: RESOURCE_TYPES.PLANK,
-                        quantity: 2,
-                        quality: 1,
-                    },
-                ],
-                2,
-            ),
-        );
-
-        // 1 bandage from 1 cotton
-        this.addRecipe(
-            new Recipe(
-                "bandage",
-                [{ resourceType: RESOURCE_TYPES.COTTON, quantity: 1 }],
-                [
-                    {
-                        resourceType: RESOURCE_TYPES.BANDAGE,
-                        quantity: 1,
-                        quality: 1,
-                    },
-                ],
-                3,
-            ),
-        );
-
-        // New recipe: Bucket from plank
-        this.addRecipe(
-            new Recipe(
-                "bucket",
-                [{ resourceType: RESOURCE_TYPES.PLANK, quantity: 1 }],
-                [
-                    {
-                        resourceType: RESOURCE_TYPES.BUCKET,
-                        quantity: 1,
-                        quality: 1,
-                    },
-                ],
-                2,
-            ),
-        );
     }
 
     addRecipe(recipe) {

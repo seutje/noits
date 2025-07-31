@@ -1,6 +1,6 @@
 import CraftingStation from './craftingStation.js';
 import Recipe from './recipe.js';
-import { BUILDING_TYPES, RESOURCE_TYPES, BUILDING_TYPE_PROPERTIES } from './constants.js';
+import { BUILDING_TYPES, RESOURCE_TYPES, BUILDING_TYPE_PROPERTIES, CRAFTING_RECIPE_DEFINITIONS } from './constants.js';
 
 export default class Well extends CraftingStation {
     constructor(x, y, spriteManager = null) {
@@ -17,17 +17,11 @@ export default class Well extends CraftingStation {
         this.resourcesDelivered = 0;
         this.passable = BUILDING_TYPE_PROPERTIES[this.type]?.passable ?? true;
         this.stationSprite = spriteManager ? spriteManager.getSprite(BUILDING_TYPES.WELL) : null;
-        this.recipes = [];
+        this.recipes = CRAFTING_RECIPE_DEFINITIONS[BUILDING_TYPES.WELL].map(
+            (def) => new Recipe(def.name, def.inputs, def.outputs, def.time),
+        );
         this.autoCraft = false;
         this.desiredRecipe = null;
         this.drawBase = false;
-        this.addRecipe(
-            new Recipe(
-                'Water bucket',
-                [{ resourceType: RESOURCE_TYPES.BUCKET, quantity: 1 }],
-                [{ resourceType: RESOURCE_TYPES.BUCKET_WATER, quantity: 1, quality: 1 }],
-                1,
-            ),
-        );
     }
 }

@@ -832,6 +832,8 @@ export default class Game {
                 newBuilding = new Well(tileX, tileY, this.spriteManager);
             } else if (this.selectedBuilding === BUILDING_TYPES.BARRICADE) {
                 newBuilding = new Building(BUILDING_TYPES.BARRICADE, tileX, tileY, 1, 1, RESOURCE_TYPES.WOOD, 0); // Barricade is a simple building
+            } else if (this.selectedBuilding === BUILDING_TYPES.FLOOR) {
+                newBuilding = new Building(BUILDING_TYPES.FLOOR, tileX, tileY, 1, 1, RESOURCE_TYPES.PLANK, 0);
             } else if (this.selectedBuilding === BUILDING_TYPES.WALL) {
                 newBuilding = new Wall(tileX, tileY, this.spriteManager); // Walls require 1 stone
             } else {
